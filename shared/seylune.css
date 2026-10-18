@@ -1,0 +1,581 @@
+/* ============================================================
+   SEYLUNE — SHARED COMPONENT STYLES
+   Loaded on every page after home/home.css.
+   Uses the same design tokens (gold, deep night, cream text)
+   for the parts added in the extended version:
+   1. Accessibility helpers (skip link, focus ring, reduced motion)
+   2. Mobile menu drawer
+   3. Toast message
+   4. Wishlist heart on product cards
+   5. Product card extras
+   6. Filter toolbar + panel
+   7. Empty state
+   8. Modal (size guide)
+   9. Footer form message
+   10. Shared form fields (checkout)
+============================================================ */
+
+
+/* ============================================================
+   1. ACCESSIBILITY HELPERS
+============================================================ */
+
+/* Native scrollbars, date pickers and form controls follow the dark theme */
+:root {
+  color-scheme: dark;
+}
+
+/* Product tabs scroll sideways on phones without a visible bar */
+.tab-buttons {
+  scrollbar-width: none;
+}
+
+.tab-buttons::-webkit-scrollbar {
+  display: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 1000;
+  background: var(--gold);
+  color: var(--bg-deep);
+  padding: 0.7rem 1.2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* Visible gold focus ring for keyboard users only */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ============================================================
+   2. MOBILE MENU DRAWER
+   Built by shared/seylune.js from the desktop nav links.
+============================================================ */
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .mobile-menu {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    background: var(--bg-main);
+    border-top: 1px solid transparent;
+    transition: max-height var(--transition), visibility var(--transition), border-color var(--transition);
+  }
+
+  .mobile-menu.open {
+    max-height: 80vh;
+    overflow-y: auto;
+    visibility: visible;
+    border-top-color: rgba(198, 163, 107, 0.12);
+  }
+
+  .mobile-menu .mobile-search {
+    display: flex;
+    margin: 1.2rem 1.2rem 0.4rem;
+  }
+
+  .mobile-menu .mobile-search input {
+    flex: 1;
+    width: auto;
+  }
+
+  .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 1.2rem 1.4rem;
+  }
+
+  .mobile-menu-links a {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.95rem 0;
+    border-bottom: 1px solid rgba(198, 163, 107, 0.08);
+  }
+
+  .mobile-menu-links a:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-menu-links a.active,
+  .mobile-menu-links a:hover {
+    color: var(--gold);
+  }
+
+  .mobile-menu-links a::after {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   3. TOAST MESSAGE
+============================================================ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.6rem;
+  z-index: 500;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  visibility: hidden;
+  max-width: calc(100% - 2rem);
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid rgba(198, 163, 107, 0.45);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.3rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+}
+
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.toast a {
+  color: var(--gold);
+  margin-left: 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-bottom: 1px solid currentColor;
+}
+
+
+/* ============================================================
+   4. WISHLIST HEART
+============================================================ */
+.product-card {
+  position: relative;
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(15, 13, 16, 0.65);
+  border: 1px solid rgba(198, 163, 107, 0.3);
+  color: var(--text-main);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: all var(--transition);
+}
+
+.wishlist-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.wishlist-btn.saved {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.wishlist-btn.saved svg {
+  fill: var(--gold);
+}
+
+
+/* ============================================================
+   5. PRODUCT CARD EXTRAS
+============================================================ */
+.product-card-category {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 0.4rem;
+}
+
+
+/* ============================================================
+   6. FILTER TOOLBAR + PANEL
+============================================================ */
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-main);
+  background: transparent;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgba(198, 163, 107, 0.3);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+}
+
+.filter-toggle:hover,
+.filter-toggle[aria-expanded="true"] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--bg-deep);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.filter-panel {
+  background: var(--bg-deep);
+  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
+  animation: filterIn 0.35s var(--ease);
+}
+
+@keyframes filterIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.filter-panel-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.filter-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 0.9rem;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--text-main);
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.2);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  transition: all var(--transition);
+}
+
+.filter-chip:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.filter-chip.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg-deep);
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 238, 232, 0.35);
+  flex-shrink: 0;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-self: end;
+}
+
+@media (max-width: 1024px) {
+  .filter-panel-inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    padding: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filter-panel-inner {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+    padding: 1.5rem 1.2rem;
+  }
+
+  .filter-actions .btn {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   7. EMPTY STATE (filters / search with no results)
+============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-soft);
+}
+
+.empty-state h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  margin-bottom: 0.8rem;
+}
+
+.empty-state p {
+  margin-bottom: 1.4rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+
+/* ============================================================
+   8. MODAL (size guide)
+============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  background: rgba(15, 13, 16, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: modalFade 0.3s var(--ease);
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.3);
+  border-radius: var(--radius);
+  padding: 2.4rem 2rem 2rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-soft);
+  font-size: 1.4rem;
+  border-radius: 50%;
+  transition: color var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--gold);
+}
+
+.modal-title {
+  font-size: 1.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.modal-text {
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  margin-bottom: 1.4rem;
+}
+
+.size-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.size-table th,
+.size-table td {
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(198, 163, 107, 0.12);
+}
+
+.size-table th {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.size-table td {
+  color: var(--text-main);
+}
+
+.size-table tr td:first-child {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+
+/* ============================================================
+   9. FOOTER FORM MESSAGE
+============================================================ */
+.footer-form-message {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--gold);
+  min-height: 1.1rem;
+}
+
+.footer-form-message.error {
+  color: #E08B8B;
+}
+
+
+/* ============================================================
+   10. SHARED FORM FIELDS
+   Same look as the Account and About forms.
+============================================================ */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.3rem;
+}
+
+.field label,
+.field legend {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: var(--bg-deep);
+  border: 1px solid rgba(198, 163, 107, 0.22);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 0.9rem 1rem;
+  transition: border-color var(--transition);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(185, 168, 174, 0.6);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.field.error input,
+.field.error select,
+.field.error textarea {
+  border-color: #E08B8B;
+}
+
+.field-error {
+  font-size: 0.76rem;
+  color: #E08B8B;
+  min-height: 0;
+}

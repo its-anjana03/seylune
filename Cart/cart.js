@@ -1,0 +1,225 @@
+/* ============================================================
+   SEYLUNE — CART PAGE JAVASCRIPT
+   Shared behaviour (mobile menu, cart storage, badge, search)
+   comes from shared/seylune.js.
+   This script handles:
+   1. Rendering cart rows from localStorage
+   2. Quantity +/- controls and remove (per id + size line)
+   3. Size picker for pieces added without a size
+   4. Order summary: items, subtotal, delivery, total
+   5. Free-delivery progress message
+   6. Update Cart + Proceed to Checkout buttons
+   7. Empty cart state toggle
+============================================================ */
+
+const { formatPrice, escapeHtml } = Seylune;
+const summaryMessage = document.getElementById("summaryMessage");
+let messageTimer = null;
+
+function showMessage(text, isError) {
+  if (!summaryMessage) return;
+  summaryMessage.textContent = text;
+  summaryMessage.classList.toggle("error", !!isError);
+  clearTimeout(messageTimer);
+  messageTimer = setTimeout(() => { summaryMessage.textContent = ""; }, 3000);
+}
+
+
+/* ============================================================
+   1. RENDER CART
+   Shows the cart layout with item rows + summary, or the
+   empty cart state (already in HTML).
+============================================================ */
+function renderCart() {
+  const cart       = Seylune.getCart();
+  const cartLayout = document.getElementById("cartLayout");
+  const emptyCart  = document.getElementById("emptyCart");
+  const cartItems  = document.getElementById("cartItems");
+
+  if (cart.length === 0) {
+    cartLayout.hidden = true;
+    emptyCart.style.display = "block";
+    updateSummary([]);
+    return;
+  }
+
+  cartLayout.hidden = false;
+  emptyCart.style.display = "none";
+
+  cartItems.innerHTML = cart.map((item, index) => {
+    const key     = Seylune.lineKey(item);
+    const product = Seylune.getProduct(item.id);
+    const url     = Seylune.productUrl(item.id);
+    const name    = escapeHtml(item.name);
+
+    // Size: show a picker so the size can be chosen or changed here
+    let sizeCell = "";
+    if (product && product.sizes) {
+      const options = product.sizes.map(s =>
+        `<option value="${s}" ${s === item.size ? "selected" : ""}>${s}</option>`).join("");
+      sizeCell = `
+        <label class="cart-size">
+          <span>Size</span>
+          <select class="cart-size-select${item.size ? "" : " needs-size"}" data-key="${key}"
+                  aria-label="Size for ${name}">
+            ${item.size ? "" : `<option value="" selected disabled>Choose</option>`}
+            ${options}
+          </select>
+        </label>`;
+    } else if (item.size) {
+      sizeCell = `<p class="cart-item-meta">Size: <strong>${escapeHtml(item.size)}</strong></p>`;
+    }
+
+    return `
+      <div class="cart-item" data-key="${key}">
+
+        <!-- Product cell -->
+        <div class="cart-item-product">
+          <a href="${url}" class="cart-item-image">
+            <img src="${escapeHtml(item.image)}" alt="${name}" />
+          </a>
+          <div class="cart-item-info">
+            <h3 class="cart-item-name"><a href="${url}">${name}</a></h3>
+            ${sizeCell}
+            <p class="cart-item-meta">Item ${index + 1}</p>
+          </div>
+        </div>
+
+        <!-- Price cell -->
+        <div class="cart-item-price">
+          <span class="mobile-label">Price</span>
+          <span>${formatPrice(item.price)}</span>
+        </div>
+
+        <!-- Quantity cell -->
+        <div class="cart-item-qty">
+          <span class="mobile-label">Quantity</span>
+          <div class="qty-control">
+            <button class="qty-btn qty-decrease" data-key="${key}" aria-label="Decrease quantity of ${name}"
+                    ${item.quantity <= 1 ? "disabled" : ""}>−</button>
+            <span class="qty-value">${item.quantity}</span>
+            <button class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${name}">+</button>
+          </div>
+        </div>
+
+        <!-- Line Total cell -->
+        <div class="cart-item-total">
+          <span class="mobile-label">Total</span>
+          <span>${formatPrice(item.price * item.quantity)}</span>
+        </div>
+
+        <!-- Remove cell -->
+        <div class="cart-item-remove">
+          <span class="mobile-label">Remove</span>
+          <button class="remove-btn" data-key="${key}" aria-label="Remove ${name}${item.size ? ", size " + item.size : ""}">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+              <path d="M10 11v6"></path>
+              <path d="M14 11v6"></path>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+  }).join("");
+
+  updateSummary(cart);
+}
+
+
+/* ============================================================
+   2 + 3. ROW CONTROLS — one listener for the whole list
+============================================================ */
+const cartItemsEl = document.getElementById("cartItems");
+
+cartItemsEl.addEventListener("click", e => {
+  const inc = e.target.closest(".qty-increase");
+  const dec = e.target.closest(".qty-decrease");
+  const rem = e.target.closest(".remove-btn");
+
+  if (inc) Seylune.changeQuantity(inc.dataset.key, 1);
+  else if (dec) Seylune.changeQuantity(dec.dataset.key, -1);
+  else if (rem) {
+    const item = Seylune.getCart().find(i => Seylune.lineKey(i) === rem.dataset.key);
+    Seylune.removeFromCart(rem.dataset.key);
+    if (item) Seylune.toast(`${item.name} removed from your cart.`);
+  } else return;
+
+  renderCart();
+});
+
+cartItemsEl.addEventListener("change", e => {
+  const select = e.target.closest(".cart-size-select");
+  if (!select) return;
+  Seylune.changeSize(select.dataset.key, select.value);
+  renderCart();
+});
+
+
+/* ============================================================
+   4 + 5. ORDER SUMMARY + FREE DELIVERY PROGRESS
+============================================================ */
+function updateSummary(cart) {
+  const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+  const subtotal   = Seylune.getSubtotal(cart);
+  const shipping   = Seylune.getShipping(subtotal, "standard");
+
+  document.getElementById("summaryItemCount").textContent = totalItems;
+  document.getElementById("summarySubtotal").textContent  = formatPrice(subtotal);
+  document.getElementById("summaryShipping").textContent  = shipping === 0 ? "Free" : formatPrice(shipping);
+  document.getElementById("summaryTotal").textContent     = formatPrice(subtotal + shipping);
+
+  const note = document.getElementById("deliveryProgress");
+  const bar  = document.getElementById("deliveryBar");
+  const remaining = Seylune.FREE_DELIVERY_MIN - subtotal;
+
+  if (note) {
+    note.textContent = remaining > 0
+      ? `Add ${formatPrice(remaining)} more for free islandwide delivery.`
+      : "You've unlocked free islandwide delivery.";
+  }
+  if (bar) {
+    bar.style.width = Math.min(100, (subtotal / Seylune.FREE_DELIVERY_MIN) * 100) + "%";
+  }
+}
+
+
+/* ============================================================
+   6. UPDATE CART + CHECKOUT BUTTONS
+============================================================ */
+document.getElementById("updateCartBtn").addEventListener("click", () => {
+  renderCart();
+  showMessage("Cart updated successfully.");
+});
+
+document.getElementById("checkoutBtn").addEventListener("click", () => {
+  const cart = Seylune.getCart();
+
+  if (cart.length === 0) {
+    showMessage("Your cart is empty.", true);
+    return;
+  }
+
+  // Every sized piece needs a size before checkout
+  const missing = document.querySelector(".cart-size-select.needs-size");
+  if (missing) {
+    showMessage("Please choose a size for every piece before checkout.", true);
+    missing.focus();
+    return;
+  }
+
+  window.location.href = "../Checkout/checkout.html";
+});
+
+
+/* ============================================================
+   7. INIT
+============================================================ */
+renderCart();
+
+// Re-render if the cart changes in another tab
+window.addEventListener("storage", e => {
+  if (e.key === Seylune.KEYS.cart) renderCart();
+});

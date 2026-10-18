@@ -1,0 +1,254 @@
+/* ============================================================
+   SEYLUNE — SEARCH RESULTS PAGE STYLES
+   Page-specific styles only.
+   The base navbar, footer, buttons, product cards, filter
+   chips and empty state come from home/home.css and
+   shared/seylune.css.
+============================================================ */
+
+
+/* ============================================================
+   1. BREADCRUMB
+============================================================ */
+.breadcrumb {
+  background: var(--bg-deep);
+  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
+}
+
+.breadcrumb-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.breadcrumb-inner a {
+  color: var(--text-soft);
+  transition: color var(--transition);
+}
+
+.breadcrumb-inner a:hover {
+  color: var(--gold);
+}
+
+.breadcrumb-separator {
+  margin: 0 0.6rem;
+  color: rgba(198, 163, 107, 0.4);
+}
+
+.breadcrumb-current {
+  color: var(--gold);
+}
+
+
+/* ============================================================
+   2. SEARCH HEADER
+============================================================ */
+.search-header {
+  text-align: center;
+  padding: var(--space-lg) 2rem var(--space-md);
+  background:
+    radial-gradient(ellipse at top, rgba(198, 163, 107, 0.08), transparent 60%),
+    var(--bg-main);
+  border-bottom: 1px solid rgba(198, 163, 107, 0.08);
+}
+
+.search-header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.search-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 1.8rem;
+  word-break: break-word;
+}
+
+.search-page-form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.search-page-form input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.25);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.95rem 1.2rem;
+  transition: border-color var(--transition);
+}
+
+.search-page-form input::placeholder {
+  color: var(--text-soft);
+}
+
+.search-page-form input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.search-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.1rem;
+  margin-top: 1.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.search-suggestions a {
+  color: var(--gold);
+  border-bottom: 1px solid transparent;
+}
+
+.search-suggestions a:hover {
+  border-bottom-color: var(--gold);
+}
+
+
+/* ============================================================
+   3. TOOLBAR (count, category chips, sort)
+============================================================ */
+.catalog-toolbar {
+  border-bottom: 1px solid rgba(198, 163, 107, 0.08);
+}
+
+.toolbar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.4rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.result-count {
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+.result-count #resultCount {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.sort-control label {
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.sort-control select {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid rgba(198, 163, 107, 0.25);
+  border-radius: var(--radius);
+  padding: 0.65rem 2.4rem 0.65rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C6A36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 14px;
+  transition: border-color var(--transition);
+}
+
+.sort-control select:focus,
+.sort-control select:hover {
+  outline: none;
+  border-color: var(--gold);
+}
+
+
+/* ============================================================
+   4. RESULTS GRID + CARD BUTTONS
+============================================================ */
+.catalog-section {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-xl);
+}
+
+.product-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.product-actions .btn {
+  width: 100%;
+}
+
+
+/* ============================================================
+   5. RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+
+  .breadcrumb-inner {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.72rem;
+  }
+
+  .search-header {
+    padding: var(--space-md) 1.2rem;
+  }
+
+  .search-page-form {
+    flex-direction: column;
+  }
+
+  .toolbar-inner {
+    padding: 1rem 1.2rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+
+  .toolbar-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .sort-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sort-control select {
+    flex: 1;
+    margin-left: 0.8rem;
+  }
+
+  .catalog-section {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-lg);
+  }
+}

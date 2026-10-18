@@ -1,0 +1,28 @@
+/* ============================================================
+   SEYLUNE — TOPS PAGE JAVASCRIPT
+   The product cards (with images, names, prices) are written
+   directly inside tops.html.
+   Shared behaviour (mobile menu, cart badge, add-to-cart,
+   wishlist hearts, search) comes from shared/seylune.js.
+   This script only sets up the catalogue tools:
+   1. Filter panel (Size, Colour, Price)
+   2. Sort (Newest, Low–High, High–Low)
+   3. Result count + empty state
+   Each card's size and colour are read from shared/products.js.
+============================================================ */
+
+
+/* ============================================================
+   1. PRICE RANGES FOR THIS PAGE
+============================================================ */
+const priceRanges = [
+  { value: "under-5000",  label: "Under Rs. 5,000",         min: 0,     max: 4999 },
+  { value: "5000-5800",   label: "Rs. 5,000 – 5,800",       min: 5000,  max: 5800 },
+  { value: "above-5800",  label: "Above Rs. 5,800",         min: 5801,  max: null }
+];
+
+
+/* ============================================================
+   2. START FILTERS + SORT
+============================================================ */
+Seylune.initCatalog({ prices: priceRanges });

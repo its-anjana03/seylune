@@ -1,0 +1,718 @@
+/* ============================================================
+   SEYLUNE — PRODUCT DETAILS PAGE STYLES
+   One template used by every product (Product/product.html).
+   The base navbar, footer, buttons, and product cards come
+   from home/home.css and shared/seylune.css.
+============================================================ */
+
+
+/* ============================================================
+   1. BREADCRUMB
+============================================================ */
+.breadcrumb {
+  background: var(--bg-deep);
+  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
+}
+
+.breadcrumb-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.breadcrumb-inner a {
+  color: var(--text-soft);
+  transition: color var(--transition);
+}
+
+.breadcrumb-inner a:hover {
+  color: var(--gold);
+}
+
+.breadcrumb-separator {
+  margin: 0 0.6rem;
+  color: rgba(198, 163, 107, 0.4);
+}
+
+.breadcrumb-current {
+  color: var(--gold);
+}
+
+
+/* ============================================================
+   2. PRODUCT SECTION LAYOUT
+============================================================ */
+.product-section {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-xl);
+}
+
+.product-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+
+/* ============================================================
+   3. IMAGE GALLERY
+============================================================ */
+.product-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 100px; /* sits below sticky navbar */
+}
+
+/* Main image with hover zoom */
+.main-image {
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease), opacity 0.3s var(--ease);
+}
+
+.main-image:hover img {
+  transform: scale(1.04);
+}
+
+/* Smooth fade when image switches */
+.main-image.fading img {
+  opacity: 0;
+}
+
+/* Thumbnail strip */
+.thumbnail-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+
+.thumbnail {
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.15);
+  border-radius: var(--radius);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  transition: all var(--transition);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+
+.thumbnail:hover {
+  border-color: rgba(198, 163, 107, 0.5);
+}
+
+.thumbnail:hover img {
+  transform: scale(1.05);
+}
+
+.thumbnail.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+
+/* ============================================================
+   4. PRODUCT INFO COLUMN
+============================================================ */
+.product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-category {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.product-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.2rem;
+}
+
+
+/* ============================================================
+   5. PRICE ROW
+============================================================ */
+.product-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.product-price-large {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+
+.product-tax-note {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  letter-spacing: 0.05em;
+}
+
+
+/* ============================================================
+   6. SHORT DESCRIPTION + DIVIDER
+============================================================ */
+.product-short-desc {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  margin-bottom: 2rem;
+}
+
+.product-divider {
+  height: 1px;
+  background: rgba(198, 163, 107, 0.15);
+  margin-bottom: 2rem;
+}
+
+
+/* ============================================================
+   7. PRODUCT OPTIONS (size + quantity)
+============================================================ */
+.product-option {
+  margin-bottom: 1.8rem;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.option-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.option-link {
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.option-link:hover {
+  border-bottom-color: var(--gold);
+}
+
+
+/* ============================================================
+   8. SIZE BUTTONS
+============================================================ */
+.size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.size-btn {
+  min-width: 52px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+  background: var(--bg-card);
+  border: 1px solid rgba(198, 163, 107, 0.25);
+  border-radius: var(--radius);
+  cursor: pointer;
+  padding: 0 1rem;
+  transition: all var(--transition);
+}
+
+.size-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.size-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg-deep);
+}
+
+.size-error {
+  display: none;
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: #E08B8B;
+  letter-spacing: 0.05em;
+}
+
+.size-error.show {
+  display: block;
+}
+
+
+/* ============================================================
+   9. QUANTITY CONTROL
+   (Same visual style as the cart page)
+============================================================ */
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(198, 163, 107, 0.25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-deep);
+  width: fit-content;
+}
+
+.qty-btn {
+  width: 42px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.qty-btn:hover {
+  background: var(--gold);
+  color: var(--bg-deep);
+}
+
+.qty-value {
+  min-width: 50px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+  padding: 0 0.4rem;
+}
+
+
+/* ============================================================
+   10. ACTION BUTTONS + FEEDBACK
+============================================================ */
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.product-feedback {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.86rem;
+  text-align: center;
+  display: none;
+  letter-spacing: 0.03em;
+  background: rgba(198, 163, 107, 0.08);
+  border: 1px solid rgba(198, 163, 107, 0.3);
+  color: var(--gold);
+}
+
+.product-feedback.show {
+  display: block;
+}
+
+
+/* ============================================================
+   11. TRUST ROW (delivery + returns)
+============================================================ */
+.trust-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(198, 163, 107, 0.1);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+.trust-item svg {
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   12. PRODUCT TABS SECTION
+============================================================ */
+.product-tabs-section {
+  padding-top: 0;
+  padding-bottom: var(--space-xl);
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 1px solid rgba(198, 163, 107, 0.15);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  background: transparent;
+  padding: 1rem 0;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--transition);
+}
+
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width var(--transition);
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  color: var(--gold);
+}
+
+.tab-btn.active::after {
+  width: 100%;
+}
+
+/* Tab panels */
+.tab-panel {
+  display: none;
+  color: var(--text-soft);
+  line-height: 1.9;
+  font-size: 0.95rem;
+  max-width: 780px;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.4s var(--ease);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Info list inside tabs (Fabric & Care) */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.info-list li {
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.info-list li::before {
+  content: "•";
+  color: var(--gold);
+  position: absolute;
+  left: 0;
+}
+
+.info-list strong {
+  color: var(--text-main);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+
+/* ============================================================
+   13. RELATED PRODUCTS SECTION
+============================================================ */
+.related-section {
+  background: var(--bg-deep);
+  max-width: none;
+  margin: 0;
+  padding: var(--space-xl) 2rem;
+}
+
+.related-section .product-grid {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* The shared .product-card from index.css works here.
+   We just give the inner info area a slight tweak. */
+.product-info-card {
+  padding: 1.2rem 1.2rem 1.5rem;
+  text-align: center;
+}
+
+.product-info-card .product-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-heading);
+}
+
+.product-info-card .product-name a:hover {
+  color: var(--gold);
+}
+
+.product-info-card .product-price {
+  color: var(--gold);
+  font-size: 0.92rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.product-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.product-card-actions .btn {
+  width: 100%;
+}
+
+
+/* ============================================================
+   13b. EXTENDED PRODUCT DETAILS
+   Title row tag, colour line, disabled sizes, save button,
+   cart link and the "not found" state.
+============================================================ */
+.product-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.product-title-row .product-category {
+  margin-bottom: 0;
+}
+
+.product-new-tag {
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bg-deep);
+  background: var(--gold);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+}
+
+.product-color {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.product-color .option-label {
+  margin-right: 0.4rem;
+}
+
+.product-color .swatch {
+  width: 16px;
+  height: 16px;
+}
+
+.size-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.size-btn:disabled:hover {
+  border-color: rgba(198, 163, 107, 0.25);
+  color: var(--text-main);
+}
+
+.product-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.product-save.saved {
+  background: rgba(198, 163, 107, 0.12);
+  color: var(--gold);
+}
+
+.product-save.saved svg {
+  fill: var(--gold);
+}
+
+.product-cart-link {
+  align-self: flex-start;
+  margin-top: 1.1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid transparent;
+}
+
+.product-cart-link:hover {
+  border-bottom-color: var(--gold);
+}
+
+.product-missing {
+  max-width: 640px;
+}
+
+.product-missing h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-bottom: 1rem;
+}
+
+.thumbnail-strip[hidden] {
+  display: none;
+}
+
+
+/* ============================================================
+   14. RESPONSIVE — TABLET
+============================================================ */
+@media (max-width: 1024px) {
+
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .product-gallery {
+    position: static;
+  }
+
+  .main-image {
+    aspect-ratio: 4 / 5;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .thumbnail-strip {
+    max-width: 540px;
+    margin: 0 auto;
+  }
+}
+
+
+/* ============================================================
+   15. RESPONSIVE — MOBILE
+============================================================ */
+@media (max-width: 768px) {
+
+  .product-section {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-lg);
+  }
+
+  .product-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .tab-buttons {
+    gap: 1.2rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .tab-btn {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+  }
+
+  .related-section {
+    padding: var(--space-lg) 1.2rem;
+  }
+}
+
+
+/* ============================================================
+   16. RESPONSIVE — SMALL MOBILE
+============================================================ */
+@media (max-width: 480px) {
+
+  .product-title {
+    font-size: 1.7rem;
+  }
+
+  .product-price-large {
+    font-size: 1.4rem;
+  }
+
+  .size-btn {
+    min-width: 46px;
+    height: 42px;
+  }
+}
