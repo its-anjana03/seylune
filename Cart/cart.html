@@ -4,297 +4,169 @@
   <!-- ========== Meta & Page Info ========== -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Seylune Cart — Review your selected pieces before continuing." />
+  <meta name="description" content="Review the pieces in your Seylune cart before checkout." />
+  <meta name="theme-color" content="#0F0D10" />
   <title>Your Cart — Seylune</title>
   <link rel="icon" href="../home/images/Logo.png" type="image/png" />
 
-  <!-- ========== Favicon ========== -->
-  <link rel="icon" href="../home/images/Logo.png" type="image/png" />
-
-  <!-- ========== Google Fonts: Playfair Display + Inter ========== -->
+  <!-- ========== Fonts: Tenor Sans (titles) + Manrope (reading and UI) ========== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Tenor+Sans&display=swap" rel="stylesheet" />
 
-  <!-- ========== Shared Stylesheet (navbar, footer, buttons, cards) ========== -->
-  <link rel="stylesheet" href="../home/home.css" />
-
-  <!-- ========== Shared Component Styles (mobile menu, filters, toast, wishlist) ========== -->
-  <link rel="stylesheet" href="../shared/seylune.css" />
-
-  <!-- ========== Page-Specific Stylesheet ========== -->
+  <!-- ========== Site styles, then this page's own ========== -->
+  <link rel="stylesheet" href="../shared/site.css" />
   <link rel="stylesheet" href="cart.css" />
+  <script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("anim");</script>
 </head>
-<body>
+<body class="page page-cart">
 
   <!-- ============================================================
-       ANNOUNCEMENT BAR
-  ============================================================ -->
-  <div class="announcement-bar">
-    <p>Free islandwide delivery on orders over Rs. 10,000</p>
-  </div>
-
-  <!-- ============================================================
-       NAVBAR (Reusable — identical across all Seylune pages)
+       HEADER
+       No bar: the name in one corner, three words in the other.
   ============================================================ -->
   <header class="navbar" id="navbar">
-    <div class="nav-container">
 
-      <!-- Logo -->
-      <a href="../home/home.html" class="nav-logo" aria-label="Seylune home">SEYLUNE</a>
+    <a href="../home/home.html" class="nav-logo" aria-label="Seylune home">
+      <img src="../home/images/Logo.png" alt="" width="26" height="27" />
+      <span>Seylune</span>
+    </a>
 
-      <!-- Desktop Navigation Links -->
-      <nav class="nav-links" id="navLinks">
-        <a href="../home/home.html">Home</a>
-        <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
-        <a href="../Dresses/dresses.html">Dresses</a>
-        <a href="../Tops/tops.html">Tops</a>
-        <a href="../Bottoms/bottoms.html">Bottoms</a>
-        <a href="../About/About.html">About</a>
-
-      </nav>
-
-      <!-- Right-side icons -->
-      <div class="nav-actions">
-
-        <!-- Search form -->
-        <form class="nav-search" id="navSearch" role="search" action="../Search/search.html" method="get">
-          <input
-            type="text"
-            name="q"
-            id="searchInput"
-            placeholder="Search Seylune…"
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Submit search">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </form>
-
-        <!-- Account Icon -->
-        <a href="../Account/Account.html" class="nav-icon" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
-
-        <!-- Cart Icon with Count Badge -->
-        <a href="cart.html" class="nav-icon cart-icon active" aria-label="Cart">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
-          <span class="cart-badge" id="cartBadge">0</span>
-        </a>
-
-        <!-- Hamburger Menu (mobile) -->
-        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-      </div>
+    <div class="nav-actions">
+      <button type="button" class="nav-word" id="searchOpen" aria-controls="menuOverlay" aria-expanded="false">Search</button>
+      <a href="../Cart/cart.html" class="nav-word cart-icon" aria-label="Cart" aria-current="page">Cart<span class="cart-badge" id="cartBadge">0</span></a>
+      <button type="button" class="nav-word menu-toggle" id="menuToggle" aria-controls="menuOverlay" aria-expanded="false">
+        <span class="menu-toggle-word">Menu</span>
+        <span class="menu-toggle-lines" aria-hidden="true"><span></span><span></span></span>
+      </button>
     </div>
 
   </header>
 
   <!-- ============================================================
-       MAIN CONTENT
+       THE MENU
+       A full-screen room of its own: the names on the left, a
+       photograph on the right that melts to each name you point at.
   ============================================================ -->
-  <main>
+  <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="menu-inner">
 
-    <!-- ============================================================
-         BREADCRUMB
-    ============================================================ -->
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <div class="breadcrumb-inner">
-        <a href="../home/home.html">Home</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">Cart</span>
+      <nav class="menu-links" aria-label="Main">
+        <ol id="menuLinks">
+          <li><a href="../New arrivals/new-arriavals.html" data-index="0"><span class="menu-name">New Arrivals</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Dresses/dresses.html" data-index="1"><span class="menu-name">Dresses</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Tops/tops.html" data-index="2"><span class="menu-name">Tops</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Bottoms/bottoms.html" data-index="3"><span class="menu-name">Bottoms</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../About/About.html" data-index="4"><span class="menu-name">About</span><span class="menu-note">Our story</span></a></li>
+          <li><a href="../Account/Account.html" data-index="5"><span class="menu-name">Account</span><span class="menu-note">Orders &amp; saved pieces</span></a></li>
+        </ol>
+      </nav>
+
+      <div class="menu-media">
+        <div class="liquid-box" id="menuLiquid">
+          <img src="../home/images/products/Dresses/noira-satin-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/aurelle-evening-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Tops/elara-drape-top.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Bottoms/veya-tailored-pants.jpg" alt="" loading="lazy" />
+          <img src="../home/images/story-home.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/lune-midi-dress.jpg" alt="" loading="lazy" />
+        </div>
       </div>
-    </nav>
 
-    <!-- ============================================================
-         CART HEADER
-    ============================================================ -->
-    <section class="cart-header">
-      <div class="cart-header-inner">
-        <p class="section-eyebrow">Shopping Bag</p>
-        <h1 class="cart-title">Your Cart</h1>
-        <p class="cart-subtitle">Review your selected pieces before continuing.</p>
+      <div class="menu-foot">
+        <form class="nav-search menu-search" id="navSearch" role="search" action="../Search/search.html" method="get">
+          <label class="visually-hidden" for="searchInput">Search products</label>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
+          <input type="search" name="q" id="searchInput" placeholder="Search satin, ivory, trousers…" autocomplete="off" />
+        </form>
+        <p class="menu-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
       </div>
-    </section>
+
+    </div>
+  </div>
+
+  <main id="main">
 
     <!-- ============================================================
-         CART CONTENT WRAPPER
-         Either #cartLayout (when items exist) or
-         #emptyCart (when cart is empty) is shown.
+         THE CART — the pieces on the left, the summary holding still
+         on the right. Rows are drawn by cart.js from localStorage.
     ============================================================ -->
-    <section class="section cart-section">
+    <div class="room ledger-room" id="cartLayout" hidden>
 
-      <!-- ============================================================
-           1. CART LAYOUT — items + summary
-           Shown only if there are items in localStorage.
-      ============================================================ -->
-      <div class="cart-layout" id="cartLayout" hidden>
+      <section class="room-body cart-body" aria-labelledby="cartTitle">
+        <p class="kicker reveal">Shopping bag</p>
+        <h1 class="room-title reveal" id="cartTitle">Your Cart</h1>
+        <p class="room-lede reveal">Review your selected pieces before continuing.</p>
+        <div class="cart-lines" id="cartItems"></div>
+        <a href="../New arrivals/new-arriavals.html" class="text-link cart-continue">Continue shopping</a>
+      </section>
 
-        <!-- Cart Items Column -->
-        <div class="cart-items">
+      <aside class="room-side cart-summary" aria-labelledby="summaryTitle">
+        <h2 class="kicker" id="summaryTitle">Order summary</h2>
 
-          <!-- Column headers (desktop only) -->
-          <div class="cart-items-head">
-            <span>Product</span>
-            <span>Price</span>
-            <span>Quantity</span>
-            <span>Total</span>
-            <span></span>
-          </div>
+        <dl class="summary-rows">
+          <div class="summary-row"><dt>Pieces</dt><dd id="summaryItemCount">0</dd></div>
+          <div class="summary-row"><dt>Subtotal</dt><dd id="summarySubtotal">Rs. 0</dd></div>
+          <div class="summary-row"><dt>Standard delivery</dt><dd id="summaryShipping">Rs. 0</dd></div>
+        </dl>
 
-          <!-- Cart items injected here by JS (text + data only, no <img> swaps) -->
-          <div id="cartItems"></div>
+        <p class="summary-total"><span>Total</span><span id="summaryTotal">Rs. 0</span></p>
 
+        <!-- Free delivery progress -->
+        <div class="delivery-progress">
+          <div class="delivery-track" aria-hidden="true"><span id="deliveryBar"></span></div>
+          <p class="summary-note" id="deliveryProgress" aria-live="polite">Free islandwide delivery on orders over Rs. 10,000.</p>
         </div>
 
-        <!-- Order Summary Column -->
-        <aside class="cart-summary">
-          <h2 class="summary-title">Order Summary</h2>
+        <button type="button" class="btn btn-primary btn-block" id="checkoutBtn">Proceed to Checkout</button>
+        <p class="summary-message" id="summaryMessage" role="status" aria-live="polite"></p>
+      </aside>
+    </div>
 
-          <div class="summary-row">
-            <span>Total Items</span>
-            <span id="summaryItemCount">0</span>
-          </div>
-
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="summarySubtotal">Rs. 0</span>
-          </div>
-
-          <div class="summary-row summary-row-soft">
-            <span>Standard Delivery</span>
-            <span id="summaryShipping">Rs. 0</span>
-          </div>
-
-          <div class="summary-divider"></div>
-
-          <div class="summary-row summary-total">
-            <span>Total</span>
-            <span id="summaryTotal">Rs. 0</span>
-          </div>
-
-          <!-- Free delivery progress -->
-          <div class="delivery-progress">
-            <div class="delivery-track" aria-hidden="true"><span id="deliveryBar"></span></div>
-            <p class="summary-note" id="deliveryProgress" aria-live="polite">
-              Free islandwide delivery on orders over Rs. 10,000.
-            </p>
-          </div>
-
-          <!-- Action buttons -->
-          <div class="summary-actions">
-            <button class="btn btn-primary" id="checkoutBtn">Proceed to Checkout</button>
-            <button class="btn btn-outline" id="updateCartBtn">Update Cart</button>
-            <a href="../New arrivals/new-arriavals.html" class="btn btn-small continue-link">Continue Shopping</a>
-          </div>
-
-          <!-- Status feedback -->
-          <p class="summary-message" id="summaryMessage" role="status" aria-live="polite"></p>
-        </aside>
-
+    <!-- ============================================================
+         EMPTY CART
+    ============================================================ -->
+    <section class="still-room" id="emptyCart" aria-labelledby="emptyCartTitle">
+      <img class="still-mark reveal" src="../home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker reveal">Shopping bag</p>
+      <h1 class="room-title reveal" id="emptyCartTitle">Your cart is empty</h1>
+      <p class="room-lede reveal">Explore our latest arrivals and discover your next favourite piece.</p>
+      <div class="still-actions reveal">
+        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop New Arrivals</a>
+        <a href="../Account/Account.html#saved" class="btn btn-ghost">Saved pieces</a>
       </div>
-
-      <!-- ============================================================
-           2. EMPTY CART STATE
-           Shown when there are no items in the cart.
-           All visuals (the SVG illustration) live here in HTML.
-      ============================================================ -->
-      <div class="empty-cart" id="emptyCart">
-
-        <!-- Decorative cart illustration (SVG, not a JS image) -->
-        <div class="empty-cart-icon" aria-hidden="true">
-          <svg viewBox="0 0 80 80" width="80" height="80" fill="none"
-               stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="32" cy="68" r="3"></circle>
-            <circle cx="60" cy="68" r="3"></circle>
-            <path d="M8 12h8l8 40h40l6-26H22"></path>
-          </svg>
-        </div>
-
-        <h2 class="empty-cart-title">Your cart is currently empty.</h2>
-        <p class="empty-cart-text">
-          Explore our latest arrivals and discover your next favorite piece.
-        </p>
-
-        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop Now</a>
-      </div>
-
     </section>
 
   </main>
 
+
   <!-- ============================================================
        FOOTER
   ============================================================ -->
-  <footer class="footer">
-    <div class="footer-container">
-
-      <div class="footer-col">
-        <h4 class="footer-logo">SEYLUNE</h4>
-        <p>Seylune — Luxury for the modern muse.</p>
-      </div>
-
-      <div class="footer-col">
-        <h5>Quick Links</h5>
-        <ul>
-          <li><a href="../home/home.html">Home</a></li>
-          <li><a href="../New arrivals/new-arriavals.html">New Arrivals</a></li>
-          <li><a href="../Dresses/dresses.html">Dresses</a></li>
-          <li><a href="../Tops/tops.html">Tops</a></li>
-          <li><a href="../Bottoms/bottoms.html">Bottoms</a></li>
-          <li><a href="../About/About.html">About</a></li>
-          <li><a href="../Account/Account.html">Account</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h5>Contact</h5>
-        <ul>
-          <li>Colombo, Sri Lanka</li>
-          <li>hello@seylune.lk</li>
-          <li>+94 77 123 4567</li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h5>Newsletter</h5>
-        <p>Receive updates on new arrivals and private edits.</p>
-        <form class="footer-form" action="#" method="post" onsubmit="event.preventDefault();">
-          <input type="email" placeholder="Your email" aria-label="Email" required />
-          <button type="submit">→</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 Seylune. All rights reserved.</p>
-    </div>
+  <footer class="site-footer">
+    <img class="footer-mark" src="../home/images/Logo.png" alt="" width="34" height="35" />
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../home/home.html">Home</a>
+      <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
+      <a href="../Dresses/dresses.html">Dresses</a>
+      <a href="../Tops/tops.html">Tops</a>
+      <a href="../Bottoms/bottoms.html">Bottoms</a>
+      <a href="../About/About.html">About</a>
+      <a href="../Account/Account.html">Account</a>
+    </nav>
+    <p class="footer-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+    <p class="footer-legal">© 2025 Seylune. All rights reserved. A concept store by Thinura Anjana — no real orders are taken.</p>
   </footer>
 
-  <!-- ========== Shared Scripts: product catalogue + site logic ========== -->
+  <!-- ========== Shared Scripts: catalogue + site logic ========== -->
   <script src="../shared/products.js"></script>
   <script src="../shared/seylune.js"></script>
-  
+
+  <!-- ========== Motion: GSAP, WebGL photographs, the menu + rooms ========== -->
+  <script src="../shared/vendor/gsap.min.js"></script>
+  <script src="../shared/liquid.js"></script>
+  <script src="../shared/site.js"></script>
+
   <!-- ========== Page Script ========== -->
   <script src="cart.js"></script>
 </body>

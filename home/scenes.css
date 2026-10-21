@@ -1,0 +1,960 @@
+/* ============================================================
+   SEYLUNE — HOME AS SIX SCENES
+   With JavaScript the home page is a sequence of full-screen
+   scenes (home.js moves between them). Without it, or with
+   reduced motion, the same scenes simply follow one another.
+   Every scene is sized from the screen height as well as its
+   width, so nothing slides under the header on short laptop
+   screens and no scene needs scrolling on a desktop.
+   1.  The dusk under the header
+   4.  Scene stage + reveal
+   6.  Scene 1 — The house
+   7.  Scene 2 — New Arrivals
+   8.  Scene 3 — Collections
+   9.  Scene 4 — The story
+   10. Scene 5 — Signature edits
+   11. Scene 6 — The close
+   12. Framing of the home photographs
+   13. Short screens
+   14. Tablets + phones
+============================================================ */
+
+
+/* ============================================================
+   1. THE DUSK
+   A faint dusk at the top of every scene keeps the corner words
+   legible over any photograph. (Tokens, buttons, the header and
+   the menu live in shared/site.css.)
+============================================================ */
+.scenes::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  height: 140px;
+  background: linear-gradient(to bottom, rgba(15, 13, 16, 0.55), rgba(15, 13, 16, 0));
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   4. SCENE STAGE + REVEAL
+   .scenes-on is added by home.js when motion is allowed.
+============================================================ */
+.scene {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--bg-main);
+}
+
+.scenes-on,
+.scenes-on body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.scenes-on .scenes {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+}
+
+.scenes-on .scene {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.scenes-on .scene.is-active {
+  visibility: visible;
+  z-index: 2;
+}
+
+.scenes-on .scene.is-leaving {
+  visibility: visible;
+  z-index: 1;
+}
+
+
+/* ============================================================
+   6. SCENE 1 — THE HOUSE
+============================================================ */
+.scene-hero {
+  background: var(--bg-deep);
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+}
+
+/* Night falls in from the left behind the words, and up from the floor */
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(15, 13, 16, 0.86) 0%, rgba(15, 13, 16, 0.5) 34%, rgba(15, 13, 16, 0) 58%),
+    linear-gradient(0deg, rgba(15, 13, 16, 0.75) 0%, rgba(15, 13, 16, 0) 32%);
+}
+
+.hero-copy {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  top: calc(var(--header) + var(--gap-y));
+  bottom: calc(min(15vw, 24vh) + var(--gap-y));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: min(34rem, 46vw);
+}
+
+.hero-title {
+  margin: 1rem 0 0.9rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, min(4.2vw, 7.4vh), 4.4rem);
+  line-height: 1.04;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.hero-sub {
+  max-width: 26rem;
+  color: var(--text-soft);
+  margin-bottom: clamp(1.2rem, 3.4vh, 2rem);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+/* The name, set across the foot of the frame and never cut */
+.hero-word {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  right: var(--index-room);
+  bottom: var(--gap-y);
+  font-family: var(--font-display);
+  font-size: min(15vw, 24vh);
+  line-height: 0.78;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--text-main);
+  opacity: 0.92;
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   7. SCENE 2 — NEW ARRIVALS
+============================================================ */
+.scene-arrivals {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.arrivals-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--gap-y);
+  min-height: 0;
+  padding: calc(var(--header) + var(--gap-y)) var(--pad) var(--gap-y);
+}
+
+.arrivals-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.arrivals-count {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.arrivals-count span:first-child {
+  color: var(--text-main);
+}
+
+.piece {
+  max-width: 30rem;
+}
+
+.piece-category {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: clamp(0.5rem, 1.6vh, 1rem);
+}
+
+.piece-name {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, min(4.2vw, 7.2vh), 4.4rem);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: clamp(0.7rem, 2.2vh, 1.4rem);
+}
+
+.piece-name a:hover {
+  color: var(--gold);
+}
+
+.piece-short {
+  color: var(--text-soft);
+  max-width: 26rem;
+  margin-bottom: clamp(0.7rem, 2.2vh, 1.4rem);
+}
+
+.piece-price {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.6vh, 1.5rem);
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-bottom: clamp(0.9rem, 2.8vh, 1.8rem);
+}
+
+.piece-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.piece-sizes::before {
+  content: "Add to cart";
+  width: 100%;
+  margin-bottom: 0.3rem;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.arrivals-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.arrivals-nav .text-link {
+  margin-left: 1.2rem;
+}
+
+.arrivals-stage {
+  position: relative;
+  background: var(--bg-card);
+}
+
+.arrivals-stage .liquid-box {
+  position: absolute;
+  inset: 0;
+}
+
+.piece-thumbs {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.piece-thumb {
+  width: 42px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  opacity: 0.55;
+  outline: 1px solid transparent;
+  outline-offset: 2px;
+  transition: opacity 0.3s, outline-color 0.3s;
+}
+
+.piece-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.piece-thumb:hover {
+  opacity: 0.9;
+}
+
+.piece-thumb[aria-current="true"] {
+  opacity: 1;
+  outline-color: var(--gold);
+}
+
+
+/* ============================================================
+   8. SCENE 3 — COLLECTIONS
+============================================================ */
+.collections-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.collections-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(15, 13, 16, 0.92) 0%, rgba(15, 13, 16, 0.6) 38%, rgba(15, 13, 16, 0) 64%),
+    linear-gradient(0deg, rgba(15, 13, 16, 0.5), rgba(15, 13, 16, 0) 30%);
+}
+
+.collections-copy {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  top: calc(var(--header) + var(--gap-y));
+  bottom: var(--gap-y);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(46rem, 60vw);
+}
+
+.collections-sub {
+  margin: 0.7rem 0 clamp(1rem, 4vh, 2.6rem);
+  color: var(--text-soft);
+  max-width: 26rem;
+}
+
+.collection-link {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 1.6rem;
+  padding: clamp(0.1rem, 0.8vh, 0.5rem) 0;
+}
+
+.collection-name {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, min(6.4vw, 11vh), 6.2rem);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(244, 238, 232, 0.28);
+  transition: color 0.6s var(--ease), transform 0.8s var(--ease);
+}
+
+.collection-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 15rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.5s var(--ease), transform 0.6s var(--ease);
+}
+
+.collection-text {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+.collection-count {
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.collection-link.is-active .collection-name,
+.collection-link:hover .collection-name,
+.collection-link:focus-visible .collection-name {
+  color: var(--text-main);
+  transform: translateX(0.6rem);
+}
+
+.collection-link.is-active .collection-meta {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* ============================================================
+   9. SCENE 4 — THE STORY
+============================================================ */
+.scene-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: var(--bg-deep);
+}
+
+.story-media {
+  position: relative;
+  background: var(--bg-card);
+}
+
+.story-media .liquid-box {
+  position: absolute;
+  inset: 0;
+}
+
+.story-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0;
+  padding: calc(var(--header) + var(--gap-y)) var(--index-room) var(--gap-y) clamp(2rem, 6vw, 6rem);
+}
+
+.story-title {
+  margin: clamp(0.6rem, 2vh, 1.2rem) 0 clamp(0.8rem, 2.6vh, 1.6rem);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, min(3.8vw, 7vh), 3.8rem);
+  line-height: 1.04;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.story-text {
+  max-width: 30rem;
+  color: var(--text-soft);
+  font-size: clamp(0.92rem, 1.9vh, 1.04rem);
+  line-height: 1.75;
+  margin-bottom: clamp(1rem, 3vh, 2rem);
+}
+
+.story-name {
+  display: flex;
+  gap: 2.6rem;
+  padding-top: clamp(0.8rem, 2.2vh, 1.4rem);
+  margin-bottom: clamp(1.2rem, 3.4vh, 2.4rem);
+  border-top: 1px solid var(--line);
+}
+
+.story-name dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.8vh, 1.6rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.story-name dd {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+
+/* ============================================================
+   10. SCENE 5 — SIGNATURE EDITS
+============================================================ */
+.scene-edits {
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--header) + var(--gap-y)) var(--index-room) var(--gap-y) var(--pad);
+  background: var(--bg-main);
+}
+
+.edits-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: clamp(0.8rem, 2.4vh, 1.4rem);
+}
+
+.edit-panels {
+  flex: 1;
+  display: flex;
+  gap: 0.6rem;
+  min-height: 0;
+}
+
+.edit-panel {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bg-card);
+  transition: flex-grow 0.9s var(--ease);
+}
+
+.edit-panel.is-open {
+  flex-grow: 2.6;
+}
+
+.edit-panel img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 18%;
+  filter: brightness(0.62) saturate(0.85);
+  transform: scale(1.06);
+  transition: filter 0.9s var(--ease), transform 1.4s var(--ease);
+}
+
+.edit-panel.is-open img {
+  filter: brightness(0.92) saturate(1);
+  transform: scale(1);
+}
+
+.edit-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 13, 16, 0.85), rgba(15, 13, 16, 0) 45%);
+}
+
+.edit-copy {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, min(2.4vw, 4.4vh), 2.4rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Closed panels: the name runs up the panel instead of being cut off */
+.edit-panel:not(.is-open) .edit-name {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: clamp(1.05rem, min(1.6vw, 3vh), 1.5rem);
+}
+
+.edit-text {
+  max-width: 20rem;
+  color: var(--text-soft);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease) 0.1s, transform 0.8s var(--ease) 0.1s;
+}
+
+.edit-panel.is-open .edit-text {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* ============================================================
+   11. SCENE 6 — THE CLOSE
+============================================================ */
+.scene-close {
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 45%, rgba(34, 26, 36, 0.95), transparent 70%),
+    var(--bg-deep);
+}
+
+.close-inner {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  min-height: 100svh;
+  padding: calc(var(--header) + var(--gap-y)) var(--index-room) clamp(1rem, 3vh, 1.6rem) var(--pad);
+}
+
+.promises {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.6rem;
+  padding-bottom: clamp(1rem, 2.6vh, 1.6rem);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+
+.promises strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.close-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--gap-y) 0;
+}
+
+.close-mark {
+  width: clamp(38px, 6vh, 56px);
+  height: auto;
+  margin-bottom: clamp(0.8rem, 2.6vh, 1.8rem);
+}
+
+.close-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, min(4.6vw, 8vh), 4.4rem);
+  line-height: 1.04;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: clamp(0.5rem, 1.6vh, 1rem);
+}
+
+.close-sub {
+  color: var(--text-soft);
+  max-width: 30rem;
+  margin-bottom: clamp(1rem, 3vh, 2rem);
+}
+
+.newsletter-form {
+  display: flex;
+  width: min(100%, 30rem);
+  border-bottom: 1px solid var(--line-gold);
+}
+
+.newsletter-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.9rem 0;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.newsletter-form input::placeholder {
+  color: var(--text-soft);
+}
+
+.newsletter-form .btn {
+  min-height: 46px;
+  margin-bottom: -1px;
+}
+
+.newsletter-message {
+  min-height: 1.4rem;
+  margin-top: 0.6rem;
+  font-size: 0.86rem;
+}
+
+.close-footer {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: clamp(0.9rem, 2.4vh, 1.4rem);
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.8rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.footer-links a:hover,
+.footer-contact a:hover {
+  color: var(--gold);
+}
+
+
+/* ============================================================
+   12. FRAMING OF THE HOME PHOTOGRAPHS
+   (The liquid box itself lives in shared/site.css.)
+============================================================ */
+.hero-media img {
+  object-position: 62% 25%;
+}
+
+.collections-bg img {
+  object-position: 85% 40%;
+}
+
+.story-media img {
+  object-position: 50% 30%;
+}
+
+
+/* ============================================================
+   13. SHORT SCREENS (laptops with browser bars, ~650–760px tall)
+   Keep every scene whole: lose the optional lines first.
+============================================================ */
+@media (max-height: 760px) and (min-width: 861px) {
+  .piece-short,
+  .collection-text {
+    display: none;
+  }
+
+  .promises {
+    font-size: 0.74rem;
+  }
+
+  .promises li {
+    line-height: 1.45;
+  }
+}
+
+@media (max-height: 620px) and (min-width: 861px) {
+  .scene-kicker {
+    font-size: 0.62rem;
+  }
+
+  .hero-sub,
+  .collections-sub,
+  .close-sub {
+    display: none;
+  }
+
+  .promises {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   14. TABLETS + PHONES
+============================================================ */
+@media (max-width: 860px) {
+  /* A tall scene on a phone is read by scrolling inside it */
+  .scenes-on .scene {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .scenes-on .scene::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  /* The house: words at the foot, the name above them */
+  .hero-shade {
+    background: linear-gradient(0deg, rgba(15, 13, 16, 0.95) 22%, rgba(15, 13, 16, 0.35) 55%, rgba(15, 13, 16, 0.25) 100%);
+  }
+
+  .hero-media img {
+    object-position: 64% 20%;
+  }
+
+  /* The words sit at the foot; the name takes whatever height is
+     left above them, so the two can never meet on a short screen */
+  .scene-hero {
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--header) + 0.6rem) var(--pad) 3.4rem;
+  }
+
+  .hero-copy {
+    position: relative;
+    inset: auto;
+    flex: none;
+    order: 2;
+    max-width: none;
+    margin-top: 1.4rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.9rem, 9vw, 2.6rem);
+  }
+
+  /* On a phone the name runs up the dark left edge, clear of her face.
+     Its size follows the height it is given ("SEYLUNE" is about 5.2em
+     long when set vertically). */
+  .hero-word {
+    position: relative;
+    inset: auto;
+    flex: 1 1 0;
+    order: 1;
+    min-height: 0;
+    margin-left: -0.4rem;
+    container-type: size;
+    overflow: hidden;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    line-height: 1;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-word span {
+    font-size: min(calc(100cqh / 5.5), 15cqw, 5.5rem);
+  }
+
+  /* Too little room (a phone on its side): let the words have it all */
+  @container (max-height: 150px) {
+    .hero-word span {
+      display: none;
+    }
+  }
+
+  /* Arrivals: photo above, details below */
+  .scene-arrivals {
+    grid-template-columns: 1fr;
+    grid-template-rows: 54svh auto;
+  }
+
+  .arrivals-stage {
+    order: -1;
+  }
+
+  .arrivals-stage .liquid-box {
+    inset: 0;
+  }
+
+  .arrivals-copy {
+    padding: 1.1rem var(--pad) 3.4rem;
+    gap: 1rem;
+  }
+
+  .arrivals-top {
+    display: none;
+  }
+
+  .piece-name {
+    font-size: 1.9rem;
+  }
+
+  .piece-short {
+    display: none;
+  }
+
+  .size-pill {
+    width: 42px;
+    height: 42px;
+  }
+
+  .round-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .piece-thumbs {
+    left: var(--pad);
+    bottom: 0.8rem;
+  }
+
+  .piece-thumb {
+    width: 30px;
+  }
+
+  /* Collections: names over the photograph */
+  .collections-shade {
+    background: linear-gradient(0deg, rgba(15, 13, 16, 0.95) 22%, rgba(15, 13, 16, 0.3) 70%, rgba(15, 13, 16, 0.5));
+  }
+
+  .collections-copy {
+    top: auto;
+    right: var(--pad);
+    bottom: 3.6rem;
+    width: auto;
+  }
+
+  .collection-name {
+    font-size: 2.6rem;
+  }
+
+  .collection-text {
+    display: none;
+  }
+
+  .collections-bg img {
+    object-position: 80% 30%;
+  }
+
+  /* Story: photo above, words below */
+  .scene-story {
+    grid-template-columns: 1fr;
+    grid-template-rows: 46svh auto;
+  }
+
+  .story-copy {
+    justify-content: flex-start;
+    padding: 1.4rem var(--pad) 3.6rem;
+  }
+
+  .story-title {
+    font-size: 1.9rem;
+  }
+
+  /* Edits: three stacked bands */
+  .scene-edits {
+    padding-right: var(--pad);
+    padding-bottom: 3.4rem;
+    min-height: 100%;
+  }
+
+  .edit-panels {
+    flex-direction: column;
+    min-height: 62svh;
+  }
+
+  .edit-name,
+  .edit-panel:not(.is-open) .edit-name {
+    writing-mode: horizontal-tb;
+    transform: none;
+    font-size: 1.3rem;
+  }
+
+  /* Close */
+  .close-inner {
+    height: auto;
+    padding: calc(var(--header) + 1rem) var(--pad) 2.4rem;
+  }
+
+  .promises {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    font-size: 0.76rem;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+    border: none;
+    gap: 0.6rem;
+  }
+
+  .newsletter-form input {
+    border-bottom: 1px solid var(--line-gold);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-box img {
+    transition: none;
+  }
+}

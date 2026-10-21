@@ -1,254 +1,105 @@
 /* ============================================================
-   SEYLUNE — SEARCH RESULTS PAGE STYLES
-   Page-specific styles only.
-   The base navbar, footer, buttons, product cards, filter
-   chips and empty state come from home/home.css and
-   shared/seylune.css.
+   SEYLUNE — SEARCH PAGE
+   The words you type are set large; the results run down the
+   left with the photograph beside them, like a collection.
+   The index, chips and sort come from shared/site.css.
+   1. The search field
+   2. Popular searches
+   3. Category chips in the toolbar
 ============================================================ */
 
 
 /* ============================================================
-   1. BREADCRUMB
+   1. THE SEARCH FIELD
 ============================================================ */
-.breadcrumb {
-  background: var(--bg-deep);
-  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
-}
-
-.breadcrumb-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
-
-.breadcrumb-inner a {
-  color: var(--text-soft);
-  transition: color var(--transition);
-}
-
-.breadcrumb-inner a:hover {
-  color: var(--gold);
-}
-
-.breadcrumb-separator {
-  margin: 0 0.6rem;
-  color: rgba(198, 163, 107, 0.4);
-}
-
-.breadcrumb-current {
-  color: var(--gold);
-}
-
-
-/* ============================================================
-   2. SEARCH HEADER
-============================================================ */
-.search-header {
-  text-align: center;
-  padding: var(--space-lg) 2rem var(--space-md);
-  background:
-    radial-gradient(ellipse at top, rgba(198, 163, 107, 0.08), transparent 60%),
-    var(--bg-main);
-  border-bottom: 1px solid rgba(198, 163, 107, 0.08);
-}
-
-.search-header-inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.search-title {
-  font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 1.8rem;
-  word-break: break-word;
-}
-
-.search-page-form {
+.search-big {
   display: flex;
-  gap: 0.6rem;
+  align-items: center;
+  gap: 1rem;
+  margin: clamp(0.8rem, 2.4vh, 1.4rem) 0 1.2rem;
+  border-bottom: 1px solid var(--line-gold);
 }
 
-.search-page-form input {
+.search-big input {
   flex: 1;
   min-width: 0;
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.25);
-  border-radius: var(--radius);
-  color: var(--text-main);
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: 0.95rem 1.2rem;
-  transition: border-color var(--transition);
-}
-
-.search-page-form input::placeholder {
-  color: var(--text-soft);
-}
-
-.search-page-form input:focus {
+  padding: 0.4rem 0 0.6rem;
+  background: transparent;
+  border: none;
   outline: none;
-  border-color: var(--gold);
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, min(4.8vw, 8.4vh), 5rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-main);
 }
 
+.search-big input::placeholder {
+  color: rgba(244, 238, 232, 0.22);
+}
+
+.search-big input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-big .round-btn {
+  flex: none;
+  color: var(--gold);
+  border-color: var(--line-gold);
+}
+
+.search-big .round-btn:hover {
+  color: var(--bg-deep);
+}
+
+
+/* ============================================================
+   2. POPULAR SEARCHES
+============================================================ */
 .search-suggestions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem 1.1rem;
-  margin-top: 1.3rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.15em;
+  align-items: center;
+  gap: 0.4rem 1.2rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+}
+
+.search-suggestions span {
   color: var(--text-soft);
 }
 
 .search-suggestions a {
-  color: var(--gold);
-  border-bottom: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  transition: color 0.3s;
 }
 
 .search-suggestions a:hover {
-  border-bottom-color: var(--gold);
+  color: var(--gold);
 }
 
 
 /* ============================================================
-   3. TOOLBAR (count, category chips, sort)
+   3. CATEGORY CHIPS IN THE TOOLBAR
 ============================================================ */
-.catalog-toolbar {
-  border-bottom: 1px solid rgba(198, 163, 107, 0.08);
-}
-
-.toolbar-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 1.4rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+.search-room .index-tools-left {
   flex-wrap: wrap;
 }
 
-.result-count {
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  white-space: nowrap;
+.search-categories .filter-chip {
+  min-height: 32px;
+  padding: 0 0.8rem;
+  font-size: 0.68rem;
 }
 
-.result-count #resultCount {
-  color: var(--gold);
-  font-weight: 500;
-}
-
-.sort-control {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.sort-control label {
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
-
-.sort-control select {
-  background: var(--bg-card);
-  color: var(--text-main);
-  border: 1px solid rgba(198, 163, 107, 0.25);
-  border-radius: var(--radius);
-  padding: 0.65rem 2.4rem 0.65rem 1rem;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C6A36B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.8rem center;
-  background-size: 14px;
-  transition: border-color var(--transition);
-}
-
-.sort-control select:focus,
-.sort-control select:hover {
-  outline: none;
-  border-color: var(--gold);
-}
-
-
-/* ============================================================
-   4. RESULTS GRID + CARD BUTTONS
-============================================================ */
-.catalog-section {
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-xl);
-}
-
-.product-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-}
-
-.product-actions .btn {
-  width: 100%;
-}
-
-
-/* ============================================================
-   5. RESPONSIVE
-============================================================ */
-@media (max-width: 768px) {
-
-  .breadcrumb-inner {
-    padding: 0.9rem 1.2rem;
-    font-size: 0.72rem;
-  }
-
-  .search-header {
-    padding: var(--space-md) 1.2rem;
-  }
-
-  .search-page-form {
-    flex-direction: column;
-  }
-
-  .toolbar-inner {
-    padding: 1rem 1.2rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.9rem;
-  }
-
-  .toolbar-left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
-
-  .sort-control {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .sort-control select {
-    flex: 1;
-    margin-left: 0.8rem;
-  }
-
-  .catalog-section {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-lg);
+@media (max-width: 860px) {
+  .search-big .round-btn {
+    width: 44px;
+    height: 44px;
   }
 }

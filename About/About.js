@@ -1,7 +1,7 @@
 /* ============================================================
    SEYLUNE — ABOUT / CONTACT PAGE JAVASCRIPT
-   Shared behaviour (mobile menu, cart badge, search) comes
-   from shared/seylune.js.
+   Shared behaviour (menu, cart badge, search) comes
+   from shared/seylune.js and shared/site.js.
    Handles:
    1. Contact form validation (frontend only)
    2. Error + success helpers
@@ -132,7 +132,7 @@ function showSuccess(message) {
    Respect the "reduce motion" setting: stop autoplay and
    show the poster image with controls instead.
 ============================================================ */
-const brandVideo = document.querySelector(".about-video video");
+const brandVideo = document.querySelector(".about-media video");
 if (brandVideo && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   brandVideo.removeAttribute("autoplay");
   brandVideo.pause();

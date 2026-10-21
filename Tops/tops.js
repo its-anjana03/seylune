@@ -23,6 +23,14 @@ const priceRanges = [
 
 
 /* ============================================================
-   2. START FILTERS + SORT
+   2. START THE INDEX, FILTERS + SORT
+   The photograph follows the first piece still shown after
+   filtering or sorting.
 ============================================================ */
-Seylune.initCatalog({ prices: priceRanges });
+const index = SeyluneSite.initIndex({
+  list:  document.getElementById("productGrid"),
+  box:   document.getElementById("indexLiquid"),
+  plate: document.getElementById("indexPlate")
+});
+
+Seylune.initCatalog({ prices: priceRanges, onApply: () => index.refresh() });

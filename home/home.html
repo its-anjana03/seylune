@@ -5,508 +5,331 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Seylune — Luxury for the modern muse. Refined silhouettes, rich textures, and timeless confidence." />
+  <meta name="theme-color" content="#0F0D10" />
   <title>Seylune — Luxury for the Modern Muse</title>
   <link rel="icon" href="../home/images/Logo.png" type="image/png" />
 
-  <!-- ========== Google Fonts: Playfair Display + Inter ========== -->
+  <!-- ========== Fonts: Tenor Sans (scene titles) + Manrope (reading and UI) ========== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Tenor+Sans&display=swap" rel="stylesheet" />
 
-  <!-- ========== Page Stylesheet ========== -->
-  <link rel="stylesheet" href="home.css" />
-
-  <!-- ========== Shared Component Styles (mobile menu, filters, toast, wishlist) ========== -->
-  <link rel="stylesheet" href="../shared/seylune.css" />
+  <!-- ========== Site styles (header, menu, buttons), then the scenes ========== -->
+  <link rel="stylesheet" href="../shared/site.css" />
+  <link rel="stylesheet" href="scenes.css" />
+  <script>document.documentElement.classList.add("js");</script>
 </head>
-<body>
+<body class="scene-page">
 
   <!-- ============================================================
-       1. ANNOUNCEMENT BAR
-       Top bar, consistent across all Seylune pages.
-  ============================================================ -->
-  <div class="announcement-bar">
-    <p>Free islandwide delivery on orders over Rs. 10,000</p>
-  </div>
-
-  <!-- ============================================================
-       NAVBAR (Reusable across all pages)
-       - Logo on the left
-       - Nav links in the center
-       - Search, Account, Cart icons on the right
-       - Hamburger menu for mobile
+       HEADER
+       No bar: the name in one corner, three words in the other.
   ============================================================ -->
   <header class="navbar" id="navbar">
-    <div class="nav-container">
 
-      <!-- Logo -->
-      <a href="home.html" class="nav-logo" aria-label="Seylune home">SEYLUNE</a>
+    <a href="home.html" class="nav-logo" aria-label="Seylune home" aria-current="page">
+      <img src="images/Logo.png" alt="" width="26" height="27" />
+      <span>Seylune</span>
+    </a>
 
-      <!-- Desktop Navigation Links -->
-      <nav class="nav-links" id="navLinks">
-        <a href="home.html" class="active">Home</a>
-        <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
-        <a href="../Dresses/dresses.html">Dresses</a>
-        <a href="../Tops/tops.html">Tops</a>
-        <a href="../Bottoms/bottoms.html">Bottoms</a>
-        <a href="../About/About.html">About</a>
-        
-      </nav>
-
-      <!-- Right-side icons -->
-      <div class="nav-actions">
-
-        <!-- Search form — redirects to search.html?q=... -->
-        <form class="nav-search" id="navSearch" role="search" action="../Search/search.html" method="get">
-          <input
-            type="text"
-            name="q"
-            id="searchInput"
-            placeholder="Search Seylune…"
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Submit search">
-            <!-- Search icon (SVG) -->
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </form>
-
-        <!-- Account Icon -->
-        <a href="../Account/Account.html" class="nav-icon" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
-
-        <!-- Cart Icon with Count Badge -->
-        <a href="../Cart/cart.html" class="nav-icon cart-icon" aria-label="Cart">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
-          <span class="cart-badge" id="cartBadge">0</span>
-        </a>
-
-        <!-- Hamburger Menu (only visible on mobile) -->
-        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-      </div>
+    <div class="nav-actions">
+      <button type="button" class="nav-word" id="searchOpen" aria-controls="menuOverlay" aria-expanded="false">Search</button>
+      <a href="../Cart/cart.html" class="nav-word cart-icon" aria-label="Cart">Cart<span class="cart-badge" id="cartBadge">0</span></a>
+      <button type="button" class="nav-word menu-toggle" id="menuToggle" aria-controls="menuOverlay" aria-expanded="false">
+        <span class="menu-toggle-word">Menu</span>
+        <span class="menu-toggle-lines" aria-hidden="true"><span></span><span></span></span>
+      </button>
     </div>
+
   </header>
 
-
   <!-- ============================================================
-       MAIN CONTENT
+       THE MENU
+       A full-screen room of its own: the names on the left, a
+       photograph on the right that melts to each name you point at.
   ============================================================ -->
-  <main>
+  <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="menu-inner">
 
-    <!-- ============================================================
-         2. HERO SECTION
-    ============================================================ -->
-    <section class="hero">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <p class="hero-eyebrow">Luxury for the modern muse</p>
-        <h1 class="hero-title">Luxury in Every Line.</h1>
-        <p class="hero-subtitle">
-          Refined silhouettes, rich textures, and timeless confidence.
-        </p>
-        <div class="hero-buttons">
-          <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop New Arrivals</a>
-          <a href="../Dresses/dresses.html" class="btn btn-outline">Explore Collection</a>
-        </div>
-      </div>
-    </section>
+      <nav class="menu-links" aria-label="Main">
+        <ol id="menuLinks">
+          <li><a href="../New arrivals/new-arriavals.html" data-index="0"><span class="menu-name">New Arrivals</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Dresses/dresses.html" data-index="1"><span class="menu-name">Dresses</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Tops/tops.html" data-index="2"><span class="menu-name">Tops</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Bottoms/bottoms.html" data-index="3"><span class="menu-name">Bottoms</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../About/About.html" data-index="4"><span class="menu-name">About</span><span class="menu-note">Our story</span></a></li>
+          <li><a href="../Account/Account.html" data-index="5"><span class="menu-name">Account</span><span class="menu-note">Orders &amp; saved pieces</span></a></li>
+        </ol>
+      </nav>
 
-    <!-- ============================================================
-         3. FEATURED CATEGORIES
-    ============================================================ -->
-    <section class="section categories">
-      <div class="section-head">
-        <h2 class="section-title">Shop by Category</h2>
-        <p class="section-subtitle">
-          Discover signature silhouettes curated for every mood.
-        </p>
-      </div>
-
-      <div class="category-grid">
-
-        <!-- Dresses card -->
-        <a href="../Dresses/dresses.html" class="category-card">
-          <div class="category-image">
-            <img src="images/products/Dresses/zarelle-maxi-dress.jpg" alt="Seylune Dresses" />
-          </div>
-          <div class="category-info">
-            <h3>Dresses</h3>
-            <p>Fluid cuts and statement elegance for every occasion.</p>
-            <span class="link-arrow">Shop Now →</span>
-          </div>
-        </a>
-
-        <!-- Tops card -->
-        <a href="../Tops/tops.html" class="category-card">
-          <div class="category-image">
-            <img src="images/products/Tops/nerah-tie-front-top.jpg" alt="Seylune Tops" />
-          </div>
-          <div class="category-info">
-            <h3>Tops</h3>
-            <p>Refined layers designed to elevate your everyday wardrobe.</p>
-            <span class="link-arrow">Shop Now →</span>
-          </div>
-        </a>
-
-        <!-- Bottoms card -->
-        <a href="../Bottoms/bottoms.html" class="category-card">
-          <div class="category-image">
-            <img src="images/products/Bottoms/veya-tailored-pants.jpg" alt="Seylune Bottoms" />
-          </div>
-          <div class="category-info">
-            <h3>Bottoms</h3>
-            <p>Tailored essentials with modern structure and ease.</p>
-            <span class="link-arrow">Shop Now →</span>
-          </div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ============================================================
-         4. NEW ARRIVALS PREVIEW
-         Reusable product card design for all category pages.
-    ============================================================ -->
-    <section class="section new-arrivals">
-      <div class="section-head">
-        <h2 class="section-title">New Arrivals</h2>
-        <p class="section-subtitle">
-          Fresh drops curated for the season’s most elegant moments.
-        </p>
-      </div>
-
-      <!-- Product grid -->
-      <div class="product-grid" id="productGrid">
-
-        <!-- Product Card: Noira Satin Dress -->
-        <article class="product-card">
-          <a href="../Product/product.html?id=noira-satin-dress" class="product-image-link">
-            <div class="product-image">
-              <img src="../home/images/products/Dresses/noira-satin-dress.jpg" alt="Noira Satin Dress" />
-            </div>
-          </a>
-          <div class="product-info">
-            <h3 class="product-name">
-              <a href="../Product/product.html?id=noira-satin-dress">Noira Satin Dress</a>
-            </h3>
-            <p class="product-price">Rs. 8,950</p>
-            <button
-              class="btn btn-small add-to-cart"
-              data-id="noira-satin-dress"
-              data-name="Noira Satin Dress"
-              data-price="8950"
-              data-image="../home/images/products/Dresses/noira-satin-dress.jpg"
-            >Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- Product Card: Elara Drape Top -->
-        <article class="product-card">
-          <a href="../Product/product.html?id=elara-drape-top" class="product-image-link">
-            <div class="product-image">
-              <img src="../home/images/products/elara-drape-top.jpg" alt="Elara Drape Top" />
-            </div>
-          </a>
-          <div class="product-info">
-            <h3 class="product-name">
-              <a href="../Product/product.html?id=elara-drape-top">Elara Drape Top</a>
-            </h3>
-            <p class="product-price">Rs. 5,250</p>
-            <button
-              class="btn btn-small add-to-cart"
-              data-id="elara-drape-top"
-              data-name="Elara Drape Top"
-              data-price="5250"
-              data-image="../home/images/products/elara-drape-top.jpg"
-            >Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- Product Card: Veya Tailored Pants -->
-        <article class="product-card">
-          <a href="../Product/product.html?id=veya-tailored-pants" class="product-image-link">
-            <div class="product-image">
-              <img src="../home/images/products/veya-tailored-pants.jpg" alt="Veya Tailored Pants" />
-            </div>
-          </a>
-          <div class="product-info">
-            <h3 class="product-name">
-              <a href="../Product/product.html?id=veya-tailored-pants">Veya Tailored Pants</a>
-            </h3>
-            <p class="product-price">Rs. 6,400</p>
-            <button
-              class="btn btn-small add-to-cart"
-              data-id="veya-tailored-pants"
-              data-name="Veya Tailored Pants"
-              data-price="6400"
-              data-image="../home/images/products/veya-tailored-pants.jpg"
-            >Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- Product Card: Lune Midi Dress -->
-        <article class="product-card">
-          <a href="../Product/product.html?id=lune-midi-dress" class="product-image-link">
-            <div class="product-image">
-              <img src="../home/images/products/lune-midi-dress.jpg" alt="Lune Midi Dress" />
-            </div>
-          </a>
-          <div class="product-info">
-            <h3 class="product-name">
-              <a href="../Product/product.html?id=lune-midi-dress">Lune Midi Dress</a>
-            </h3>
-            <p class="product-price">Rs. 9,200</p>
-            <button
-              class="btn btn-small add-to-cart"
-              data-id="lune-midi-dress"
-              data-name="Lune Midi Dress"
-              data-price="9200"
-              data-image="../home/images/products/lune-midi-dress.jpg"
-            >Add to Cart</button>
-          </div>
-        </article>
-      </div>
-
-      <!-- View All link -->
-      <div class="section-footer">
-        <a href="../New arrivals/new-arriavals.html" class="btn btn-outline">View All New Arrivals</a>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         5. BRAND STORY
-    ============================================================ -->
-    <section class="section brand-story">
-      <div class="story-grid">
-        <div class="story-image">
-          <img src="images/story-home.jpg" alt="The Seylune Story" />
-        </div>
-        <div class="story-text">
-          <p class="section-eyebrow">Our Story</p>
-          <h2 class="section-title">The Seylune Story</h2>
-          <p class="story-paragraph">
-            Seylune is a women’s fashion brand inspired by modern elegance,
-            quiet confidence, and timeless detail. Blending an international
-            editorial spirit with subtle island warmth, Seylune creates pieces
-            that feel refined, feminine, and effortlessly elevated.
-          </p>
-          <a href="../About/About.html" class="btn btn-outline">About Seylune</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         6. SIGNATURE EDITS
-    ============================================================ -->
-    <section class="section signature-edits">
-      <div class="section-head">
-        <p class="section-eyebrow">Signature</p>
-        <h2 class="section-title">Signature Edits</h2>
-      </div>
-
-      <div class="edits-grid">
-
-        <!-- Evening Edit -->
-        <div class="edit-card">
-          <div class="edit-number">01</div>
-          <h3>Evening Edit</h3>
-          <p>For graceful nights and statement entrances.</p>
-        </div>
-
-        <!-- Soft Tailoring -->
-        <div class="edit-card">
-          <div class="edit-number">02</div>
-          <h3>Soft Tailoring</h3>
-          <p>Structured elegance for modern everyday wear.</p>
-        </div>
-
-        <!-- Moonlit Muse -->
-        <div class="edit-card">
-          <div class="edit-number">03</div>
-          <h3>Moonlit Muse</h3>
-          <p>Romantic silhouettes with a bold, polished edge.</p>
+      <div class="menu-media">
+        <div class="liquid-box" id="menuLiquid">
+          <img src="images/products/Dresses/noira-satin-dress.jpg" alt="" loading="lazy" />
+          <img src="images/products/Dresses/aurelle-evening-dress.jpg" alt="" loading="lazy" />
+          <img src="images/products/Tops/elara-drape-top.jpg" alt="" loading="lazy" />
+          <img src="images/products/Bottoms/veya-tailored-pants.jpg" alt="" loading="lazy" />
+          <img src="images/story-home.jpg" alt="" loading="lazy" />
+          <img src="images/products/Dresses/lune-midi-dress.jpg" alt="" loading="lazy" />
         </div>
       </div>
 
-      <div class="section-footer">
-        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Discover More</a>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         7. WHY SEYLUNE
-    ============================================================ -->
-    <section class="section why-seylune">
-      <div class="section-head">
-        <h2 class="section-title">Why Seylune</h2>
-      </div>
-
-      <div class="why-grid">
-
-        <div class="why-item">
-          <div class="why-icon">
-            <!-- Fabric icon -->
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
-                 stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 6c3 2 6 2 9 0s6-2 9 0"></path>
-              <path d="M3 12c3 2 6 2 9 0s6-2 9 0"></path>
-              <path d="M3 18c3 2 6 2 9 0s6-2 9 0"></path>
-            </svg>
-          </div>
-          <h3>Premium Fabrics</h3>
-          <p>Carefully sourced textiles with a refined, lasting feel.</p>
-        </div>
-
-        <div class="why-item">
-          <div class="why-icon">
-            <!-- Silhouette icon -->
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
-                 stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2l3 5-3 3-3-3 3-5z"></path>
-              <path d="M6 22l3-10h6l3 10H6z"></path>
-            </svg>
-          </div>
-          <h3>Modern Silhouettes</h3>
-          <p>Contemporary cuts designed for the modern muse.</p>
-        </div>
-
-        <div class="why-item">
-          <div class="why-icon">
-            <!-- Collection icon -->
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
-                 stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-            </svg>
-          </div>
-          <h3>Curated Collections</h3>
-          <p>Thoughtful edits crafted around every mood and moment.</p>
-        </div>
-
-        <div class="why-item">
-          <div class="why-icon">
-            <!-- Shopping icon -->
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
-                 stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2l-2 4h16l-2-4H6z"></path>
-              <path d="M4 6v14h16V6"></path>
-              <path d="M10 10a2 2 0 0 0 4 0"></path>
-            </svg>
-          </div>
-          <h3>Easy Shopping</h3>
-          <p>A seamless, thoughtfully designed shopping experience.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         8. NEWSLETTER
-    ============================================================ -->
-    <section class="section newsletter">
-      <div class="newsletter-inner">
-        <p class="section-eyebrow">Newsletter</p>
-        <h2 class="section-title">Stay in the Loop</h2>
-        <p class="section-subtitle">
-          Be the first to know about new arrivals, exclusive edits, and special releases.
-        </p>
-
-        <!-- Newsletter form -->
-        <form class="newsletter-form" id="newsletterForm" novalidate>
-          <input
-            type="email"
-            id="newsletterEmail"
-            placeholder="Enter your email"
-            aria-label="Email address"
-            required
-          />
-          <button type="submit" class="btn btn-primary">Subscribe</button>
+      <div class="menu-foot">
+        <form class="nav-search menu-search" id="navSearch" role="search" action="../Search/search.html" method="get">
+          <label class="visually-hidden" for="searchInput">Search products</label>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
+          <input type="search" name="q" id="searchInput" placeholder="Search satin, ivory, trousers…" autocomplete="off" />
         </form>
-        <p class="newsletter-message" id="newsletterMessage" aria-live="polite"></p>
+        <p class="menu-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <main class="scenes" id="scenes">
+
+    <!-- ============================================================
+         SCENE 1 — THE HOUSE
+         The campaign photograph on a liquid plane, the name set
+         across the foot of the frame.
+    ============================================================ -->
+    <section class="scene scene-hero" id="hero" data-label="Seylune" aria-labelledby="heroTitle">
+      <div class="liquid-box hero-media" id="heroLiquid">
+        <img src="images/hero-home.jpg" alt="A woman in a long plum satin gown standing in a candlelit hall" fetchpriority="high" />
+      </div>
+      <div class="hero-shade" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <p class="scene-kicker reveal">Luxury for the modern muse</p>
+        <h1 class="hero-title reveal" id="heroTitle">Luxury in every line.</h1>
+        <p class="hero-sub reveal">Refined silhouettes, rich textures, and timeless confidence.</p>
+        <div class="hero-actions reveal">
+          <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop New Arrivals</a>
+          <a href="../Dresses/dresses.html" class="btn btn-ghost">Explore Collection</a>
+        </div>
+      </div>
+
+      <p class="hero-word" aria-hidden="true"><span>Seylune</span></p>
+    </section>
+
+
+    <!-- ============================================================
+         SCENE 2 — NEW ARRIVALS
+         One piece at a time; the photograph melts into the next.
+    ============================================================ -->
+    <section class="scene scene-arrivals" id="arrivals" data-label="New Arrivals" aria-labelledby="arrivalsTitle">
+      <div class="arrivals-copy">
+        <div class="arrivals-top">
+          <h2 class="scene-kicker" id="arrivalsTitle">New Arrivals</h2>
+          <p class="arrivals-count" aria-live="polite"><span id="pieceIndex">01</span> / <span id="pieceTotal">08</span></p>
+        </div>
+
+        <div class="piece" id="piece">
+          <p class="piece-category reveal" id="pieceCategory">Dresses</p>
+          <h3 class="piece-name reveal" id="pieceName"><a href="../Product/product.html?id=noira-satin-dress" id="pieceLink">Noira Satin Dress</a></h3>
+          <p class="piece-short reveal" id="pieceShort">A sleek satin silhouette designed to bring softness, structure, and quiet luxury into every occasion.</p>
+          <p class="piece-price reveal" id="piecePrice">Rs. 8,950</p>
+
+          <div class="piece-sizes reveal" role="group" aria-label="Add to cart in size" id="pieceSizes">
+            <button type="button" class="size-pill add-to-cart" data-id="noira-satin-dress" data-name="Noira Satin Dress" data-price="8950" data-image="../home/images/products/Dresses/noira-satin-dress.jpg">XS</button>
+            <button type="button" class="size-pill add-to-cart" data-id="noira-satin-dress" data-name="Noira Satin Dress" data-price="8950" data-image="../home/images/products/Dresses/noira-satin-dress.jpg">S</button>
+            <button type="button" class="size-pill add-to-cart" data-id="noira-satin-dress" data-name="Noira Satin Dress" data-price="8950" data-image="../home/images/products/Dresses/noira-satin-dress.jpg">M</button>
+            <button type="button" class="size-pill add-to-cart" data-id="noira-satin-dress" data-name="Noira Satin Dress" data-price="8950" data-image="../home/images/products/Dresses/noira-satin-dress.jpg">L</button>
+          </div>
+        </div>
+
+        <div class="arrivals-nav">
+          <button type="button" class="round-btn" id="piecePrev" aria-label="Previous piece">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+          </button>
+          <button type="button" class="round-btn" id="pieceNext" aria-label="Next piece">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+          </button>
+          <a href="../New arrivals/new-arriavals.html" class="text-link">View all new arrivals</a>
+        </div>
+      </div>
+
+      <div class="arrivals-stage">
+        <div class="liquid-box" id="arrivalsLiquid">
+          <img src="images/products/Dresses/noira-satin-dress.jpg" alt="Noira Satin Dress" />
+          <img src="images/products/lune-midi-dress.jpg" alt="Lune Midi Dress" loading="lazy" />
+          <img src="images/products/Dresses/aurelle-evening-dress.jpg" alt="Aurelle Evening Dress" loading="lazy" />
+          <img src="images/products/Tops/elara-drape-top.jpg" alt="Elara Drape Top" loading="lazy" />
+          <img src="images/products/Tops/selah-wrap-top.jpg" alt="Selah Wrap Top" loading="lazy" />
+          <img src="images/products/Tops/liora-satin-blouse.jpg" alt="Kaia Structured Blouse" loading="lazy" />
+          <img src="images/products/Bottoms/veya-tailored-pants.jpg" alt="Veya Tailored Pants" loading="lazy" />
+          <img src="images/products/Bottoms/mira-wide-leg-trousers.jpg" alt="Mira Wide Leg Trousers" loading="lazy" />
+        </div>
+        <ol class="piece-thumbs" id="pieceThumbs" aria-label="Choose a piece"></ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SCENE 3 — THE COLLECTIONS
+         The room behind the names changes as you point at one.
+    ============================================================ -->
+    <section class="scene scene-collections" id="collections" data-label="Collections" aria-labelledby="collectionsTitle">
+      <div class="liquid-box collections-bg" id="collectionsLiquid">
+        <img src="images/Dresess.jpg" alt="" />
+        <img src="images/scenes/tops-mirrored.jpg" alt="" loading="lazy" />
+        <img src="images/Bottoms.jpg" alt="" loading="lazy" />
+      </div>
+      <div class="collections-shade" aria-hidden="true"></div>
+
+      <div class="collections-copy">
+        <h2 class="scene-kicker reveal" id="collectionsTitle">Shop by Category</h2>
+        <p class="collections-sub reveal">Discover signature silhouettes curated for every mood.</p>
+
+        <ul class="collections-list" id="collectionsList">
+          <li class="reveal">
+            <a href="../Dresses/dresses.html" class="collection-link is-active" data-index="0">
+              <span class="collection-name">Dresses</span>
+              <span class="collection-meta">
+                <span class="collection-text">Fluid cuts and statement elegance for every occasion.</span>
+                <span class="collection-count">8 pieces</span>
+              </span>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="../Tops/tops.html" class="collection-link" data-index="1">
+              <span class="collection-name">Tops</span>
+              <span class="collection-meta">
+                <span class="collection-text">Refined layers designed to elevate your everyday wardrobe.</span>
+                <span class="collection-count">8 pieces</span>
+              </span>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="../Bottoms/bottoms.html" class="collection-link" data-index="2">
+              <span class="collection-name">Bottoms</span>
+              <span class="collection-meta">
+                <span class="collection-text">Tailored essentials with modern structure and ease.</span>
+                <span class="collection-count">8 pieces</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SCENE 4 — THE SEYLUNE STORY
+    ============================================================ -->
+    <section class="scene scene-story" id="story" data-label="Our Story" aria-labelledby="storyTitle">
+      <div class="story-media">
+        <div class="liquid-box" id="storyLiquid">
+          <img src="images/story-home.jpg" alt="A woman in a plum dress before a golden crescent moon" />
+        </div>
+      </div>
+
+      <div class="story-copy">
+        <h2 class="scene-kicker reveal">Our Story</h2>
+        <p class="story-title reveal" id="storyTitle">The Seylune Story</p>
+        <p class="story-text reveal">
+          Seylune is a women’s fashion brand inspired by modern elegance,
+          quiet confidence, and timeless detail. Blending an international
+          editorial spirit with subtle island warmth, Seylune creates pieces
+          that feel refined, feminine, and effortlessly elevated.
+        </p>
+        <dl class="story-name reveal">
+          <div><dt>Sey</dt><dd>a hint of Ceylon</dd></div>
+          <div><dt>Lune</dt><dd>the moon</dd></div>
+        </dl>
+        <a href="../About/About.html" class="btn btn-ghost reveal">About Seylune</a>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SCENE 5 — SIGNATURE EDITS
+         Three panels; the one you point at opens.
+    ============================================================ -->
+    <section class="scene scene-edits" id="edits" data-label="Signature Edits" aria-labelledby="editsTitle">
+      <div class="edits-head">
+        <h2 class="scene-kicker" id="editsTitle">Signature Edits</h2>
+        <a href="../New arrivals/new-arriavals.html" class="text-link">Discover More</a>
+      </div>
+
+      <div class="edit-panels" id="editPanels">
+        <a href="../Dresses/dresses.html" class="edit-panel is-open">
+          <img src="images/products/Dresses/aurelle-evening-dress.jpg" alt="" loading="lazy" />
+          <span class="edit-copy">
+            <span class="edit-name">Evening Edit</span>
+            <span class="edit-text">For graceful nights and statement entrances.</span>
+          </span>
+        </a>
+        <a href="../Tops/tops.html" class="edit-panel">
+          <img src="images/products/Tops/veya-luxe-shirt.jpg" alt="" loading="lazy" />
+          <span class="edit-copy">
+            <span class="edit-name">Soft Tailoring</span>
+            <span class="edit-text">Structured elegance for modern everyday wear.</span>
+          </span>
+        </a>
+        <a href="../Dresses/dresses.html" class="edit-panel">
+          <img src="images/products/Dresses/zarelle-maxi-dress.jpg" alt="" loading="lazy" />
+          <span class="edit-copy">
+            <span class="edit-name">Moonlit Muse</span>
+            <span class="edit-text">Romantic silhouettes with a bold, polished edge.</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SCENE 6 — THE CLOSE
+         Why Seylune, the newsletter and the house links.
+    ============================================================ -->
+    <section class="scene scene-close" id="close" data-label="Stay in the Loop" aria-labelledby="closeTitle">
+      <div class="close-inner">
+
+        <ul class="promises reveal" aria-label="Why Seylune">
+          <li><strong>Premium Fabrics</strong> Carefully sourced textiles with a refined, lasting feel.</li>
+          <li><strong>Modern Silhouettes</strong> Contemporary cuts designed for the modern muse.</li>
+          <li><strong>Curated Collections</strong> Thoughtful edits crafted around every mood and moment.</li>
+          <li><strong>Easy Shopping</strong> A seamless, thoughtfully designed shopping experience.</li>
+        </ul>
+
+        <div class="close-main">
+          <img class="close-mark reveal" src="images/Logo.png" alt="" width="64" height="66" />
+          <h2 class="close-title reveal" id="closeTitle">Stay in the Loop</h2>
+          <p class="close-sub reveal">Be the first to know about new arrivals, exclusive edits, and special releases.</p>
+          <form class="newsletter-form reveal" id="newsletterForm" novalidate>
+            <label class="visually-hidden" for="newsletterEmail">Email address</label>
+            <input type="email" id="newsletterEmail" placeholder="Enter your email" autocomplete="email" required />
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+          <p class="newsletter-message" id="newsletterMessage" aria-live="polite"></p>
+        </div>
+
+        <footer class="footer close-footer">
+          <nav class="footer-links" aria-label="Footer">
+            <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
+            <a href="../Dresses/dresses.html">Dresses</a>
+            <a href="../Tops/tops.html">Tops</a>
+            <a href="../Bottoms/bottoms.html">Bottoms</a>
+            <a href="../About/About.html">About</a>
+            <a href="../Account/Account.html">Account</a>
+          </nav>
+          <p class="footer-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+          <p class="footer-legal">© 2025 Seylune. All rights reserved. A concept store by Thinura Anjana — no real orders are taken.</p>
+        </footer>
       </div>
     </section>
 
   </main>
 
-  <!-- ============================================================
-       FOOTER (Reusable across all pages)
-  ============================================================ -->
-  <footer class="footer">
-    <div class="footer-container">
-
-      <!-- Brand column -->
-      <div class="footer-col">
-        <h4 class="footer-logo">SEYLUNE</h4>
-        <p>Seylune — Luxury for the modern muse.</p>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="footer-col">
-        <h5>Quick Links</h5>
-        <ul>
-          <li><a href="../home/home.html">Home</a></li>
-          <li><a href="../New arrivals/new-arriavals.html">New Arrivals</a></li>
-          <li><a href="../Dresses/dresses.html">Dresses</a></li>
-          <li><a href="../Tops/tops.html">Tops</a></li>
-          <li><a href="../Bottoms/bottoms.html">Bottoms</a></li>
-          <li><a href="../About/About.html">About</a></li>
-          <li><a href="../Account/Account.html">Account</a></li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div class="footer-col">
-        <h5>Contact</h5>
-        <ul>
-          <li>Colombo, Sri Lanka</li>
-          <li>hello@seylune.lk</li>
-          <li>+94 77 123 4567</li>
-        </ul>
-      </div>
-
-      <!-- Newsletter -->
-      <div class="footer-col">
-        <h5>Newsletter</h5>
-        <p>Receive updates on new arrivals and private edits.</p>
-        <form class="footer-form" action="#" method="post" onsubmit="event.preventDefault();">
-          <input type="email" placeholder="Your email" aria-label="Email" required />
-          <button type="submit">→</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 Seylune. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <!-- ========== Shared Scripts: product catalogue + site logic ========== -->
+  <!-- ========== Shared Scripts: catalogue + site logic ========== -->
   <script src="../shared/products.js"></script>
   <script src="../shared/seylune.js"></script>
-  
+
+  <!-- ========== Motion: GSAP for scene changes and text, WebGL for photographs ========== -->
+  <script src="../shared/vendor/gsap.min.js"></script>
+  <script src="../shared/liquid.js"></script>
+  <script src="../shared/site.js"></script>
+
   <!-- ========== Page Script ========== -->
   <script src="home.js"></script>
 </body>

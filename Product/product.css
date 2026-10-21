@@ -1,605 +1,201 @@
 /* ============================================================
-   SEYLUNE — PRODUCT DETAILS PAGE STYLES
-   One template used by every product (Product/product.html).
-   The base navbar, footer, buttons, and product cards come
-   from home/home.css and shared/seylune.css.
+   SEYLUNE — PRODUCT PAGE
+   The photograph holds still on the left (the other views melt
+   in through shared/liquid.js); the details move on the right.
+   The room, buttons, sizes and cards come from shared/site.css.
+   1. Photograph + thumbnails
+   2. Name, price, colour
+   3. Size, quantity, add
+   4. Details
+   5. Related pieces + not found
+   6. Phones
 ============================================================ */
 
 
 /* ============================================================
-   1. BREADCRUMB
+   1. PHOTOGRAPH + THUMBNAILS
 ============================================================ */
-.breadcrumb {
-  background: var(--bg-deep);
-  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
+.product-room {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
 }
 
-.breadcrumb-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-soft);
+.product-media .liquid-box img {
+  object-position: 50% 12%;
 }
 
-.breadcrumb-inner a {
-  color: var(--text-soft);
-  transition: color var(--transition);
-}
-
-.breadcrumb-inner a:hover {
-  color: var(--gold);
-}
-
-.breadcrumb-separator {
-  margin: 0 0.6rem;
-  color: rgba(198, 163, 107, 0.4);
-}
-
-.breadcrumb-current {
-  color: var(--gold);
-}
-
-
-/* ============================================================
-   2. PRODUCT SECTION LAYOUT
-============================================================ */
-.product-section {
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-xl);
-}
-
-.product-layout {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 4rem;
-  align-items: start;
-}
-
-
-/* ============================================================
-   3. IMAGE GALLERY
-============================================================ */
-.product-gallery {
+.product-thumbs {
+  position: absolute;
+  left: clamp(1.25rem, 3vw, 2.4rem);
+  bottom: clamp(1.25rem, 4vh, 2.4rem);
+  z-index: 3;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  position: sticky;
-  top: 100px; /* sits below sticky navbar */
+  gap: 0.45rem;
 }
 
-/* Main image with hover zoom */
-.main-image {
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.1);
-  border-radius: var(--radius);
+.product-thumb {
+  width: 46px;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
+  opacity: 0.55;
+  outline: 1px solid transparent;
+  outline-offset: 3px;
+  transition: opacity 0.3s, outline-color 0.3s;
 }
 
-.main-image img {
+.product-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s var(--ease), opacity 0.3s var(--ease);
+  object-position: 50% 15%;
 }
 
-.main-image:hover img {
-  transform: scale(1.04);
+.product-thumb:hover {
+  opacity: 0.9;
 }
 
-/* Smooth fade when image switches */
-.main-image.fading img {
-  opacity: 0;
-}
-
-/* Thumbnail strip */
-.thumbnail-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.8rem;
-}
-
-.thumbnail {
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.15);
-  border-radius: var(--radius);
-  padding: 0;
-  cursor: pointer;
-  overflow: hidden;
-  aspect-ratio: 1 / 1;
-  transition: all var(--transition);
-}
-
-.thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s var(--ease);
-}
-
-.thumbnail:hover {
-  border-color: rgba(198, 163, 107, 0.5);
-}
-
-.thumbnail:hover img {
-  transform: scale(1.05);
-}
-
-.thumbnail.active {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold);
+.product-thumb[aria-pressed="true"] {
+  opacity: 1;
+  outline-color: var(--gold);
 }
 
 
 /* ============================================================
-   4. PRODUCT INFO COLUMN
+   2. NAME, PRICE, COLOUR
 ============================================================ */
-.product-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.product-category {
-  font-size: 0.72rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 1rem;
+.product-body {
+  padding-left: clamp(1.5rem, 5vw, 5.5rem);
+  max-width: 46rem;
 }
 
 .product-title {
-  font-family: var(--font-heading);
-  font-size: clamp(2rem, 3.5vw, 2.8rem);
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 1.2rem;
+  font-size: clamp(2.2rem, min(4.2vw, 7.6vh), 4.4rem);
 }
 
-
-/* ============================================================
-   5. PRICE ROW
-============================================================ */
 .product-price-row {
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+  margin-bottom: clamp(0.8rem, 2.4vh, 1.4rem);
 }
 
 .product-price-large {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
   color: var(--gold);
-  letter-spacing: 0.05em;
 }
 
 .product-tax-note {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   color: var(--text-soft);
-  letter-spacing: 0.05em;
 }
 
-
-/* ============================================================
-   6. SHORT DESCRIPTION + DIVIDER
-============================================================ */
-.product-short-desc {
+.product-short {
+  max-width: 32rem;
+  margin-bottom: clamp(1.2rem, 3vh, 1.8rem);
   color: var(--text-soft);
-  font-size: 0.95rem;
-  line-height: 1.85;
-  margin-bottom: 2rem;
 }
 
-.product-divider {
-  height: 1px;
-  background: rgba(198, 163, 107, 0.15);
-  margin-bottom: 2rem;
-}
-
-
-/* ============================================================
-   7. PRODUCT OPTIONS (size + quantity)
-============================================================ */
-.product-option {
-  margin-bottom: 1.8rem;
-}
-
-.option-row {
+.product-colour {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.8rem;
+  gap: 0.6rem;
+  margin-bottom: clamp(1.2rem, 3.4vh, 2rem);
+  font-size: 0.88rem;
 }
 
 .option-label {
-  font-size: 0.72rem;
-  letter-spacing: 0.25em;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-soft);
+}
+
+.product-colour .option-label {
+  margin-right: 0.6rem;
+}
+
+
+/* ============================================================
+   3. SIZE, QUANTITY, ADD
+============================================================ */
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.8rem;
 }
 
 .option-link {
-  font-size: 0.78rem;
-  color: var(--gold);
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--transition);
+  padding-bottom: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line-gold);
+  transition: color 0.3s;
 }
 
 .option-link:hover {
-  border-bottom-color: var(--gold);
+  color: var(--gold);
 }
 
-
-/* ============================================================
-   8. SIZE BUTTONS
-============================================================ */
 .size-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.size-btn {
-  min-width: 52px;
-  height: 46px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--text-main);
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.25);
-  border-radius: var(--radius);
-  cursor: pointer;
-  padding: 0 1rem;
-  transition: all var(--transition);
-}
-
-.size-btn:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.size-btn.active {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--bg-deep);
+  gap: 0.5rem;
 }
 
 .size-error {
-  display: none;
-  margin-top: 0.6rem;
+  min-height: 1.3rem;
+  margin-top: 0.5rem;
   font-size: 0.78rem;
-  color: #E08B8B;
-  letter-spacing: 0.05em;
+  color: var(--error);
 }
 
-.size-error.show {
-  display: block;
-}
-
-
-/* ============================================================
-   9. QUANTITY CONTROL
-   (Same visual style as the cart page)
-============================================================ */
-.qty-control {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid rgba(198, 163, 107, 0.25);
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--bg-deep);
-  width: fit-content;
-}
-
-.qty-btn {
-  width: 42px;
-  height: 46px;
+.product-buy {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  color: var(--text-main);
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.qty-btn:hover {
-  background: var(--gold);
-  color: var(--bg-deep);
-}
-
-.qty-value {
-  min-width: 50px;
-  text-align: center;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-main);
-  padding: 0 0.4rem;
-}
-
-
-/* ============================================================
-   10. ACTION BUTTONS + FEEDBACK
-============================================================ */
-.product-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.product-feedback {
-  margin-top: 1rem;
-  padding: 0.8rem 1rem;
-  border-radius: var(--radius);
-  font-size: 0.86rem;
-  text-align: center;
-  display: none;
-  letter-spacing: 0.03em;
-  background: rgba(198, 163, 107, 0.08);
-  border: 1px solid rgba(198, 163, 107, 0.3);
-  color: var(--gold);
-}
-
-.product-feedback.show {
-  display: block;
-}
-
-
-/* ============================================================
-   11. TRUST ROW (delivery + returns)
-============================================================ */
-.trust-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(198, 163, 107, 0.1);
-}
-
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: 0.85rem;
-  color: var(--text-soft);
-}
-
-.trust-item svg {
-  color: var(--gold);
-  flex-shrink: 0;
-}
-
-
-/* ============================================================
-   12. PRODUCT TABS SECTION
-============================================================ */
-.product-tabs-section {
-  padding-top: 0;
-  padding-bottom: var(--space-xl);
-}
-
-.tab-buttons {
-  display: flex;
-  gap: 2rem;
-  border-bottom: 1px solid rgba(198, 163, 107, 0.15);
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.tab-btn {
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  background: transparent;
-  padding: 1rem 0;
-  cursor: pointer;
-  position: relative;
-  transition: color var(--transition);
-}
-
-.tab-btn::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--gold);
-  transition: width var(--transition);
-}
-
-.tab-btn:hover {
-  color: var(--text-main);
-}
-
-.tab-btn.active {
-  color: var(--gold);
-}
-
-.tab-btn.active::after {
-  width: 100%;
-}
-
-/* Tab panels */
-.tab-panel {
-  display: none;
-  color: var(--text-soft);
-  line-height: 1.9;
-  font-size: 0.95rem;
-  max-width: 780px;
-}
-
-.tab-panel.active {
-  display: block;
-  animation: fadeIn 0.4s var(--ease);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Info list inside tabs (Fabric & Care) */
-.info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.info-list li {
-  padding-left: 1.2rem;
-  position: relative;
-}
-
-.info-list li::before {
-  content: "•";
-  color: var(--gold);
-  position: absolute;
-  left: 0;
-}
-
-.info-list strong {
-  color: var(--text-main);
-  font-weight: 500;
-  letter-spacing: 0.05em;
-}
-
-
-/* ============================================================
-   13. RELATED PRODUCTS SECTION
-============================================================ */
-.related-section {
-  background: var(--bg-deep);
-  max-width: none;
-  margin: 0;
-  padding: var(--space-xl) 2rem;
-}
-
-.related-section .product-grid {
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-/* The shared .product-card from index.css works here.
-   We just give the inner info area a slight tweak. */
-.product-info-card {
-  padding: 1.2rem 1.2rem 1.5rem;
-  text-align: center;
-}
-
-.product-info-card .product-name {
-  font-size: 1.05rem;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-  font-family: var(--font-heading);
-}
-
-.product-info-card .product-name a:hover {
-  color: var(--gold);
-}
-
-.product-info-card .product-price {
-  color: var(--gold);
-  font-size: 0.92rem;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
-}
-
-.product-card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
   margin-top: 0.4rem;
 }
 
-.product-card-actions .btn {
-  width: 100%;
+.product-buy .qty-control {
+  flex: none;
 }
 
+.product-buy .qty-btn {
+  height: 48px;
+}
 
-/* ============================================================
-   13b. EXTENDED PRODUCT DETAILS
-   Title row tag, colour line, disabled sizes, save button,
-   cart link and the "not found" state.
-============================================================ */
-.product-title-row {
+.product-buy .btn {
+  flex: 1;
+}
+
+.product-secondary {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.product-title-row .product-category {
-  margin-bottom: 0;
-}
-
-.product-new-tag {
-  font-size: 0.64rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--bg-deep);
-  background: var(--gold);
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-}
-
-.product-color {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 2rem;
-  font-size: 0.9rem;
-  color: var(--text-main);
-}
-
-.product-color .option-label {
-  margin-right: 0.4rem;
-}
-
-.product-color .swatch {
-  width: 16px;
-  height: 16px;
-}
-
-.size-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-
-.size-btn:disabled:hover {
-  border-color: rgba(198, 163, 107, 0.25);
-  color: var(--text-main);
+  margin-top: 0.9rem;
 }
 
 .product-save {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
+  gap: 0.55rem;
+  min-height: 44px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  transition: color 0.3s;
 }
 
+.product-save:hover,
 .product-save.saved {
-  background: rgba(198, 163, 107, 0.12);
   color: var(--gold);
 }
 
@@ -607,112 +203,134 @@
   fill: var(--gold);
 }
 
-.product-cart-link {
-  align-self: flex-start;
-  margin-top: 1.1rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+.product-feedback {
+  min-height: 1.4rem;
+  margin: 0.5rem 0 clamp(1.4rem, 4vh, 2.4rem);
+  font-size: 0.86rem;
   color: var(--gold);
-  border-bottom: 1px solid transparent;
 }
 
-.product-cart-link:hover {
-  border-bottom-color: var(--gold);
+
+/* ============================================================
+   4. DETAILS — Description, Fabric & Care, Delivery
+============================================================ */
+.product-details {
+  border-top: 1px solid var(--line);
 }
 
-.product-missing {
-  max-width: 640px;
+.product-details details {
+  border-bottom: 1px solid var(--line);
 }
 
-.product-missing h1 {
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-  margin-bottom: 1rem;
+.product-details summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
 }
 
-.thumbnail-strip[hidden] {
+.product-details summary::-webkit-details-marker {
   display: none;
 }
 
+.product-details summary::after {
+  content: "+";
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--gold);
+  transition: transform 0.5s var(--ease);
+}
 
-/* ============================================================
-   14. RESPONSIVE — TABLET
-============================================================ */
-@media (max-width: 1024px) {
+.product-details details[open] summary::after {
+  transform: rotate(45deg);
+}
 
-  .product-layout {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
+.product-details summary:hover {
+  color: var(--gold);
+}
 
-  .product-gallery {
-    position: static;
-  }
+.product-details details > p,
+.info-list {
+  padding-bottom: 1.3rem;
+  font-size: 0.94rem;
+  color: var(--text-soft);
+}
 
-  .main-image {
-    aspect-ratio: 4 / 5;
-    max-width: 540px;
-    margin: 0 auto;
-  }
+.info-list li {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
 
-  .thumbnail-strip {
-    max-width: 540px;
-    margin: 0 auto;
-  }
+.info-list li > span:first-child {
+  padding-top: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-main);
 }
 
 
 /* ============================================================
-   15. RESPONSIVE — MOBILE
+   5. RELATED PIECES + NOT FOUND
 ============================================================ */
-@media (max-width: 768px) {
+.related {
+  margin-top: clamp(3rem, 10vh, 5.5rem);
+}
 
-  .product-section {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-lg);
-  }
+.related-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-  .product-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .trust-row {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-
-  .tab-buttons {
-    gap: 1.2rem;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-
-  .tab-btn {
-    flex-shrink: 0;
-    font-size: 0.76rem;
-  }
-
-  .related-section {
-    padding: var(--space-lg) 1.2rem;
-  }
+.product-room.is-missing {
+  display: block;
 }
 
 
 /* ============================================================
-   16. RESPONSIVE — SMALL MOBILE
+   6. PHONES
 ============================================================ */
-@media (max-width: 480px) {
+@media (max-width: 860px) {
+  .product-room {
+    grid-template-columns: 1fr;
+  }
+
+  .product-media {
+    height: 74svh;
+  }
+
+  .product-thumbs {
+    left: var(--pad);
+    bottom: 1rem;
+  }
+
+  .product-thumb {
+    width: 38px;
+  }
+
+  .product-body {
+    padding: 1.6rem var(--pad) 3.4rem;
+  }
 
   .product-title {
-    font-size: 1.7rem;
-  }
-
-  .product-price-large {
-    font-size: 1.4rem;
+    font-size: clamp(2rem, 9vw, 2.8rem);
   }
 
   .size-btn {
-    min-width: 46px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .related-grid {
+    gap: 2rem 0.8rem;
   }
 }

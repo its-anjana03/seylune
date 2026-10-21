@@ -1,13 +1,14 @@
 /* ============================================================
    SEYLUNE — SEARCH RESULTS PAGE JAVASCRIPT
    Every navbar search form sends ?q=... to this page.
-   Shared behaviour (mobile menu, cart, wishlist) comes from
-   shared/seylune.js.
+   Shared behaviour (menu, cart, wishlist) comes from
+   shared/seylune.js; the results list + photograph from
+   shared/site.js (the same index as the collections).
    This script handles:
    1. Read the search words from the URL
    2. Score every product in shared/products.js
-   3. Category chips + sort
-   4. Render result cards / empty state
+   3. Render the results once, in order of relevance
+   4. Category chips + sort show and order them
 ============================================================ */
 
 
@@ -90,7 +91,41 @@ const matches = words.length
 
 
 /* ============================================================
-   3. CATEGORY CHIPS + SORT
+   3. RENDER THE RESULTS (once, in order of relevance)
+   Each result is a row in the list and a photograph in the
+   liquid box beside it, in the same order.
+============================================================ */
+matches.sort((a, b) => b.score - a.score || a.index - b.index);
+
+const grid = document.getElementById("productGrid");
+const esc = Seylune.escapeHtml;
+
+grid.innerHTML = matches.map((r, order) => `
+  <li class="index-row product-card reveal" data-id="${r.p.id}" data-order="${order}">
+    <a class="index-link" href="${Seylune.productUrl(r.p.id)}">
+      <img class="index-thumb" src="${Seylune.asset(r.p.image)}" alt="" loading="lazy" width="896" height="1200" />
+      <span class="index-name">${esc(r.p.name)}</span>
+      <span class="index-price">${Seylune.formatPrice(r.p.price)}</span>
+    </a>
+  </li>`).join("");
+
+document.getElementById("indexLiquid").innerHTML = matches.map((r, i) =>
+  `<img src="${Seylune.asset(r.p.image)}" alt=""${i ? " loading=\"lazy\"" : ""} />`).join("");
+
+Seylune.addWishlistButtons(grid);
+
+const index = SeyluneSite.initIndex({
+  list:  grid,
+  box:   document.getElementById("indexLiquid"),
+  plate: document.getElementById("indexPlate")
+});
+
+const rows = Array.from(grid.querySelectorAll(".index-row"));
+SeyluneSite.reveal(grid, 0.3);
+
+
+/* ============================================================
+   4. CATEGORY CHIPS + SORT
 ============================================================ */
 const state = { category: "all", sort: "relevance" };
 
@@ -111,28 +146,27 @@ document.getElementById("sortSelect").addEventListener("change", e => {
   render();
 });
 
-
-/* ============================================================
-   4. RENDER
-============================================================ */
 function render() {
-  const grid = document.getElementById("productGrid");
+  const price = row => Seylune.getProduct(row.dataset.id).price;
+  let shown = 0;
 
-  let results = matches.filter(r => state.category === "all" || r.p.category === state.category);
-
-  results.sort((a, b) => {
-    if (state.sort === "price-low")  return a.p.price - b.p.price;
-    if (state.sort === "price-high") return b.p.price - a.p.price;
-    return b.score - a.score || a.index - b.index;
+  rows.forEach(row => {
+    const match = state.category === "all" || Seylune.getProduct(row.dataset.id).category === state.category;
+    row.hidden = !match;
+    if (match) shown++;
   });
 
-  grid.innerHTML = results.map(r => Seylune.renderProductCard(r.p)).join("");
-  Seylune.addWishlistButtons(grid);
+  rows.slice().sort((a, b) => {
+    if (state.sort === "price-low")  return price(a) - price(b);
+    if (state.sort === "price-high") return price(b) - price(a);
+    return a.dataset.order - b.dataset.order;
+  }).forEach(row => grid.appendChild(row));
 
-  document.getElementById("resultCount").textContent = results.length;
-  document.getElementById("resultLabel").textContent = results.length === 1 ? "Result" : "Results";
-  document.getElementById("emptyState").hidden = results.length > 0;
+  document.getElementById("resultCount").textContent = shown;
+  document.getElementById("resultLabel").textContent = shown === 1 ? "result" : "results";
+  document.getElementById("emptyState").hidden = shown > 0;
   document.getElementById("emptyQuery").textContent = query ? ` for “${query}”` : "";
+  index.refresh();
 }
 
 render();

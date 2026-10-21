@@ -7,7 +7,7 @@
    3. Cart (items are kept apart by id AND size)
    4. Wishlist (saved pieces)
    5. Toast messages
-   6. Navbar: cart badge, mobile menu, search
+   6. Search forms (the menu room lives in shared/site.js)
    7. Product card rendering + add-to-cart / wishlist buttons
    8. Catalogue filters + sort (category pages)
    9. Footer newsletter + skip link
@@ -253,70 +253,9 @@ const Seylune = (() => {
 
 
   /* ============================================================
-     6. NAVBAR — mobile menu + search
+     6. SEARCH FORMS
+     (The menu room itself is run by shared/site.js.)
   ============================================================ */
-  function initMobileMenu() {
-    const header    = document.getElementById("navbar");
-    const hamburger = document.getElementById("hamburger");
-    const navLinks  = document.getElementById("navLinks");
-    if (!header || !hamburger || !navLinks) return;
-
-    // Build the drawer from the desktop links so both stay identical
-    let menu = document.getElementById("mobileMenu");
-    if (!menu) {
-      menu = document.createElement("nav");
-      menu.id = "mobileMenu";
-      menu.className = "mobile-menu";
-      menu.setAttribute("aria-label", "Mobile navigation");
-
-      const search = document.getElementById("navSearch");
-      if (search) {
-        const clone = search.cloneNode(true);
-        clone.id = "mobileSearch";
-        clone.classList.add("mobile-search");
-        const input = clone.querySelector("input");
-        if (input) input.id = "mobileSearchInput";
-        menu.appendChild(clone);
-      }
-
-      const list = document.createElement("div");
-      list.className = "mobile-menu-links";
-      navLinks.querySelectorAll("a").forEach(a => list.appendChild(a.cloneNode(true)));
-
-      const extra = document.createElement("a");
-      extra.href = ROOT + "Account/Account.html";
-      extra.textContent = "Account";
-      list.appendChild(extra);
-
-      menu.appendChild(list);
-      header.appendChild(menu);
-    }
-
-    hamburger.setAttribute("aria-controls", "mobileMenu");
-
-    function setOpen(open) {
-      menu.classList.toggle("open", open);
-      hamburger.classList.toggle("active", open);
-      hamburger.setAttribute("aria-expanded", open);
-      hamburger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    }
-
-    hamburger.addEventListener("click", () => setOpen(!menu.classList.contains("open")));
-    menu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => setOpen(false)));
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && menu.classList.contains("open")) {
-        setOpen(false);
-        hamburger.focus();
-      }
-    });
-
-    // Close the drawer if the screen grows back to desktop size
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 768) setOpen(false);
-    });
-  }
-
   function initSearchForms() {
     document.querySelectorAll(".nav-search").forEach(form => {
       form.setAttribute("action", ROOT + "Search/search.html");
@@ -340,31 +279,32 @@ const Seylune = (() => {
        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"></path>
      </svg>`;
 
-  /* Returns the same card markup used on the category pages.
-     variant "related" uses the class names from the product page. */
-  function renderProductCard(p, variant) {
-    const infoClass    = variant === "related" ? "product-info-card"    : "product-info";
-    const actionsClass = variant === "related" ? "product-card-actions" : "product-actions";
+  /* A photograph, the name and the price. Pointing at the photo
+     brings up the sizes: one tap adds that size to the cart. */
+  function renderProductCard(p) {
     const url   = productUrl(p.id);
     const image = asset(p.image);
     const name  = escapeHtml(p.name);
+    const data  = `data-id="${p.id}" data-name="${name}" data-price="${p.price}" data-image="${image}"`;
 
     return `
       <article class="product-card" data-id="${p.id}" data-price="${p.price}">
-        <a href="${url}" class="product-image-link">
-          <div class="product-image">
-            <img src="${image}" alt="${name}" loading="lazy" />
+        <div class="product-frame">
+          <a href="${url}" class="product-image-link" tabindex="-1" aria-hidden="true">
+            <div class="product-image">
+              <img src="${image}" alt="" loading="lazy" />
+            </div>
+          </a>
+          <div class="card-sizes" role="group" aria-label="Add ${name} to cart in size">
+            ${(p.sizes || []).map(s =>
+              `<button type="button" class="size-pill add-to-cart" ${data} data-size="${s}" aria-label="Add ${name}, size ${s}, to cart">${s}</button>`
+            ).join("")}
           </div>
-        </a>
-        <div class="${infoClass}">
+        </div>
+        <div class="product-info">
           <p class="product-card-category">${escapeHtml(p.category)}</p>
           <h3 class="product-name"><a href="${url}">${name}</a></h3>
           <p class="product-price">${formatPrice(p.price)}</p>
-          <div class="${actionsClass}">
-            <a href="${url}" class="btn btn-small">View Product</a>
-            <button class="btn btn-small btn-primary add-to-cart"
-              data-id="${p.id}" data-name="${name}" data-price="${p.price}" data-image="${image}">Add to Cart</button>
-          </div>
         </div>
       </article>`;
   }
@@ -398,21 +338,26 @@ const Seylune = (() => {
           id:    addBtn.dataset.id,
           name:  addBtn.dataset.name,
           price: parseInt(addBtn.dataset.price, 10),
-          image: addBtn.dataset.image
+          image: addBtn.dataset.image,
+          size:  addBtn.dataset.size || ""   // size buttons carry their size
         };
         addToCart(product);
 
+        // A size button keeps its label and lights up; a text button says "Added"
         const originalText = addBtn.textContent;
-        addBtn.textContent = "Added ✓";
+        if (product.size) addBtn.classList.add("added");
+        else addBtn.textContent = "Added ✓";
         addBtn.disabled = true;
         setTimeout(() => {
           addBtn.textContent = originalText;
+          addBtn.classList.remove("added");
           addBtn.disabled = false;
         }, 1200);
 
-        const needsSize = (getProduct(product.id) || {}).sizes;
+        const needsSize = !product.size && (getProduct(product.id) || {}).sizes;
         toast(
-          needsSize ? `${product.name} added — choose your size in the cart.` : `${product.name} added to your cart.`,
+          product.size ? `${product.name}, size ${product.size}, added to your cart.`
+            : needsSize ? `${product.name} added — choose your size in the cart.` : `${product.name} added to your cart.`,
           "View cart",
           ROOT + "Cart/cart.html"
         );
@@ -583,6 +528,7 @@ const Seylune = (() => {
 
       if (counter) counter.textContent = visible;
       if (emptyState) emptyState.hidden = visible > 0;
+      if (options && options.onApply) options.onApply(visible);
     }
 
     apply();
@@ -642,7 +588,6 @@ const Seylune = (() => {
   ============================================================ */
   function init() {
     initSkipLink();
-    initMobileMenu();
     initSearchForms();
     initCardButtons();
     addWishlistButtons();
@@ -666,6 +611,6 @@ const Seylune = (() => {
     lineKey, getCart, saveCart, getCartCount, getSubtotal, getShipping,
     addToCart, changeQuantity, changeSize, removeFromCart, clearCart, updateCartBadge,
     getWishlist, isSaved, toggleWishlist, syncWishlistButtons,
-    toast, renderProductCard, addWishlistButtons, initCatalog
+    toast, renderProductCard, addWishlistButtons, initCatalog, HEART_SVG
   };
 })();

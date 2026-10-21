@@ -1,505 +1,207 @@
 /* ============================================================
-   SEYLUNE — ABOUT / CONTACT PAGE STYLES
-   Page-specific styles only.
-   The base navbar, footer, buttons, and product cards come
-   from css/index.css.
+   SEYLUNE — ABOUT + CONTACT PAGE
+   The brand film holds still on the left; the story, the three
+   pillars and the contact form move on the right.
+   The room, fields and buttons come from shared/site.css.
+   1. The film
+   2. The story
+   3. Pillars
+   4. Contact
+   5. Phones
 ============================================================ */
 
 
 /* ============================================================
-   1. BREADCRUMB
+   1. THE FILM — portrait, so it fills the half; scaled a touch so
+      the frame's corners stay out of view
 ============================================================ */
-.breadcrumb {
-  background: var(--bg-deep);
-  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
+.about-room {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 }
 
-.breadcrumb-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
-
-.breadcrumb-inner a {
-  color: var(--text-soft);
-  transition: color var(--transition);
-}
-
-.breadcrumb-inner a:hover {
-  color: var(--gold);
-}
-
-.breadcrumb-separator {
-  margin: 0 0.6rem;
-  color: rgba(198, 163, 107, 0.4);
-}
-
-.breadcrumb-current {
-  color: var(--gold);
-}
-
-
-/* ============================================================
-   2. ABOUT SECTION
-============================================================ */
-.about-section {
-  padding-top: var(--space-xl);
-  padding-bottom: var(--space-xl);
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-/* About image with subtle hover zoom */
-.about-image {
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  border-radius: var(--radius);
-}
-
-.about-image img,
-.about-image video {
+.about-media video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;                   /* removes the small inline gap below videos */
-  transition: transform 1s var(--ease);
+  object-position: 50% 30%;
+  transform: scale(1.06);
 }
 
-.about-image:hover img,
-.about-image:hover video {
-  transform: scale(1.04);
-}
-
-/* About text column */
-.about-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.about-title {
-  font-family: var(--font-heading);
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 1.2rem;
-}
-
-.about-paragraph {
-  color: var(--text-soft);
-  font-size: 1rem;
-  line-height: 1.9;
-  margin-bottom: 2.5rem;
+.about-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(21, 17, 22, 0) 70%, rgba(21, 17, 22, 0.5));
 }
 
 
 /* ============================================================
-   3. BRAND PILLARS (inside the About section)
+   2. THE STORY
 ============================================================ */
-.about-pillars {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  border-top: 1px solid rgba(198, 163, 107, 0.15);
-  padding-top: 2rem;
+.about-body {
+  padding-left: clamp(1.5rem, 5vw, 5.5rem);
 }
 
-.pillar {
+.about-story {
+  max-width: 40rem;
+}
+
+.about-lead {
+  font-size: clamp(1rem, 1.4vw, 1.14rem);
+  line-height: 1.8;
+  color: var(--text-soft);
+  margin-bottom: clamp(1.6rem, 5vh, 2.6rem);
+}
+
+.about-name {
   display: flex;
-  flex-direction: column;
+  gap: 3rem;
+  padding: 1.2rem 0;
+  margin-bottom: clamp(2rem, 6vh, 3.4rem);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.about-name dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.about-name dd {
+  font-size: 0.84rem;
+  color: var(--text-soft);
+}
+
+
+/* ============================================================
+   3. PILLARS
+============================================================ */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
 }
 
 .pillar-number {
-  font-family: var(--font-heading);
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   color: var(--gold);
-  font-size: 1.4rem;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
 }
 
-.pillar h3 {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
+.pillars h2 {
   margin-bottom: 0.4rem;
-  color: var(--text-main);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.pillar p {
-  color: var(--text-soft);
+.pillars p {
   font-size: 0.88rem;
   line-height: 1.6;
+  color: var(--text-soft);
 }
 
 
 /* ============================================================
-   4. CONTACT HEADER
+   4. CONTACT
 ============================================================ */
-.contact-header {
-  background: var(--bg-deep);
-  border-top: 1px solid rgba(198, 163, 107, 0.08);
-  border-bottom: 1px solid rgba(198, 163, 107, 0.08);
-  text-align: center;
-  padding: var(--space-lg) 2rem;
-}
-
-.contact-header-inner {
-  max-width: 720px;
-  margin: 0 auto;
+.about-contact {
+  max-width: 40rem;
+  margin-top: clamp(4rem, 14vh, 8rem);
+  padding-top: clamp(2rem, 6vh, 3rem);
+  border-top: 1px solid var(--line);
 }
 
 .contact-title {
-  font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 500;
-  margin-bottom: 1rem;
-  letter-spacing: 0.5px;
+  margin: 0.8rem 0 0.8rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, min(3.6vw, 6.4vh), 3.4rem);
+  line-height: 1.04;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .contact-text {
+  max-width: 30rem;
+  margin-bottom: clamp(1.6rem, 4vh, 2.4rem);
   color: var(--text-soft);
-  font-size: 1rem;
-  line-height: 1.8;
 }
 
-
-/* ============================================================
-   5. CONTACT GRID — details + form (two columns)
-============================================================ */
-.contact-section {
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-xl);
-}
-
-.contact-grid {
+.contact-list {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 3rem;
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem 2rem;
+  margin-bottom: clamp(2.4rem, 7vh, 3.6rem);
 }
 
-
-/* ============================================================
-   6. CONTACT DETAILS (left column)
-============================================================ */
-.contact-details {
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.1);
-  border-radius: var(--radius);
-  padding: 2.2rem;
-  position: sticky;
-  top: 100px;
-}
-
-.contact-details-title {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin-bottom: 0.8rem;
-}
-
-.contact-details-text {
-  color: var(--text-soft);
-  font-size: 0.9rem;
-  line-height: 1.7;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
-}
-
-/* Each contact line: icon + text */
-.contact-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.contact-info-icon {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(198, 163, 107, 0.3);
-  border-radius: 50%;
-  color: var(--gold);
-  transition: all var(--transition);
-}
-
-.contact-info:hover .contact-info-icon {
-  background: var(--gold);
-  color: var(--bg-deep);
-}
-
-.contact-info-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.contact-info-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+.contact-list dt {
+  margin-bottom: 0.3rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-soft);
 }
 
-.contact-info-text a,
-.contact-info-text span {
+.contact-list dd {
   font-size: 0.95rem;
-  color: var(--text-main);
-  transition: color var(--transition);
 }
 
-.contact-info-text a:hover {
+.contact-list a {
+  border-bottom: 1px solid var(--line-gold);
+  transition: color 0.3s;
+}
+
+.contact-list a:hover {
   color: var(--gold);
-}
-
-
-/* ============================================================
-   7. SOCIAL LINKS
-============================================================ */
-.contact-socials {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(198, 163, 107, 0.1);
-}
-
-.contact-socials-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  margin-bottom: 0.8rem;
-}
-
-.contact-socials-list {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.social-link {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(198, 163, 107, 0.25);
-  border-radius: 50%;
-  color: var(--text-soft);
-  transition: all var(--transition);
-}
-
-.social-link:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--bg-deep);
-  transform: translateY(-2px);
-}
-
-
-/* ============================================================
-   8. CONTACT FORM (right column)
-============================================================ */
-.contact-form {
-  background: var(--bg-card);
-  border: 1px solid rgba(198, 163, 107, 0.1);
-  border-radius: var(--radius);
-  padding: 2.2rem;
 }
 
 .contact-form-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: 1.4rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .contact-form-text {
-  color: var(--text-soft);
-  font-size: 0.9rem;
-  margin-bottom: 1.8rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(198, 163, 107, 0.1);
-}
-
-
-/* ============================================================
-   9. FORM GROUPS (label + input + error)
-============================================================ */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.4rem;
-}
-
-.form-group label {
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  margin-bottom: 0.6rem;
-}
-
-.form-group input,
-.form-group textarea {
-  background: var(--bg-deep);
-  border: 1px solid rgba(198, 163, 107, 0.2);
-  border-radius: var(--radius);
-  color: var(--text-main);
-  padding: 0.95rem 1rem;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  transition: border-color var(--transition);
-  resize: vertical;
-}
-
-.form-group textarea {
-  min-height: 140px;
-  font-family: var(--font-body);
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: var(--text-soft);
-  opacity: 0.7;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--gold);
-}
-
-/* Error state */
-.form-group.error input,
-.form-group.error textarea {
-  border-color: #E08B8B;
-}
-
-.form-error {
-  display: none;
-  color: #E08B8B;
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  margin-top: 0.5rem;
-}
-
-.form-group.error .form-error {
-  display: block;
-}
-
-
-/* ============================================================
-   10. SUBMIT BUTTON + SUCCESS MESSAGE
-============================================================ */
-.contact-form .btn {
-  width: 100%;
-  margin-top: 0.5rem;
-}
-
-.form-success {
-  margin-top: 1.2rem;
-  padding: 0.9rem 1rem;
-  background: rgba(198, 163, 107, 0.08);
-  border: 1px solid rgba(198, 163, 107, 0.3);
-  border-radius: var(--radius);
-  color: var(--gold);
+  margin-bottom: 1.6rem;
   font-size: 0.88rem;
-  text-align: center;
-  display: none;
-}
-
-.form-success.show {
-  display: block;
+  color: var(--text-soft);
 }
 
 
 /* ============================================================
-   11. RESPONSIVE — TABLET
+   5. PHONES
 ============================================================ */
-@media (max-width: 1024px) {
-
-  .about-grid {
+@media (max-width: 860px) {
+  .about-room {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
   }
 
-  .about-image {
-    aspect-ratio: 16 / 10;
+  .about-media {
+    height: 78svh;
   }
 
-  .contact-grid {
+  .about-media::after {
+    background: linear-gradient(to top, rgba(21, 17, 22, 0.9), rgba(21, 17, 22, 0) 30%);
+  }
+
+  .about-body {
+    padding: 2rem var(--pad) 3.4rem;
+  }
+
+  .pillars,
+  .contact-list {
     grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .contact-details {
-    position: static;
-  }
-}
-
-
-/* ============================================================
-   12. RESPONSIVE — MOBILE
-============================================================ */
-@media (max-width: 768px) {
-
-  .about-section {
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-  }
-
-  .about-pillars {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding-top: 1.5rem;
-  }
-
-  .contact-header {
-    padding: var(--space-md) 1.2rem;
-  }
-
-  .contact-section {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-lg);
-  }
-
-  .contact-details,
-  .contact-form {
-    padding: 1.5rem;
-  }
-}
-
-
-/* ============================================================
-   13. RESPONSIVE — SMALL MOBILE
-============================================================ */
-@media (max-width: 480px) {
-
-  .about-title {
-    font-size: 2rem;
-  }
-
-  .contact-title {
-    font-size: 1.8rem;
-  }
-
-  .contact-info {
-    gap: 0.8rem;
-  }
-
-  .contact-info-icon {
-    width: 34px;
-    height: 34px;
   }
 }

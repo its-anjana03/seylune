@@ -22,7 +22,10 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 
 ## Features
 
-- Dark editorial theme — deep night, plum and antique gold with Playfair Display + Inter
+- Moonlit theme — night, plum and antique gold with Tenor Sans + Manrope
+- Home as six full-screen scenes; every other page is a split "room" where a photograph holds still while the details move
+- Liquid WebGL photographs (shared/liquid.js) that melt between pieces and ripple under the cursor
+- Full-screen menu with search, and size buttons that add a piece to the cart in one tap
 - Shared product catalogue (`shared/products.js`) driving product pages, search, filters and related items
 - Filter by size, colour and price, plus sorting, on every category page
 - Search with relevance scoring, category chips and sorting
@@ -30,7 +33,7 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 - Frontend checkout with validation (Sri Lankan mobile and postal code), order confirmation and order history
 - Wishlist hearts on every product, saved to the account page
 - Size guide dialog, image gallery and accessible tabs on product pages
-- Mobile menu, skip link, keyboard focus styles, live regions and reduced-motion support
+- Skip link, keyboard focus styles, live regions and reduced-motion support
 - Everything persists in `localStorage` — no backend required
 
 ## Run locally
@@ -44,8 +47,8 @@ npx serve .
 ## Structure
 
 ```
-shared/      products.js (catalogue) · seylune.js (cart, menu, search, filters) · seylune.css
-home/        home page + all images and video
+shared/      products.js (catalogue) · seylune.js (cart, search, filters) · site.css · site.js (menu, rooms, page motion) · liquid.js (WebGL photographs) · vendor/gsap.min.js
+home/        home page (scenes.css, home.js) + all images and video
 Product/     single product template
 Search/      search results
 Checkout/    checkout

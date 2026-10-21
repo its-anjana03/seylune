@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T00:00:00Z",
+  "title": "Design System: Seylune",
+  "extensions": {
+    "colorMeta": {
+      "night":        { "role": "neutral", "displayName": "Night", "canonical": "#151116", "tonalRamp": ["#0b080c", "#151116", "#221d23", "#352e36", "#4d454e", "#6f6670", "#9a919b", "#cfc8d0"] },
+      "plum":         { "role": "neutral", "displayName": "Plum", "canonical": "#221A24", "tonalRamp": ["#120d13", "#221a24", "#342836", "#4a3a4d", "#665168", "#8a7290", "#b29db6", "#ddd0df"] },
+      "deep":         { "role": "neutral", "displayName": "Deep", "canonical": "#0F0D10", "tonalRamp": ["#070608", "#0f0d10", "#1b181c", "#2c282d", "#433e44", "#655f66", "#928c93", "#c9c4ca"] },
+      "cream":        { "role": "neutral", "displayName": "Cream", "canonical": "#F4EEE8", "tonalRamp": ["#3b352f", "#5c544c", "#81776d", "#a69c92", "#c6bdb4", "#ddd6ce", "#ebe5de", "#f4eee8"] },
+      "mist":         { "role": "neutral", "displayName": "Mist", "canonical": "#B9A8AE", "tonalRamp": ["#2c2427", "#43383c", "#5e5055", "#7c6c72", "#9a8990", "#b9a8ae", "#d3c7cb", "#ebe4e6"] },
+      "antique-gold": { "role": "primary", "displayName": "Antique Gold", "canonical": "#C6A36B", "tonalRamp": ["#33270f", "#53401c", "#75592b", "#98763f", "#c6a36b", "#d7b980", "#e6d1a8", "#f4e9d4"] },
+      "gold-glow":    { "role": "primary", "displayName": "Gold Glow", "canonical": "#D7B980" },
+      "rose-error":   { "role": "tertiary", "displayName": "Rose Error", "canonical": "#E59A9A" }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display", "purpose": "Room and scene titles, the search field. Tenor Sans, uppercase." },
+      "headline": { "displayName": "Index name", "purpose": "Piece names in the collection and search index; dim until active." },
+      "title":    { "displayName": "Title", "purpose": "Section heads, plate names, cart line names." },
+      "body":     { "displayName": "Body", "purpose": "Descriptions and ledes, in mist." },
+      "label":    { "displayName": "Label", "purpose": "Buttons, header words, form labels, filters." },
+      "kicker":   { "displayName": "Kicker", "purpose": "Gold line naming a page or section above its title." }
+    },
+    "shadows": [
+      { "name": "toast-float", "value": "0 18px 50px rgba(0, 0, 0, 0.5)", "purpose": "The toast message, the only floating element." }
+    ],
+    "motion": [
+      { "name": "ease-house", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Every CSS transition: underlines, menu reveal, name shifts." },
+      { "name": "scene-dissolve", "value": "out 0.55s power2.in to scale 0.96; in 0.85s expo.out from scale 1.05", "purpose": "Home scene change (GSAP)." },
+      { "name": "reveal-rise", "value": "y 24px to 0, 1s expo.out, stagger 0.06s", "purpose": "Words arriving on a page or scene." },
+      { "name": "liquid-melt", "value": "1.1-1.5s ease-out cubic", "purpose": "Photograph melting into the next piece (shared/liquid.js)." },
+      { "name": "page-leave", "value": "opacity to 0, 0.35s", "purpose": "Fade into the night before following a link." }
+    ],
+    "breakpoints": [
+      { "name": "phone-tablet", "value": "860px" },
+      { "name": "ledger-stack", "value": "960px" },
+      { "name": "short-laptop", "value": "max-height 760px" },
+      { "name": "very-short", "value": "max-height 620px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The next step: add to cart, checkout, place order.",
+      "html": "<button class=\"ds-btn-primary\">Add to Cart</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 2rem; background: #C6A36B; color: #0F0D10; border: 1px solid transparent; border-radius: 0; font-family: Manrope, system-ui, sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; cursor: pointer; transition: background-color 0.4s cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #F4EEE8; } .ds-btn-primary:focus-visible { outline: 1px solid #C6A36B; outline-offset: 4px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The quieter second choice.",
+      "html": "<button class=\"ds-btn-ghost\">Explore Collection</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; min-height: 50px; padding: 0 2rem; background: transparent; color: #F4EEE8; border: 1px solid rgba(244, 238, 232, 0.4); border-radius: 0; font-family: Manrope, system-ui, sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; cursor: pointer; transition: background-color 0.4s, color 0.4s, border-color 0.4s; } .ds-btn-ghost:hover { background: #F4EEE8; border-color: #F4EEE8; color: #0F0D10; } .ds-btn-ghost:focus-visible { outline: 1px solid #C6A36B; outline-offset: 4px; }"
+    },
+    {
+      "name": "Size Pills",
+      "kind": "chip",
+      "refersTo": "size-pill",
+      "description": "One tap adds that size to the cart; fills gold when added.",
+      "html": "<div class=\"ds-sizes\"><button class=\"ds-size\">XS</button><button class=\"ds-size is-added\">S</button><button class=\"ds-size\">M</button><button class=\"ds-size\">L</button></div>",
+      "css": ".ds-sizes { display: flex; gap: 0.5rem; } .ds-size { width: 46px; height: 46px; border-radius: 50%; background: transparent; color: #F4EEE8; border: 1px solid rgba(244, 238, 232, 0.3); font: 600 0.76rem Manrope, system-ui, sans-serif; cursor: pointer; transition: background-color 0.35s, color 0.35s, border-color 0.35s; } .ds-size:hover { border-color: #C6A36B; color: #C6A36B; } .ds-size.is-added { background: #C6A36B; border-color: #C6A36B; color: #0F0D10; } .ds-size:focus-visible { outline: 1px solid #C6A36B; outline-offset: 4px; }"
+    },
+    {
+      "name": "Hairline Field",
+      "kind": "input",
+      "description": "Label above, one line below; the line turns gold on focus.",
+      "html": "<label class=\"ds-field\"><span>Email address</span><input type=\"email\" placeholder=\"you@example.com\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 0.35rem; max-width: 22rem; } .ds-field span { font: 600 0.62rem Manrope, system-ui, sans-serif; letter-spacing: 0.24em; text-transform: uppercase; color: #B9A8AE; } .ds-field input { padding: 0.7rem 0; background: transparent; border: none; border-bottom: 1px solid rgba(244, 238, 232, 0.3); border-radius: 0; color: #F4EEE8; font: 400 0.98rem Manrope, system-ui, sans-serif; transition: border-color 0.4s; } .ds-field input::placeholder { color: rgba(185, 168, 174, 0.55); } .ds-field input:focus { outline: none; border-color: #C6A36B; }"
+    },
+    {
+      "name": "Corner Header",
+      "kind": "nav",
+      "description": "No bar: the house name in one corner, three words in the other.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-logo\" href=\"#\">Seylune</a><nav class=\"ds-words\"><a href=\"#\">Search</a><a href=\"#\">Cart <b>2</b></a><a href=\"#\">Menu</a></nav></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; height: 76px; padding: 0 2rem; background: linear-gradient(to bottom, rgba(15, 13, 16, 0.85), rgba(15, 13, 16, 0)); color: #F4EEE8; } .ds-logo { font-family: 'Tenor Sans', Futura, sans-serif; font-size: 1.12rem; letter-spacing: 0.44em; text-transform: uppercase; color: inherit; text-decoration: none; } .ds-words { display: flex; gap: 2rem; } .ds-words a { position: relative; color: inherit; text-decoration: none; font: 600 0.7rem Manrope, system-ui, sans-serif; letter-spacing: 0.26em; text-transform: uppercase; } .ds-words a::after { content: ''; position: absolute; left: 0; right: 0.26em; bottom: -6px; height: 1px; background: #C6A36B; transform: scaleX(0); transform-origin: 100% 50%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); } .ds-words a:hover::after { transform: scaleX(1); transform-origin: 0 50%; } .ds-words b { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 999px; background: #C6A36B; color: #0F0D10; font-size: 0.6rem; letter-spacing: 0; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "filter-chip-active",
+      "description": "Square filter options; the chosen one fills gold.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip is-active\">All</button><button class=\"ds-chip\">Black</button><button class=\"ds-chip\">Ivory</button></div>",
+      "css": ".ds-chips { display: flex; gap: 0.4rem; } .ds-chip { min-height: 34px; padding: 0 0.9rem; background: transparent; color: #F4EEE8; border: 1px solid rgba(244, 238, 232, 0.14); border-radius: 0; font: 400 0.72rem Manrope, system-ui, sans-serif; letter-spacing: 0.06em; cursor: pointer; transition: border-color 0.35s, color 0.35s, background-color 0.35s; } .ds-chip:hover { border-color: #C6A36B; color: #C6A36B; } .ds-chip.is-active { background: #C6A36B; border-color: #C6A36B; color: #0F0D10; }"
+    },
+    {
+      "name": "Index Row",
+      "kind": "custom",
+      "description": "The signature collection list: numbered, dim Tenor names that brighten when pointed at.",
+      "html": "<ol class=\"ds-index\"><li class=\"is-active\"><a href=\"#\"><span class=\"n\">01</span><span class=\"name\">Noira Satin Dress</span><span class=\"price\">Rs. 8,950</span></a></li><li><a href=\"#\"><span class=\"n\">02</span><span class=\"name\">Lune Midi Dress</span><span class=\"price\">Rs. 9,200</span></a></li></ol>",
+      "css": ".ds-index { list-style: none; padding: 0; margin: 0; max-width: 40rem; } .ds-index li { border-bottom: 1px solid rgba(244, 238, 232, 0.14); } .ds-index a { display: grid; grid-template-columns: 2.4rem 1fr auto; align-items: baseline; gap: 1rem; padding: 0.8rem 0; color: inherit; text-decoration: none; } .ds-index .n { font: 600 0.66rem Manrope, system-ui, sans-serif; letter-spacing: 0.12em; color: #B9A8AE; } .ds-index .name { font-family: 'Tenor Sans', Futura, sans-serif; font-size: 1.8rem; letter-spacing: 0.02em; text-transform: uppercase; color: rgba(244, 238, 232, 0.36); transition: color 0.5s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); } .ds-index .price { font-family: 'Tenor Sans', Futura, sans-serif; letter-spacing: 0.06em; color: #B9A8AE; } .ds-index li.is-active .name, .ds-index a:hover .name { color: #F4EEE8; transform: translateX(0.5rem); } .ds-index li.is-active .n, .ds-index li.is-active .price { color: #C6A36B; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Moonlit House",
+    "overview": "Seylune is a house you walk through after dark. Home is its entrance hall: six full-screen scenes that dissolve into one another, one flick of the wheel per scene, never a stacked scrolling page. Every other page is a room. One half of the room holds still (a photograph, the brand film, or the order summary) while the other half moves with the visitor. The clothes are always the light source; the interface is the dusk around them.\n\nMotion is a material, not decoration. Photographs live on a single WebGL plane that melts from one piece to the next through a soft noise displacement and ripples like silk under the cursor. Words rise into place, scenes zoom-dissolve, and pages fade into the night before the next one arrives. All of it stops for reduced-motion visitors, and every flow still works without it.\n\nThe house deliberately does not look like the author's FORGE Studio portfolio. There is no stacked scroll landing page, no pinned horizontal rails, no circle reveals or page wipes, no smooth-scroll library, no serif-italic headlines and no outline footer wordmark.",
+    "keyCharacteristics": [
+      "Original moonlit palette: night, plum and deep grounds, cream type, antique gold as the only accent.",
+      "Tenor Sans set uppercase and tracked for every name and title; Manrope for reading and controls.",
+      "A barless corner header and a full-screen menu room instead of a navigation bar.",
+      "Split \"rooms\": a sticky still half beside a moving half.",
+      "Liquid WebGL photographs with an <img> fallback.",
+      "Sharp corners everywhere; circles only for sizes and round controls."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Antique gold is the only accent. It marks what is chosen, what costs money, or what to do next, and nothing else.", "section": "colors" },
+      { "name": "The Dusk Rule", "body": "Text over photographs is protected by a gradient from deep (0.85–0.92 alpha) to transparent, never by a box or a blur.", "section": "colors" },
+      { "name": "The Engraved Rule", "body": "Tenor Sans is always uppercase and slightly tracked, and never bold or italic. Hierarchy comes from size and brightness, not weight.", "section": "typography" },
+      { "name": "The Two Voices Rule", "body": "Only two families. Prices use Tenor Sans tracked at 0.06em; numbers are never set in a third face.", "section": "typography" },
+      { "name": "The Still Half Rule", "body": "Every inner page has exactly one thing that holds still. Never two sticky halves, and never a sticky element inside the moving half.", "section": "layout" },
+      { "name": "The Lamplight Rule", "body": "Light comes from the photograph or from a soft radial glow of plum (rgba(34, 26, 36, 0.9–0.95)) in a still room. It never comes from a drop shadow under a card.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do give every new inner page one still half (a photograph, film or summary) and one moving half.",
+      "Do set every name and title in uppercase Tenor Sans and let brightness (36% → 100% cream) carry the active state.",
+      "Do use antique gold only for the chosen, the priced and the next step.",
+      "Do put photographs on a liquid box with a focus point on the face, and keep the <img> fallback.",
+      "Do size type and spacing from the screen height as well as its width (min(vw, vh) clamps) so nothing hides under the header.",
+      "Do keep every flow working with JavaScript motion off and with reduced motion on."
+    ],
+    "donts": [
+      "Don't build a stacked, scrolling landing page or anything that reads as the FORGE portfolio: pinned rails, circle reveals, page wipes, Lenis, serif-italic headlines or an outline footer wordmark.",
+      "Don't add a navigation bar, a glass capsule or an announcement bar across the photographs.",
+      "Don't round corners on buttons, fields, cards or panels.",
+      "Don't introduce a second accent colour or a third typeface.",
+      "Don't use drop shadows under cards; depth comes from tone and photographs.",
+      "Don't blur text panels over images; protect text with the deep dusk gradient."
+    ]
+  }
+}

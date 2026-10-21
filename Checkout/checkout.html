@@ -4,188 +4,135 @@
   <!-- ========== Meta & Page Info ========== -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Complete your Seylune order: delivery details, delivery method and payment." />
+  <meta name="description" content="Complete your Seylune order." />
+  <meta name="theme-color" content="#0F0D10" />
   <title>Checkout — Seylune</title>
-
-  <!-- ========== Favicon ========== -->
   <link rel="icon" href="../home/images/Logo.png" type="image/png" />
 
-  <!-- ========== Google Fonts: Playfair Display + Inter ========== -->
+  <!-- ========== Fonts: Tenor Sans (titles) + Manrope (reading and UI) ========== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Tenor+Sans&display=swap" rel="stylesheet" />
 
-  <!-- ========== Shared Stylesheet (navbar, footer, buttons, cards) ========== -->
-  <link rel="stylesheet" href="../home/home.css" />
-
-  <!-- ========== Shared Component Styles (mobile menu, filters, toast, wishlist) ========== -->
-  <link rel="stylesheet" href="../shared/seylune.css" />
-
-  <!-- ========== Page-Specific Stylesheet ========== -->
+  <!-- ========== Site styles, then this page's own ========== -->
+  <link rel="stylesheet" href="../shared/site.css" />
   <link rel="stylesheet" href="checkout.css" />
+  <script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("anim");</script>
 </head>
-<body>
+<body class="page page-checkout">
 
   <!-- ============================================================
-       ANNOUNCEMENT BAR
-  ============================================================ -->
-  <div class="announcement-bar">
-    <p>Free islandwide delivery on orders over Rs. 10,000</p>
-  </div>
-
-  <!-- ============================================================
-       NAVBAR (Reusable — identical across all Seylune pages)
+       HEADER
+       No bar: the name in one corner, three words in the other.
   ============================================================ -->
   <header class="navbar" id="navbar">
-    <div class="nav-container">
 
-      <!-- Logo -->
-      <a href="../home/home.html" class="nav-logo" aria-label="Seylune home">SEYLUNE</a>
+    <a href="../home/home.html" class="nav-logo" aria-label="Seylune home">
+      <img src="../home/images/Logo.png" alt="" width="26" height="27" />
+      <span>Seylune</span>
+    </a>
 
-      <!-- Desktop Navigation Links -->
-      <nav class="nav-links" id="navLinks">
-        <a href="../home/home.html">Home</a>
-        <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
-        <a href="../Dresses/dresses.html">Dresses</a>
-        <a href="../Tops/tops.html">Tops</a>
-        <a href="../Bottoms/bottoms.html">Bottoms</a>
-        <a href="../About/About.html">About</a>
-      </nav>
-
-      <!-- Right-side icons -->
-      <div class="nav-actions">
-
-        <!-- Search form -->
-        <form class="nav-search" id="navSearch" role="search" action="../Search/search.html" method="get">
-          <input
-            type="text"
-            name="q"
-            id="searchInput"
-            placeholder="Search Seylune…"
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Submit search">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </form>
-
-        <!-- Account Icon -->
-        <a href="../Account/Account.html" class="nav-icon" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
-
-        <!-- Cart Icon with Count Badge -->
-        <a href="../Cart/cart.html" class="nav-icon cart-icon" aria-label="Cart">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
-          <span class="cart-badge" id="cartBadge">0</span>
-        </a>
-
-        <!-- Hamburger Menu (mobile) -->
-        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-      </div>
+    <div class="nav-actions">
+      <button type="button" class="nav-word" id="searchOpen" aria-controls="menuOverlay" aria-expanded="false">Search</button>
+      <a href="../Cart/cart.html" class="nav-word cart-icon" aria-label="Cart">Cart<span class="cart-badge" id="cartBadge">0</span></a>
+      <button type="button" class="nav-word menu-toggle" id="menuToggle" aria-controls="menuOverlay" aria-expanded="false">
+        <span class="menu-toggle-word">Menu</span>
+        <span class="menu-toggle-lines" aria-hidden="true"><span></span><span></span></span>
+      </button>
     </div>
+
   </header>
 
   <!-- ============================================================
-       MAIN CONTENT
-       Frontend-only checkout: validates the form, saves the
-       order to localStorage and shows a confirmation.
-       No real payment is taken.
+       THE MENU
+       A full-screen room of its own: the names on the left, a
+       photograph on the right that melts to each name you point at.
   ============================================================ -->
-  <main>
+  <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="menu-inner">
 
-    <!-- ============================================================
-         BREADCRUMB
-    ============================================================ -->
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <div class="breadcrumb-inner">
-        <a href="../home/home.html">Home</a>
-        <span class="breadcrumb-separator">/</span>
-        <a href="../Cart/cart.html">Cart</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">Checkout</span>
-      </div>
-    </nav>
-
-    <!-- ============================================================
-         CHECKOUT HEADER + STEPS
-    ============================================================ -->
-    <section class="checkout-header">
-      <div class="checkout-header-inner">
-        <p class="section-eyebrow">Secure Checkout</p>
-        <h1 class="checkout-title" id="checkoutTitle">Checkout</h1>
-        <ol class="checkout-steps" aria-label="Checkout progress">
-          <li class="done"><a href="../Cart/cart.html">Cart</a></li>
-          <li class="current" id="stepDetails" aria-current="step">Details</li>
-          <li id="stepConfirm">Confirmation</li>
+      <nav class="menu-links" aria-label="Main">
+        <ol id="menuLinks">
+          <li><a href="../New arrivals/new-arriavals.html" data-index="0"><span class="menu-name">New Arrivals</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Dresses/dresses.html" data-index="1"><span class="menu-name">Dresses</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Tops/tops.html" data-index="2"><span class="menu-name">Tops</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Bottoms/bottoms.html" data-index="3"><span class="menu-name">Bottoms</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../About/About.html" data-index="4"><span class="menu-name">About</span><span class="menu-note">Our story</span></a></li>
+          <li><a href="../Account/Account.html" data-index="5"><span class="menu-name">Account</span><span class="menu-note">Orders &amp; saved pieces</span></a></li>
         </ol>
+      </nav>
+
+      <div class="menu-media">
+        <div class="liquid-box" id="menuLiquid">
+          <img src="../home/images/products/Dresses/noira-satin-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/aurelle-evening-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Tops/elara-drape-top.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Bottoms/veya-tailored-pants.jpg" alt="" loading="lazy" />
+          <img src="../home/images/story-home.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/lune-midi-dress.jpg" alt="" loading="lazy" />
+        </div>
       </div>
-    </section>
 
-    <section class="section checkout-section">
+      <div class="menu-foot">
+        <form class="nav-search menu-search" id="navSearch" role="search" action="../Search/search.html" method="get">
+          <label class="visually-hidden" for="searchInput">Search products</label>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
+          <input type="search" name="q" id="searchInput" placeholder="Search satin, ivory, trousers…" autocomplete="off" />
+        </form>
+        <p class="menu-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+      </div>
 
-      <!-- ============================================================
-           1. CHECKOUT LAYOUT — form + order summary
-      ============================================================ -->
-      <div class="checkout-layout" id="checkoutLayout" hidden>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- ============================================================
+         CHECKOUT — the form on the left, the order holding still on
+         the right
+    ============================================================ -->
+    <div class="room ledger-room" id="checkoutLayout" hidden>
+
+      <section class="room-body checkout-body" aria-labelledby="checkoutTitle">
+        <nav class="trail reveal" aria-label="Checkout progress">
+          <ol class="checkout-steps">
+            <li class="done"><a href="../Cart/cart.html">Cart</a></li>
+            <li class="current" id="stepDetails" aria-current="step">Details</li>
+            <li id="stepConfirm">Confirmation</li>
+          </ol>
+        </nav>
+        <h1 class="room-title reveal" id="checkoutTitle">Checkout</h1>
 
         <form class="checkout-form" id="checkoutForm" novalidate>
 
-          <!-- Contact -->
-          <fieldset class="checkout-block">
+          <fieldset class="checkout-block reveal">
             <legend class="checkout-block-title"><span>01</span> Contact</legend>
-
             <div class="field">
-              <label for="coName">Full Name</label>
+              <label for="coName">Full name</label>
               <input type="text" id="coName" name="name" autocomplete="name" placeholder="Enter your full name" />
               <p class="field-error" id="coNameError"></p>
             </div>
-
             <div class="field-row">
               <div class="field">
-                <label for="coEmail">Email Address</label>
+                <label for="coEmail">Email address</label>
                 <input type="email" id="coEmail" name="email" autocomplete="email" placeholder="you@example.com" />
                 <p class="field-error" id="coEmailError"></p>
               </div>
               <div class="field">
-                <label for="coPhone">Mobile Number</label>
+                <label for="coPhone">Mobile number</label>
                 <input type="tel" id="coPhone" name="phone" autocomplete="tel" placeholder="07X XXX XXXX" />
                 <p class="field-error" id="coPhoneError"></p>
               </div>
             </div>
           </fieldset>
 
-          <!-- Delivery address -->
-          <fieldset class="checkout-block">
-            <legend class="checkout-block-title"><span>02</span> Delivery Address</legend>
-
+          <fieldset class="checkout-block reveal">
+            <legend class="checkout-block-title"><span>02</span> Delivery address</legend>
             <div class="field">
-              <label for="coAddress">Street Address</label>
+              <label for="coAddress">Street address</label>
               <input type="text" id="coAddress" name="address" autocomplete="street-address" placeholder="House number and street" />
               <p class="field-error" id="coAddressError"></p>
             </div>
-
             <div class="field-row">
               <div class="field">
                 <label for="coCity">City</label>
@@ -193,193 +140,143 @@
                 <p class="field-error" id="coCityError"></p>
               </div>
               <div class="field">
-                <label for="coPostal">Postal Code</label>
+                <label for="coPostal">Postal code</label>
                 <input type="text" id="coPostal" name="postal" inputmode="numeric" autocomplete="postal-code" placeholder="00700" maxlength="5" />
                 <p class="field-error" id="coPostalError"></p>
               </div>
             </div>
-
             <div class="field">
-              <label for="coNotes">Delivery Notes <span class="optional">(optional)</span></label>
+              <label for="coNotes">Delivery notes <span class="optional">(optional)</span></label>
               <textarea id="coNotes" name="notes" rows="2" placeholder="Landmark, gate code or preferred time"></textarea>
             </div>
           </fieldset>
 
-          <!-- Delivery method -->
-          <fieldset class="checkout-block">
-            <legend class="checkout-block-title"><span>03</span> Delivery Method</legend>
-
+          <fieldset class="checkout-block reveal">
+            <legend class="checkout-block-title"><span>03</span> Delivery method</legend>
             <label class="choice">
               <input type="radio" name="delivery" value="standard" checked />
               <span class="choice-body">
-                <span class="choice-title">Standard Delivery</span>
+                <span class="choice-title">Standard delivery</span>
                 <span class="choice-text">2–4 working days, islandwide</span>
               </span>
               <span class="choice-price" id="standardPrice">Rs. 450</span>
             </label>
-
             <label class="choice">
               <input type="radio" name="delivery" value="express" />
               <span class="choice-body">
-                <span class="choice-title">Express Delivery</span>
+                <span class="choice-title">Express delivery</span>
                 <span class="choice-text">1–2 working days, Colombo &amp; suburbs</span>
               </span>
               <span class="choice-price">Rs. 950</span>
             </label>
           </fieldset>
 
-          <!-- Payment -->
-          <fieldset class="checkout-block">
+          <fieldset class="checkout-block reveal">
             <legend class="checkout-block-title"><span>04</span> Payment</legend>
-
             <label class="choice">
               <input type="radio" name="payment" value="cod" checked />
               <span class="choice-body">
-                <span class="choice-title">Cash on Delivery</span>
+                <span class="choice-title">Cash on delivery</span>
                 <span class="choice-text">Pay in cash or by card when your order arrives</span>
               </span>
             </label>
-
             <label class="choice">
               <input type="radio" name="payment" value="bank" />
               <span class="choice-body">
-                <span class="choice-title">Bank Transfer</span>
+                <span class="choice-title">Bank transfer</span>
                 <span class="choice-text">Transfer details are sent with your order email</span>
               </span>
             </label>
-
-            <p class="demo-note">
-              This is a student demo store — no payment is taken and no order is shipped.
-            </p>
+            <p class="demo-note">This is a concept store — no payment is taken and no order is shipped.</p>
           </fieldset>
 
-          <!-- Terms + submit -->
-          <label class="form-check">
-            <input type="checkbox" id="coTerms" />
-            <span>I agree to the delivery and returns policy.</span>
-          </label>
-          <p class="field-error" id="coTermsError"></p>
-
-          <button type="submit" class="btn btn-primary checkout-submit" id="placeOrderBtn">Place Order</button>
-          <p class="checkout-message" id="checkoutMessage" role="alert"></p>
+          <div class="checkout-finish reveal">
+            <label class="form-check">
+              <input type="checkbox" id="coTerms" />
+              <span>I agree to the delivery and returns policy.</span>
+            </label>
+            <p class="field-error" id="coTermsError"></p>
+            <button type="submit" class="btn btn-primary btn-block" id="placeOrderBtn">Place Order</button>
+            <p class="checkout-message" id="checkoutMessage" role="alert"></p>
+          </div>
         </form>
+      </section>
 
-        <!-- Order Summary -->
-        <aside class="checkout-summary" aria-labelledby="summaryTitle">
-          <h2 class="summary-title" id="summaryTitle">Order Summary</h2>
-
-          <ul class="summary-items" id="summaryItems"></ul>
-
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="coSubtotal">Rs. 0</span>
-          </div>
-          <div class="summary-row">
-            <span>Delivery</span>
-            <span id="coShipping">Rs. 0</span>
-          </div>
-          <div class="summary-divider"></div>
-          <div class="summary-row summary-total">
-            <span>Total</span>
-            <span id="coTotal">Rs. 0</span>
-          </div>
-
-          <p class="summary-note" id="coDeliveryNote">Free standard delivery on orders over Rs. 10,000.</p>
-          <a href="../Cart/cart.html" class="summary-edit">← Edit cart</a>
-        </aside>
-      </div>
-
-      <!-- ============================================================
-           2. ORDER CONFIRMATION (shown after placing an order)
-      ============================================================ -->
-      <div class="checkout-done" id="checkoutDone" hidden tabindex="-1">
-        <div class="checkout-done-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" width="44" height="44" fill="none"
-               stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M28 22a12 12 0 1 1-12-16 9 9 0 0 0 12 16z"></path>
-          </svg>
-        </div>
-        <p class="section-eyebrow">Thank You</p>
-        <h2 class="checkout-done-title">Your order is confirmed.</h2>
-        <p class="checkout-done-text" id="doneText"></p>
-
-        <dl class="checkout-done-details">
-          <div><dt>Order Number</dt><dd id="doneOrderId"></dd></div>
-          <div><dt>Total</dt><dd id="doneTotal"></dd></div>
-          <div><dt>Delivery</dt><dd id="doneDelivery"></dd></div>
-          <div><dt>Payment</dt><dd id="donePayment"></dd></div>
+      <aside class="room-side checkout-summary" aria-labelledby="summaryTitle">
+        <h2 class="kicker" id="summaryTitle">Order summary</h2>
+        <ul class="summary-items" id="summaryItems"></ul>
+        <dl class="summary-rows">
+          <div class="summary-row"><dt>Subtotal</dt><dd id="coSubtotal">Rs. 0</dd></div>
+          <div class="summary-row"><dt>Delivery</dt><dd id="coShipping">Rs. 0</dd></div>
         </dl>
+        <p class="summary-total"><span>Total</span><span id="coTotal">Rs. 0</span></p>
+        <p class="summary-note" id="coDeliveryNote">Free standard delivery on orders over Rs. 10,000.</p>
+        <a href="../Cart/cart.html" class="text-link">Edit cart</a>
+      </aside>
+    </div>
 
-        <div class="checkout-done-actions">
-          <a href="../Account/Account.html#orders" class="btn btn-outline">View My Orders</a>
-          <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Continue Shopping</a>
-        </div>
+    <!-- ============================================================
+         ORDER CONFIRMED
+    ============================================================ -->
+    <section class="still-room checkout-done" id="checkoutDone" hidden tabindex="-1" aria-labelledby="doneTitle">
+      <img class="still-mark" src="../home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker">Thank you</p>
+      <h1 class="room-title" id="doneTitle">Your order is confirmed</h1>
+      <p class="room-lede" id="doneText"></p>
+      <dl class="checkout-done-details">
+        <div><dt>Order number</dt><dd id="doneOrderId"></dd></div>
+        <div><dt>Total</dt><dd id="doneTotal"></dd></div>
+        <div><dt>Delivery</dt><dd id="doneDelivery"></dd></div>
+        <div><dt>Payment</dt><dd id="donePayment"></dd></div>
+      </dl>
+      <div class="still-actions">
+        <a href="../Account/Account.html#orders" class="btn btn-ghost">View my orders</a>
+        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Continue shopping</a>
       </div>
+    </section>
 
-      <!-- ============================================================
-           3. EMPTY CART (nothing to check out)
-      ============================================================ -->
-      <div class="empty-state" id="checkoutEmpty" hidden>
-        <h2>Your cart is empty.</h2>
-        <p>Add a few pieces to your cart before checking out.</p>
-        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop Now</a>
+    <!-- ============================================================
+         NOTHING TO CHECK OUT
+    ============================================================ -->
+    <section class="still-room" id="checkoutEmpty" hidden aria-labelledby="checkoutEmptyTitle">
+      <img class="still-mark" src="../home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker">Checkout</p>
+      <h1 class="room-title" id="checkoutEmptyTitle">Your cart is empty</h1>
+      <p class="room-lede">Add a few pieces to your cart before checking out.</p>
+      <div class="still-actions">
+        <a href="../New arrivals/new-arriavals.html" class="btn btn-primary">Shop New Arrivals</a>
       </div>
-
     </section>
 
   </main>
 
+
   <!-- ============================================================
        FOOTER
   ============================================================ -->
-  <footer class="footer">
-    <div class="footer-container">
-
-      <div class="footer-col">
-        <h4 class="footer-logo">SEYLUNE</h4>
-        <p>Seylune — Luxury for the modern muse.</p>
-      </div>
-
-      <div class="footer-col">
-        <h5>Quick Links</h5>
-        <ul>
-          <li><a href="../home/home.html">Home</a></li>
-          <li><a href="../New arrivals/new-arriavals.html">New Arrivals</a></li>
-          <li><a href="../Dresses/dresses.html">Dresses</a></li>
-          <li><a href="../Tops/tops.html">Tops</a></li>
-          <li><a href="../Bottoms/bottoms.html">Bottoms</a></li>
-          <li><a href="../About/About.html">About</a></li>
-          <li><a href="../Account/Account.html">Account</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h5>Contact</h5>
-        <ul>
-          <li>Colombo, Sri Lanka</li>
-          <li>hello@seylune.lk</li>
-          <li>+94 77 123 4567</li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h5>Newsletter</h5>
-        <p>Receive updates on new arrivals and private edits.</p>
-        <form class="footer-form" action="#" method="post">
-          <input type="email" placeholder="Your email" aria-label="Email" required />
-          <button type="submit" aria-label="Subscribe">→</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 Seylune. All rights reserved.</p>
-    </div>
+  <footer class="site-footer">
+    <img class="footer-mark" src="../home/images/Logo.png" alt="" width="34" height="35" />
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../home/home.html">Home</a>
+      <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
+      <a href="../Dresses/dresses.html">Dresses</a>
+      <a href="../Tops/tops.html">Tops</a>
+      <a href="../Bottoms/bottoms.html">Bottoms</a>
+      <a href="../About/About.html">About</a>
+      <a href="../Account/Account.html">Account</a>
+    </nav>
+    <p class="footer-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+    <p class="footer-legal">© 2025 Seylune. All rights reserved. A concept store by Thinura Anjana — no real orders are taken.</p>
   </footer>
 
-  <!-- ========== Shared Scripts: product catalogue + site logic ========== -->
+  <!-- ========== Shared Scripts: catalogue + site logic ========== -->
   <script src="../shared/products.js"></script>
   <script src="../shared/seylune.js"></script>
+
+  <!-- ========== Motion: GSAP, WebGL photographs, the menu + rooms ========== -->
+  <script src="../shared/vendor/gsap.min.js"></script>
+  <script src="../shared/liquid.js"></script>
+  <script src="../shared/site.js"></script>
 
   <!-- ========== Page Script ========== -->
   <script src="checkout.js"></script>

@@ -1,14 +1,14 @@
 /* ============================================================
    SEYLUNE — CART PAGE JAVASCRIPT
-   Shared behaviour (mobile menu, cart storage, badge, search)
-   comes from shared/seylune.js.
+   Shared behaviour (menu, cart storage, badge, search) comes
+   from shared/seylune.js and shared/site.js.
    This script handles:
    1. Rendering cart rows from localStorage
    2. Quantity +/- controls and remove (per id + size line)
    3. Size picker for pieces added without a size
    4. Order summary: items, subtotal, delivery, total
    5. Free-delivery progress message
-   6. Update Cart + Proceed to Checkout buttons
+   6. Proceed to Checkout
    7. Empty cart state toggle
 ============================================================ */
 
@@ -36,23 +36,20 @@ function renderCart() {
   const emptyCart  = document.getElementById("emptyCart");
   const cartItems  = document.getElementById("cartItems");
 
+  cartLayout.hidden = cart.length === 0;
+  emptyCart.hidden = cart.length > 0;
   if (cart.length === 0) {
-    cartLayout.hidden = true;
-    emptyCart.style.display = "block";
     updateSummary([]);
     return;
   }
 
-  cartLayout.hidden = false;
-  emptyCart.style.display = "none";
-
-  cartItems.innerHTML = cart.map((item, index) => {
+  cartItems.innerHTML = cart.map(item => {
     const key     = Seylune.lineKey(item);
     const product = Seylune.getProduct(item.id);
     const url     = Seylune.productUrl(item.id);
     const name    = escapeHtml(item.name);
 
-    // Size: show a picker so the size can be chosen or changed here
+    // Size: a picker, so the size can be chosen or changed here
     let sizeCell = "";
     if (product && product.sizes) {
       const options = product.sizes.map(s =>
@@ -60,69 +57,40 @@ function renderCart() {
       sizeCell = `
         <label class="cart-size">
           <span>Size</span>
-          <select class="cart-size-select${item.size ? "" : " needs-size"}" data-key="${key}"
+          <select class="select cart-size-select${item.size ? "" : " needs-size"}" data-key="${key}"
                   aria-label="Size for ${name}">
             ${item.size ? "" : `<option value="" selected disabled>Choose</option>`}
             ${options}
           </select>
         </label>`;
     } else if (item.size) {
-      sizeCell = `<p class="cart-item-meta">Size: <strong>${escapeHtml(item.size)}</strong></p>`;
+      sizeCell = `<p class="cart-size"><span>Size</span> ${escapeHtml(item.size)}</p>`;
     }
 
     return `
-      <div class="cart-item" data-key="${key}">
+      <article class="cart-line" data-key="${key}">
+        <a href="${url}" class="cart-line-image" tabindex="-1" aria-hidden="true">
+          <img src="${escapeHtml(item.image)}" alt="" />
+        </a>
 
-        <!-- Product cell -->
-        <div class="cart-item-product">
-          <a href="${url}" class="cart-item-image">
-            <img src="${escapeHtml(item.image)}" alt="${name}" />
-          </a>
-          <div class="cart-item-info">
-            <h3 class="cart-item-name"><a href="${url}">${name}</a></h3>
+        <div class="cart-line-info">
+          <h2 class="cart-line-name"><a href="${url}">${name}</a></h2>
+          <p class="cart-line-each">${formatPrice(item.price)} each</p>
+
+          <div class="cart-line-controls">
             ${sizeCell}
-            <p class="cart-item-meta">Item ${index + 1}</p>
+            <div class="qty-control" role="group" aria-label="Quantity of ${name}">
+              <button class="qty-btn qty-decrease" data-key="${key}" aria-label="Decrease quantity of ${name}"
+                      ${item.quantity <= 1 ? "disabled" : ""}>−</button>
+              <span class="qty-value">${item.quantity}</span>
+              <button class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${name}">+</button>
+            </div>
+            <button class="remove-btn" data-key="${key}" aria-label="Remove ${name}${item.size ? ", size " + item.size : ""}">Remove</button>
           </div>
         </div>
 
-        <!-- Price cell -->
-        <div class="cart-item-price">
-          <span class="mobile-label">Price</span>
-          <span>${formatPrice(item.price)}</span>
-        </div>
-
-        <!-- Quantity cell -->
-        <div class="cart-item-qty">
-          <span class="mobile-label">Quantity</span>
-          <div class="qty-control">
-            <button class="qty-btn qty-decrease" data-key="${key}" aria-label="Decrease quantity of ${name}"
-                    ${item.quantity <= 1 ? "disabled" : ""}>−</button>
-            <span class="qty-value">${item.quantity}</span>
-            <button class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${name}">+</button>
-          </div>
-        </div>
-
-        <!-- Line Total cell -->
-        <div class="cart-item-total">
-          <span class="mobile-label">Total</span>
-          <span>${formatPrice(item.price * item.quantity)}</span>
-        </div>
-
-        <!-- Remove cell -->
-        <div class="cart-item-remove">
-          <span class="mobile-label">Remove</span>
-          <button class="remove-btn" data-key="${key}" aria-label="Remove ${name}${item.size ? ", size " + item.size : ""}">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
-                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-              <path d="M10 11v6"></path>
-              <path d="M14 11v6"></path>
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-            </svg>
-          </button>
-        </div>
-      </div>`;
+        <p class="cart-line-total">${formatPrice(item.price * item.quantity)}</p>
+      </article>`;
   }).join("");
 
   updateSummary(cart);
@@ -187,13 +155,8 @@ function updateSummary(cart) {
 
 
 /* ============================================================
-   6. UPDATE CART + CHECKOUT BUTTONS
+   6. PROCEED TO CHECKOUT
 ============================================================ */
-document.getElementById("updateCartBtn").addEventListener("click", () => {
-  renderCart();
-  showMessage("Cart updated successfully.");
-});
-
 document.getElementById("checkoutBtn").addEventListener("click", () => {
   const cart = Seylune.getCart();
 

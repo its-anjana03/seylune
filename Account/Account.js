@@ -1,7 +1,7 @@
 /* ============================================================
    SEYLUNE — ACCOUNT PAGE JAVASCRIPT
-   Shared behaviour (mobile menu, cart badge, wishlist, search)
-   comes from shared/seylune.js.
+   Shared behaviour (menu, cart badge, wishlist, search) comes
+   from shared/seylune.js and shared/site.js.
    Handles:
    1. Show/Hide password toggles
    2. Validation helpers
@@ -9,7 +9,7 @@
    4. Signup form validation
    5. Password strength meter
    6. Live error clearing
-   7. Mobile toggle links (smooth scroll between cards)
+   7. Sign in / Create account tabs + the photograph
    8. Forgot password (demo message)
    9. Signed-in dashboard: profile, order history, saved pieces
    NOTE: This is a frontend demo — passwords are NOT stored.
@@ -251,20 +251,38 @@ function scorePassword(pw) {
 
 
 /* ============================================================
-   7. MOBILE TOGGLE LINKS
-   Smooth-scrolls between login and signup cards on mobile.
+   7. SIGN IN / CREATE ACCOUNT TABS
+   Arrow keys move between the two tabs. The photograph beside
+   the forms ripples under the cursor (shared/liquid.js).
 ============================================================ */
-document.querySelectorAll(".account-toggle-link").forEach(link => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const targetId = link.dataset.toggle === "signup" ? "signupCard" : "loginCard";
-    const target = document.getElementById(targetId);
+const authTabs = [document.getElementById("tabLogin"), document.getElementById("tabSignup")];
 
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+function showAuthTab(tab, focus) {
+  authTabs.forEach(t => {
+    const on = t === tab;
+    t.setAttribute("aria-selected", on);
+    t.tabIndex = on ? 0 : -1;
+    document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+  });
+  if (focus) tab.focus();
+}
+
+authTabs.forEach((tab, i) => {
+  tab.addEventListener("click", () => showAuthTab(tab));
+  tab.addEventListener("keydown", e => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    showAuthTab(authTabs[(i + 1) % 2], true);
   });
 });
+
+// A link to #signup opens the Create account tab
+if (location.hash === "#signup") showAuthTab(authTabs[1]);
+
+if (SeyluneSite.liquid) {
+  // Zoomed toward the top so the words printed at the foot of the photograph stay out of view
+  SeyluneSite.liquid.create(document.getElementById("accountLiquid"), { focus: [[0.5, 0.12]], zoom: 1.3 });
+}
 
 
 /* ============================================================
@@ -317,13 +335,9 @@ function renderAccount() {
   authSection.hidden = signedIn;
   dashboard.hidden = !signedIn;
 
-  const title    = document.getElementById("accountTitle");
-  const subtitle = document.getElementById("accountSubtitle");
-
   if (signedIn) {
     const name = user.name || user.email.split("@")[0];
-    title.textContent = `Welcome, ${name.split(" ")[0]}`;
-    subtitle.textContent = "Your orders, saved pieces and details — all in one place.";
+    document.getElementById("dashboardTitle").textContent  = `Welcome, ${name.split(" ")[0]}`;
     document.getElementById("dashboardName").textContent   = name;
     document.getElementById("dashboardAvatar").textContent = name.charAt(0).toUpperCase();
     const since = user.memberSince
@@ -331,9 +345,6 @@ function renderAccount() {
       : "";
     document.getElementById("dashboardEmail").textContent = user.email + since;
     renderOrders(user);
-  } else {
-    title.textContent = "Welcome to Seylune";
-    subtitle.textContent = "Sign in to access your account or create a new profile to begin your Seylune journey.";
   }
 
   renderSaved();

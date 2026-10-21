@@ -2,17 +2,16 @@
    SEYLUNE — PRODUCT DETAILS PAGE JAVASCRIPT
    One page for every product: reads ?id=... from the URL and
    fills the template from shared/products.js.
-   Shared behaviour (mobile menu, cart, wishlist, search)
-   comes from shared/seylune.js.
+   Shared behaviour (menu, cart, wishlist, search) comes from
+   shared/seylune.js and shared/site.js.
    This script handles:
    1. Load the product (or show "not found")
-   2. Image gallery — thumbnail switching
+   2. The photograph — its other views melt in (shared/liquid.js)
    3. Size selector
    4. Quantity selector
    5. Add to cart + save to wishlist
-   6. Tabs — Description / Fabric & Care / Delivery
-   7. Size guide modal
-   8. Related products
+   6. Size guide modal
+   7. Related products
 ============================================================ */
 
 
@@ -29,11 +28,8 @@ function loadProduct() {
   if (!product) {
     $("productMissing").hidden = false;
     $("productSection").hidden = true;
-    $("productTabs").hidden = true;
-    $("relatedSection").hidden = true;
-    $("breadcrumbCategory").textContent = "New Arrivals";
-    $("breadcrumbCategory").href = "../New arrivals/new-arriavals.html";
-    $("breadcrumbCurrent").textContent = "Not Found";
+    $("productMedia").hidden = true;
+    $("main").classList.add("is-missing");
     document.title = "Product Not Found — Seylune";
   } else {
     fillProduct(product);
@@ -72,46 +68,37 @@ function fillProduct(p) {
 
 
 /* ============================================================
-   2. IMAGE GALLERY — thumbnail switching
+   2. THE PHOTOGRAPH
+   Every view of the piece sits in one liquid box; a thumbnail
+   melts the photograph into that view.
 ============================================================ */
-const mainImageImg   = $("mainImageImg");
-const mainImageBox   = $("mainImage");
 const thumbnailStrip = $("thumbnailStrip");
 
 function buildGallery(p) {
   const images = [p.image].concat(p.gallery || []).map(Seylune.asset);
+  const box = $("productLiquid");
 
-  mainImageImg.src = images[0];
-  mainImageImg.alt = `${p.name} — main view`;
+  box.innerHTML = images.map((src, i) =>
+    `<img src="${src}" alt="${Seylune.escapeHtml(p.name)}${i ? " — view " + (i + 1) : ""}"${i ? " loading=\"lazy\"" : ""} />`).join("");
 
-  // Only show thumbnails when there is more than one image
-  if (images.length < 2) {
-    thumbnailStrip.hidden = true;
-    return;
-  }
+  const liquid = SeyluneSite.liquid
+    ? SeyluneSite.liquid.create(box, { focus: images.map(() => [0.5, 0.08]) })
+    : null;
+  if (!liquid) box.querySelector("img").classList.add("is-current");
 
+  // Thumbnails only when there is more than one view
+  if (images.length < 2) return;
+  thumbnailStrip.hidden = false;
   thumbnailStrip.innerHTML = images.map((src, i) => `
-    <button type="button" class="thumbnail${i === 0 ? " active" : ""}" data-image="${src}"
-            aria-label="View image ${i + 1} of ${images.length}" aria-pressed="${i === 0}">
+    <button type="button" class="product-thumb" aria-label="View image ${i + 1} of ${images.length}" aria-pressed="${i === 0}">
       <img src="${src}" alt="" />
     </button>`).join("");
 
-  thumbnailStrip.querySelectorAll(".thumbnail").forEach((thumb, i) => {
+  thumbnailStrip.querySelectorAll(".product-thumb").forEach((thumb, i) => {
     thumb.addEventListener("click", () => {
-      thumbnailStrip.querySelectorAll(".thumbnail").forEach(t => {
-        t.classList.remove("active");
-        t.setAttribute("aria-pressed", "false");
-      });
-      thumb.classList.add("active");
-      thumb.setAttribute("aria-pressed", "true");
-
-      // Smooth fade when swapping main image
-      mainImageBox.classList.add("fading");
-      setTimeout(() => {
-        mainImageImg.src = thumb.dataset.image;
-        mainImageImg.alt = `${p.name} — view ${i + 1}`;
-        mainImageBox.classList.remove("fading");
-      }, 200);
+      thumbnailStrip.querySelectorAll(".product-thumb").forEach(t => t.setAttribute("aria-pressed", t === thumb));
+      if (liquid) liquid.show(i, 1300);
+      else box.querySelectorAll("img").forEach((img, k) => img.classList.toggle("is-current", k === i));
     });
   });
 }
@@ -220,40 +207,7 @@ $("saveBtn").addEventListener("click", () => {
 
 
 /* ============================================================
-   6. TABS — Description / Fabric & Care / Delivery
-   Click or use the arrow keys to move between tabs.
-============================================================ */
-const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
-const tabPanels  = document.querySelectorAll(".tab-panel");
-
-function activateTab(btn) {
-  tabButtons.forEach(b => {
-    b.classList.remove("active");
-    b.setAttribute("aria-selected", "false");
-    b.setAttribute("tabindex", "-1");
-  });
-  tabPanels.forEach(p => p.classList.remove("active"));
-
-  btn.classList.add("active");
-  btn.setAttribute("aria-selected", "true");
-  btn.removeAttribute("tabindex");
-  const panel = $("tab-" + btn.dataset.tab);
-  if (panel) panel.classList.add("active");
-}
-
-tabButtons.forEach((btn, i) => {
-  btn.addEventListener("click", () => activateTab(btn));
-  btn.addEventListener("keydown", e => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    const next = tabButtons[(i + (e.key === "ArrowRight" ? 1 : -1) + tabButtons.length) % tabButtons.length];
-    activateTab(next);
-    next.focus();
-  });
-});
-
-
-/* ============================================================
-   7. SIZE GUIDE MODAL
+   6. SIZE GUIDE MODAL
 ============================================================ */
 const sizeGuide    = $("sizeGuide");
 const sizeGuideBtn = $("sizeGuideBtn");
@@ -284,14 +238,16 @@ document.addEventListener("keydown", e => {
 
 
 /* ============================================================
-   8. RELATED PRODUCTS — same category, current piece excluded
+   7. RELATED PRODUCTS — same category, current piece excluded
 ============================================================ */
 function buildRelated(p) {
   const related = Seylune.products
     .filter(item => item.category === p.category && item.id !== p.id)
     .slice(0, 4);
 
-  $("relatedGrid").innerHTML = related.map(item => Seylune.renderProductCard(item, "related")).join("");
+  $("relatedTitle").textContent = "More " + p.category;
+  $("relatedLink").href = Seylune.categoryUrl(p.category);
+  $("relatedGrid").innerHTML = related.map(item => Seylune.renderProductCard(item)).join("");
   Seylune.addWishlistButtons($("relatedGrid"));
 }
 
