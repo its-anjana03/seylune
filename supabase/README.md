@@ -109,6 +109,26 @@ Once connected, we test the security from the browser console, the same way an a
 
 Then you'll have seen with your own eyes that the rules hold.
 
+## Step 6 — The admin team and member profiles
+
+1. SQL Editor → **+ → Create a new snippet** → paste all of
+   [`02-admin-and-profiles.sql`](02-admin-and-profiles.sql) → **Run**.
+2. Make yourself an admin: in a new snippet, run (with the email you signed up with):
+
+   ```sql
+   insert into public.admins (user_id)
+   select id from auth.users where email = 'your-email@example.com';
+   ```
+3. Sign in on the site → **Account** shows an **Admin** link → `Admin/admin.html`.
+
+How the admin page is protected: the page itself is public (anyone can open the URL), but the
+**database** decides what it returns. Only accounts in `admins` can read every order, change an
+order's status (through `admin_set_order_status()`) or change stock. For everyone else the same
+requests come back empty or refused. Nobody can add themselves to `admins` from the browser.
+
+Members can edit their own profile (name, phone, address) in **Account → Your Details**; the
+database checks the same formats as checkout, and only their own row can be read or changed.
+
 ## Later: adding products
 
 1. Add the piece to `shared/products.js` (and its photos).

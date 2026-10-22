@@ -18,6 +18,8 @@
    2. Stock
    3. Accounts
    4. Orders
+   5. Profile (the member's own details)
+   6. Admin (the Seylune team only)
 ============================================================ */
 
 const SeyluneBackend = (() => {
@@ -137,12 +139,84 @@ const SeyluneBackend = (() => {
     return data;
   }
 
+  /* ============================================================
+     5. PROFILE — the member's own name, phone and address
+     (Row Level Security: only their own row can be read or saved)
+  ============================================================ */
+  async function getProfile() {
+    const user = await getUser();
+    if (!user) return null;
+    const { data, error } = await client.from("profiles")
+      .select("full_name, phone, address, city, postal").eq("id", user.id).maybeSingle();
+    if (error) throw new Error(friendly(error, "Your details could not be loaded."));
+    return data || {};
+  }
+
+  async function saveProfile(fields) {
+    const user = await getUser();
+    if (!user) throw new Error("Please sign in again.");
+    const { error } = await client.from("profiles")
+      .upsert({ id: user.id, ...fields, updated_at: new Date().toISOString() });
+    if (error) {
+      if (error.code === "23514") throw new Error("Please check the highlighted details.");
+      throw new Error(friendly(error, "Your details could not be saved."));
+    }
+    // Keep the name shown at sign-in in step with the profile
+    if (fields.full_name) await client.auth.updateUser({ data: { full_name: fields.full_name } });
+  }
+
+
+  /* ============================================================
+     6. ADMIN — the Seylune team only
+     The page checks the admins table to decide what to show, but the real
+     protection is in the database: for anyone else these calls
+     return nothing or are refused.
+  ============================================================ */
+  // The admins table lets each person see only their own row, so this
+  // returns a row only for someone who is on the team
+  async function isAdmin() {
+    if (!enabled) return false;
+    const { data, error } = await client.from("admins").select("user_id").maybeSingle();
+    return !error && !!data;
+  }
+
+  async function adminOrders() {
+    const { data, error } = await client
+      .from("orders")
+      .select("number, status, email, delivery, payment, subtotal, shipping, total, ship_name, ship_phone, ship_address, ship_city, ship_postal, notes, created_at, status_updated_at, order_items (product_id, name, size, unit_price, quantity)")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(friendly(error, "Orders could not be loaded."));
+    return data;
+  }
+
+  async function setOrderStatus(number, status) {
+    const { error } = await client.rpc("admin_set_order_status", { p_number: number, p_status: status });
+    if (error) throw new Error(friendly(error, error.message || "The order could not be updated."));
+    loadStock();   // cancelling puts pieces back
+  }
+
+  async function allStock() {
+    const { data, error } = await client.from("product_stock").select("product_id, size, quantity");
+    if (error) throw new Error(friendly(error, "Stock could not be loaded."));
+    return data;
+  }
+
+  async function setStockCount(productId, size, quantity) {
+    const { data, error } = await client.from("product_stock")
+      .update({ quantity }).eq("product_id", productId).eq("size", size).select("quantity");
+    if (error) throw new Error(friendly(error, "Stock could not be saved."));
+    // RLS hides rows you may not change: no row back means "not allowed"
+    if (!data || !data.length) throw new Error("Only the Seylune team can change stock.");
+  }
+
   const ready = enabled ? loadStock() : Promise.resolve();
 
   return {
     enabled, client, ready, friendly,
     loadStock, getUser, onAuthChange, signUp, signIn, signOut,
     sendPasswordReset, updatePassword, displayName,
-    placeOrder, myOrders
+    placeOrder, myOrders, getProfile, saveProfile,
+    isAdmin, adminOrders, setOrderStatus, allStock, setStockCount
   };
 })();

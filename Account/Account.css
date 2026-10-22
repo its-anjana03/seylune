@@ -245,6 +245,31 @@
   padding: clamp(2.4rem, 7vh, 4rem) 0 0;
 }
 
+.dashboard-links {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+/* Your details + change password, side by side */
+.details-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 5rem);
+}
+
+.details-grid .account-form {
+  max-width: none;
+}
+
+.details-title {
+  margin-bottom: 1.4rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 
 /* ============================================================
    4. ORDERS
@@ -377,13 +402,17 @@
   }
 
   .dashboard-stats,
-  #signOutBtn {
+  .dashboard-links {
     grid-column: 1 / -1;
     justify-self: start;
   }
 
   .order-card summary {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 
   .order-date,

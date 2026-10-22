@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ========== Meta & Page Info ========== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Seylune team admin: orders and stock." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0F0D10" />
+  <title>Admin — Seylune</title>
+  <link rel="icon" href="../home/images/Logo.png" type="image/png" />
+
+  <!-- ========== Fonts: Tenor Sans (titles) + Manrope (reading and UI) ========== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Tenor+Sans&display=swap" rel="stylesheet" />
+
+  <!-- ========== Site styles, then this page's own ========== -->
+  <link rel="stylesheet" href="../shared/site.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("anim");</script>
+</head>
+<body class="page page-admin">
+
+  <!-- ============================================================
+       HEADER
+       No bar: the name in one corner, three words in the other.
+  ============================================================ -->
+  <header class="navbar" id="navbar">
+
+    <a href="../home/home.html" class="nav-logo" aria-label="Seylune home">
+      <img src="../home/images/Logo.png" alt="" width="26" height="27" />
+      <span>Seylune</span>
+    </a>
+
+    <div class="nav-actions">
+      <button type="button" class="nav-word" id="searchOpen" aria-controls="menuOverlay" aria-expanded="false">Search</button>
+      <a href="../Cart/cart.html" class="nav-word cart-icon" aria-label="Cart">Cart<span class="cart-badge" id="cartBadge">0</span></a>
+      <button type="button" class="nav-word menu-toggle" id="menuToggle" aria-controls="menuOverlay" aria-expanded="false">
+        <span class="menu-toggle-word">Menu</span>
+        <span class="menu-toggle-lines" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ============================================================
+       THE MENU
+       A full-screen room of its own: the names on the left, a
+       photograph on the right that melts to each name you point at.
+  ============================================================ -->
+  <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="menu-inner">
+
+      <nav class="menu-links" aria-label="Main">
+        <ol id="menuLinks">
+          <li><a href="../New arrivals/new-arriavals.html" data-index="0"><span class="menu-name">New Arrivals</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Dresses/dresses.html" data-index="1"><span class="menu-name">Dresses</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Tops/tops.html" data-index="2"><span class="menu-name">Tops</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../Bottoms/bottoms.html" data-index="3"><span class="menu-name">Bottoms</span><span class="menu-note">8 pieces</span></a></li>
+          <li><a href="../About/About.html" data-index="4"><span class="menu-name">About</span><span class="menu-note">Our story</span></a></li>
+          <li><a href="../Account/Account.html" data-index="5"><span class="menu-name">Account</span><span class="menu-note">Orders &amp; saved pieces</span></a></li>
+        </ol>
+      </nav>
+
+      <div class="menu-media">
+        <div class="liquid-box" id="menuLiquid">
+          <img src="../home/images/products/Dresses/noira-satin-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/aurelle-evening-dress.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Tops/elara-drape-top.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Bottoms/veya-tailored-pants.jpg" alt="" loading="lazy" />
+          <img src="../home/images/story-home.jpg" alt="" loading="lazy" />
+          <img src="../home/images/products/Dresses/lune-midi-dress.jpg" alt="" loading="lazy" />
+        </div>
+      </div>
+
+      <div class="menu-foot">
+        <form class="nav-search menu-search" id="navSearch" role="search" action="../Search/search.html" method="get">
+          <label class="visually-hidden" for="searchInput">Search products</label>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>
+          <input type="search" name="q" id="searchInput" placeholder="Search satin, ivory, trousers…" autocomplete="off" />
+        </form>
+        <p class="menu-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+      </div>
+
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- ============================================================
+         THE DOOR — shown until we know who you are. Hiding the panel
+         is only for tidiness: the database refuses anyone who is not
+         on the admins list (supabase/02-admin-and-profiles.sql).
+    ============================================================ -->
+    <section class="still-room" id="adminGate" aria-labelledby="gateTitle">
+      <img class="still-mark" src="../home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker">Seylune team</p>
+      <h1 class="room-title" id="gateTitle">Checking your access…</h1>
+      <p class="room-lede" id="gateText"></p>
+      <div class="still-actions" id="gateActions" hidden>
+        <a href="../Account/Account.html" class="btn btn-primary">Go to Account</a>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         THE ADMIN PANEL — orders and stock
+    ============================================================ -->
+    <section class="admin" id="adminPanel" aria-labelledby="adminTitle" hidden>
+
+      <header class="admin-head">
+        <div>
+          <p class="kicker">Seylune team</p>
+          <h1 class="room-title" id="adminTitle">Admin</h1>
+        </div>
+        <dl class="admin-stats">
+          <div><dt>Orders</dt><dd id="statTotal">0</dd></div>
+          <div><dt>To ship</dt><dd id="statOpen">0</dd></div>
+          <div><dt>Revenue</dt><dd id="statRevenue">Rs. 0</dd></div>
+          <div><dt>Sizes low</dt><dd id="statLow">0</dd></div>
+        </dl>
+      </header>
+
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button type="button" class="admin-tab" role="tab" id="tabOrders" aria-selected="true" aria-controls="ordersPanel">Orders</button>
+        <button type="button" class="admin-tab" role="tab" id="tabStock" aria-selected="false" aria-controls="stockPanel" tabindex="-1">Stock</button>
+      </div>
+
+      <!-- Orders -->
+      <div class="admin-panel" id="ordersPanel" role="tabpanel" aria-labelledby="tabOrders">
+        <div class="admin-tools">
+          <div class="filter-options" id="statusChips" role="group" aria-label="Filter orders by status">
+            <button type="button" class="filter-chip active" data-status="all" aria-pressed="true">All</button>
+            <button type="button" class="filter-chip" data-status="processing" aria-pressed="false">Processing</button>
+            <button type="button" class="filter-chip" data-status="shipped" aria-pressed="false">Shipped</button>
+            <button type="button" class="filter-chip" data-status="delivered" aria-pressed="false">Delivered</button>
+            <button type="button" class="filter-chip" data-status="cancelled" aria-pressed="false">Cancelled</button>
+          </div>
+          <label class="admin-search">
+            <span class="visually-hidden">Search orders</span>
+            <input type="search" id="orderSearch" placeholder="Order number, name or email" autocomplete="off" />
+          </label>
+        </div>
+        <div class="admin-orders" id="adminOrders"></div>
+        <p class="admin-empty" id="ordersEmpty" hidden>No orders match.</p>
+      </div>
+
+      <!-- Stock -->
+      <div class="admin-panel" id="stockPanel" role="tabpanel" aria-labelledby="tabStock" hidden>
+        <div class="admin-tools">
+          <div class="filter-options" id="stockChips" role="group" aria-label="Filter stock">
+            <button type="button" class="filter-chip active" data-filter="all" aria-pressed="true">All pieces</button>
+            <button type="button" class="filter-chip" data-filter="low" aria-pressed="false">Low or sold out</button>
+          </div>
+          <label class="admin-search">
+            <span class="visually-hidden">Search pieces</span>
+            <input type="search" id="stockSearch" placeholder="Piece or category" autocomplete="off" />
+          </label>
+        </div>
+        <div class="stock-list" id="stockList"></div>
+      </div>
+
+      <p class="admin-message" id="adminMessage" role="status" aria-live="polite"></p>
+    </section>
+
+  </main>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="site-footer">
+    <img class="footer-mark" src="../home/images/Logo.png" alt="" width="34" height="35" />
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../home/home.html">Home</a>
+      <a href="../New arrivals/new-arriavals.html">New Arrivals</a>
+      <a href="../Dresses/dresses.html">Dresses</a>
+      <a href="../Tops/tops.html">Tops</a>
+      <a href="../Bottoms/bottoms.html">Bottoms</a>
+      <a href="../About/About.html">About</a>
+      <a href="../Account/Account.html">Account</a>
+    </nav>
+    <p class="footer-contact">Colombo, Sri Lanka · <a href="mailto:hello@seylune.lk">hello@seylune.lk</a> · <a href="tel:+94771234567">+94 77 123 4567</a></p>
+    <p class="footer-legal">© 2025 Seylune. All rights reserved. A concept store by Thinura Anjana — no real orders are taken.</p>
+  </footer>
+
+  <!-- ========== Shared Scripts: catalogue + site logic ========== -->
+  <script src="../shared/products.js"></script>
+  <script src="../shared/seylune.js"></script>
+
+  <!-- ========== Backend: Supabase (accounts, orders, live stock) ========== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.97.0/dist/umd/supabase.js"></script>
+  <script src="../shared/supabase-config.js"></script>
+  <script src="../shared/backend.js"></script>
+
+  <!-- ========== Motion: GSAP, WebGL photographs, the menu + rooms ========== -->
+  <script src="../shared/vendor/gsap.min.js"></script>
+  <script src="../shared/liquid.js"></script>
+  <script src="../shared/site.js"></script>
+
+  <!-- ========== Page Script ========== -->
+  <script src="admin.js"></script>
+</body>
+</html>

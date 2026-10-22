@@ -52,6 +52,10 @@ if (cart.length === 0) {
     renderSummary();
     prefill({ name: SeyluneBackend.displayName(user), email: user.email });
     $("coEmail").readOnly = true;   // the order belongs to the signed-in account
+    // Fill in the rest from the member's saved details (Account → Your Details)
+    SeyluneBackend.getProfile().then(p => prefill({
+      name: p.full_name, phone: p.phone, address: p.address, city: p.city, postal: p.postal
+    })).catch(() => {});
   });
 } else {
   layout.hidden = false;
@@ -109,8 +113,14 @@ form.querySelectorAll("input[name='delivery']").forEach(radio => {
 ============================================================ */
 function prefill(user) {
   if (!user) return;
-  if (user.name)  $("coName").value  = user.name;
-  if (user.email) $("coEmail").value = user.email;
+  // Only fills empty fields, so nothing the customer typed is overwritten
+  const fill = (id, value) => { if (value && !$(id).value) $(id).value = value; };
+  fill("coName", user.name);
+  fill("coEmail", user.email);
+  fill("coPhone", user.phone);
+  fill("coAddress", user.address);
+  fill("coCity", user.city);
+  fill("coPostal", user.postal);
 }
 
 

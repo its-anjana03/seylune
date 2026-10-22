@@ -18,7 +18,7 @@
    5. Create account (+ password strength)
    6. Forgot password + choosing a new one
    7. Sign in / Create account tabs + the photograph
-   8. Signed in: profile, orders, saved pieces
+   8. Signed in: profile, your details + password, orders, saved pieces
 ============================================================ */
 
 const $ = id => document.getElementById(id);
@@ -379,9 +379,103 @@ async function renderAccount() {
       : "";
     $("dashboardEmail").textContent = user.email + since;
     renderOrders(user);
+    if (live) {
+      renderDetails();
+      SeyluneBackend.isAdmin().then(yes => { $("adminLink").hidden = !yes; });
+    }
   }
   renderSaved();
 }
+
+
+/* ----- Your details (live only) -----
+   The same rules as checkout. The database checks them again, so a
+   bad phone number is refused even if someone skips this form. */
+const PHONE_PATTERN  = /^(?:\+94|0)7\d{8}$/;
+const POSTAL_PATTERN = /^\d{5}$/;
+const profileFields = ["profileName", "profilePhone", "profileAddress", "profileCity", "profilePostal"];
+profileFields.forEach(id => $(id).addEventListener("input", () => clearFieldError(id)));
+
+async function renderDetails() {
+  $("details").hidden = false;
+  try {
+    const p = await SeyluneBackend.getProfile();
+    $("profileName").value    = p.full_name || $("dashboardName").textContent;
+    $("profilePhone").value   = p.phone || "";
+    $("profileAddress").value = p.address || "";
+    $("profileCity").value    = p.city || "";
+    $("profilePostal").value  = p.postal || "";
+    if (p.full_name) setDisplayName(p.full_name);
+  } catch (err) {
+    showFeedback("profileFeedback", err.message, "error");
+  }
+}
+
+function setDisplayName(name) {
+  $("dashboardTitle").textContent = `Welcome, ${name.split(" ")[0]}`;
+  $("dashboardName").textContent = name;
+  $("dashboardAvatar").textContent = name.charAt(0).toUpperCase();
+}
+
+$("profileForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  profileFields.forEach(clearFieldError);
+  showFeedback("profileFeedback", "");
+
+  const v = id => $(id).value.trim();
+  const phone = v("profilePhone").replace(/[\s-]/g, "");
+  const checks = [
+    ["profileName",    v("profileName").length >= 2 && v("profileName").length <= 80, "Please enter your full name."],
+    ["profilePhone",   !phone || PHONE_PATTERN.test(phone),                           "Enter a Sri Lankan mobile number, e.g. 077 123 4567."],
+    ["profileAddress", !v("profileAddress") || v("profileAddress").length >= 5,       "Please enter your street address."],
+    ["profileCity",    !v("profileCity") || v("profileCity").length >= 2,             "Please enter your city."],
+    ["profilePostal",  !v("profilePostal") || POSTAL_PATTERN.test(v("profilePostal")), "Postal codes have 5 digits, e.g. 00700."]
+  ];
+  let first = null;
+  checks.forEach(([id, ok, msg]) => { if (!ok) { showFieldError(id, msg); first = first || id; } });
+  if (first) { $(first).focus(); return; }
+
+  const form = $("profileForm");
+  busy(form, true, "Saving…");
+  try {
+    await SeyluneBackend.saveProfile({
+      full_name: v("profileName"),
+      phone:   phone || null,
+      address: v("profileAddress") || null,
+      city:    v("profileCity") || null,
+      postal:  v("profilePostal") || null
+    });
+    setDisplayName(v("profileName"));
+    showFeedback("profileFeedback", "Your details are saved.", "success");
+  } catch (err) {
+    showFeedback("profileFeedback", err.message, "error");
+  } finally {
+    busy(form, false);
+  }
+});
+
+["newPassword", "newPasswordConfirm"].forEach(id => $(id).addEventListener("input", () => clearFieldError(id)));
+
+$("passwordForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  ["newPassword", "newPasswordConfirm"].forEach(clearFieldError);
+  showFeedback("passwordFeedback", "");
+  const pw = $("newPassword").value;
+  if (pw.length < MIN_PASSWORD) { showFieldError("newPassword", `Password must be at least ${MIN_PASSWORD} characters.`); return; }
+  if ($("newPasswordConfirm").value !== pw) { showFieldError("newPasswordConfirm", "Passwords do not match."); return; }
+
+  const form = $("passwordForm");
+  busy(form, true, "Updating…");
+  try {
+    await SeyluneBackend.updatePassword(pw);
+    form.reset();
+    showFeedback("passwordFeedback", "Your password is updated.", "success");
+  } catch (err) {
+    showFeedback("passwordFeedback", err.message, "error");
+  } finally {
+    busy(form, false);
+  }
+});
 
 const STATUS = { processing: "Processing", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled" };
 

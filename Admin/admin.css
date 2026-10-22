@@ -1,0 +1,469 @@
+/* ============================================================
+   SEYLUNE — ADMIN PAGE (the Seylune team only)
+   A working room: quieter than the shop, the same house. Chips,
+   buttons, fields and the still room come from shared/site.css.
+   1. The panel + figures
+   2. Tabs + tools
+   3. Orders
+   4. Stock
+   5. Phones
+============================================================ */
+
+
+/* ============================================================
+   1. THE PANEL + FIGURES
+============================================================ */
+.admin {
+  min-height: 100svh;
+  padding: calc(var(--header) + var(--gap-y)) var(--pad) clamp(3rem, 9vh, 5rem);
+  background:
+    radial-gradient(ellipse 60% 50% at 90% 0%, rgba(34, 26, 36, 0.95), transparent 70%),
+    var(--bg-main);
+}
+
+.admin-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.6rem 3rem;
+  padding-bottom: clamp(1.4rem, 4vh, 2.2rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-head .room-title {
+  margin-bottom: 0;
+}
+
+.admin-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem clamp(1.6rem, 4vw, 3.4rem);
+}
+
+.admin-stats dt {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.admin-stats dd {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+
+/* ============================================================
+   2. TABS + TOOLS
+============================================================ */
+.admin-tabs {
+  display: flex;
+  gap: 2rem;
+  margin: clamp(1.4rem, 4vh, 2.2rem) 0 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tab {
+  position: relative;
+  min-height: 48px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  transition: color 0.3s;
+}
+
+.admin-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--ease);
+}
+
+.admin-tab:hover,
+.admin-tab[aria-selected="true"] {
+  color: var(--text-main);
+}
+
+.admin-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+.admin-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-bottom: 1.4rem;
+}
+
+.admin-search input {
+  width: min(22rem, 100%);
+  padding: 0.6rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 0.92rem;
+  color: var(--text-main);
+  transition: border-color 0.4s var(--ease);
+}
+
+.admin-search input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.admin-search input::placeholder {
+  color: rgba(185, 168, 174, 0.55);
+}
+
+.admin-empty {
+  padding: 2rem 0;
+  color: var(--text-soft);
+}
+
+.admin-message {
+  position: fixed;
+  left: 50%;
+  bottom: 1.6rem;
+  z-index: 300;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2rem);
+  font-size: 0.86rem;
+  color: var(--gold);
+}
+
+.admin-message:not(:empty) {
+  padding: 0.9rem 1.3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line-gold);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+}
+
+.admin-message.error {
+  color: var(--error);
+  border-color: rgba(229, 154, 154, 0.5);
+}
+
+
+/* ============================================================
+   3. ORDERS
+============================================================ */
+.admin-orders {
+  border-top: 1px solid var(--line);
+}
+
+.admin-order {
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-order summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 0.7fr) minmax(0, 0.8fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+
+.admin-order summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-order summary:hover .ao-number {
+  color: var(--gold);
+}
+
+.ao-number {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  transition: color 0.3s;
+}
+
+.ao-date,
+.ao-count {
+  color: var(--text-soft);
+}
+
+.ao-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ao-who small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  color: var(--text-soft);
+}
+
+.ao-total {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-align: right;
+}
+
+.status-badge {
+  justify-self: end;
+  min-width: 6.6rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.status-badge.is-processing {
+  color: var(--gold);
+  border-color: var(--line-gold);
+}
+
+.status-badge.is-shipped {
+  color: var(--text-main);
+}
+
+.status-badge.is-delivered {
+  color: var(--bg-deep);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.status-badge.is-cancelled {
+  color: var(--text-soft);
+  border-style: dashed;
+}
+
+.ao-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.4rem clamp(2rem, 5vw, 4rem);
+  padding: 0.4rem 0 1.6rem;
+}
+
+.ao-items li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  font-size: 0.86rem;
+}
+
+.ao-items img,
+.ao-noimg {
+  width: 44px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: 50% 15%;
+  background: var(--bg-card);
+}
+
+.ao-items a {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ao-items a:hover {
+  color: var(--gold);
+}
+
+.ao-items li span {
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+.ao-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.6rem;
+  font-size: 0.86rem;
+}
+
+.ao-facts dt {
+  margin-bottom: 0.2rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.ao-facts a:hover {
+  color: var(--gold);
+}
+
+.ao-notes {
+  grid-column: 1 / -1;
+}
+
+.ao-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.ao-cancel:hover {
+  background: transparent;
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.ao-final {
+  font-size: 0.84rem;
+  color: var(--text-soft);
+}
+
+
+/* ============================================================
+   4. STOCK
+============================================================ */
+.stock-list {
+  border-top: 1px solid var(--line);
+}
+
+.stock-row {
+  display: grid;
+  grid-template-columns: 48px minmax(10rem, 1fr) auto auto;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.stock-row > img {
+  width: 48px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.stock-name {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stock-meta {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.stock-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stock-size {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.stock-size input {
+  width: 3.6rem;
+  padding: 0.45rem 0.3rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--text-main);
+  -moz-appearance: textfield;
+  transition: border-color 0.3s;
+}
+
+.stock-size input::-webkit-outer-spin-button,
+.stock-size input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stock-size input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.stock-size.is-low input {
+  border-color: var(--line-gold);
+  color: var(--gold);
+}
+
+.stock-size.is-out input {
+  border-color: rgba(229, 154, 154, 0.5);
+  color: var(--error);
+}
+
+
+/* ============================================================
+   5. PHONES
+============================================================ */
+@media (max-width: 960px) {
+  .admin-order summary {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .ao-date,
+  .ao-count,
+  .ao-who small {
+    display: none;
+  }
+
+  .ao-who {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .ao-body {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+  }
+
+  .stock-sizes {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .ao-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .ao-items li {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .ao-items li span:first-of-type {
+    display: none;
+  }
+}
