@@ -2,252 +2,320 @@
    SEYLUNE — ACCOUNT PAGE JAVASCRIPT
    Shared behaviour (menu, cart badge, wishlist, search) comes
    from shared/seylune.js and shared/site.js.
-   Handles:
+
+   Two modes, one page:
+   - LIVE (Supabase connected, shared/backend.js): real accounts.
+     The password goes straight to Supabase over HTTPS and is
+     never stored by this site. Orders come from the database,
+     and Row Level Security returns only this customer's own.
+   - DEMO (no backend): the old frontend-only behaviour, kept in
+     localStorage, with no passwords stored.
+
    1. Show/Hide password toggles
-   2. Validation helpers
-   3. Login form validation
-   4. Signup form validation
-   5. Password strength meter
-   6. Live error clearing
+   2. Field helpers
+   3. Accounts: live or demo, behind the same few functions
+   4. Sign in
+   5. Create account (+ password strength)
+   6. Forgot password + choosing a new one
    7. Sign in / Create account tabs + the photograph
-   8. Forgot password (demo message)
-   9. Signed-in dashboard: profile, order history, saved pieces
-   NOTE: This is a frontend demo — passwords are NOT stored.
-   localStorage keeps a "session" (name + email), the orders
-   placed at checkout and the saved pieces between visits.
+   8. Signed in: profile, orders, saved pieces
 ============================================================ */
+
+const $ = id => document.getElementById(id);
+const esc = Seylune.escapeHtml;
+const emailPattern = Seylune.EMAIL_PATTERN;
+const MIN_PASSWORD = 8;
+const live = typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled;
+
+// Came here from checkout? Go back there once signed in.
+const next = new URLSearchParams(location.search).get("next");
 
 
 /* ============================================================
    1. SHOW / HIDE PASSWORD TOGGLES
-   Each .password-toggle button has a data-target attribute
-   pointing to the input it should toggle.
 ============================================================ */
 document.querySelectorAll(".password-toggle").forEach(btn => {
   btn.addEventListener("click", () => {
-    const targetId = btn.dataset.target;
-    const input = document.getElementById(targetId);
+    const input = $(btn.dataset.target);
     if (!input) return;
-
-    if (input.type === "password") {
-      input.type = "text";
-      btn.classList.add("is-visible");
-      btn.setAttribute("aria-label", "Hide password");
-    } else {
-      input.type = "password";
-      btn.classList.remove("is-visible");
-      btn.setAttribute("aria-label", "Show password");
-    }
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.classList.toggle("is-visible", show);
+    btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
   });
 });
 
 
 /* ============================================================
-   2. SHARED VALIDATION HELPERS
+   2. FIELD HELPERS
 ============================================================ */
-const emailPattern = Seylune.EMAIL_PATTERN;
-
-function showFieldError(fieldId, message) {
-  const field = document.getElementById(fieldId);
+function showFieldError(id, message) {
+  const field = $(id);
   if (!field) return;
   const group = field.closest(".form-group");
-  const errorEl = document.getElementById(fieldId + "Error");
-
-  if (group)   group.classList.add("error");
-  if (errorEl) errorEl.textContent = message;
+  if (group) group.classList.add("error");
+  field.setAttribute("aria-invalid", "true");
+  field.setAttribute("aria-describedby", id + "Error");
+  if ($(id + "Error")) $(id + "Error").textContent = message;
 }
 
-function clearFieldError(fieldId) {
-  const field = document.getElementById(fieldId);
+function clearFieldError(id) {
+  const field = $(id);
   if (!field) return;
   const group = field.closest(".form-group");
-  const errorEl = document.getElementById(fieldId + "Error");
-
-  if (group)   group.classList.remove("error");
-  if (errorEl) errorEl.textContent = "";
+  if (group) group.classList.remove("error");
+  field.removeAttribute("aria-invalid");
+  if ($(id + "Error")) $(id + "Error").textContent = "";
 }
 
-function showFeedback(feedbackId, message, type) {
-  const el = document.getElementById(feedbackId);
+function showFeedback(id, message, type) {
+  const el = $(id);
   if (!el) return;
-  el.className = "form-feedback show " + type;   // type = "success" | "error"
+  el.className = "form-feedback " + (type || "");
   el.textContent = message;
-
-  // Auto-hide after 4 seconds
-  setTimeout(() => {
-    el.className = "form-feedback";
-    el.textContent = "";
-  }, 4000);
 }
+
+// While a request is on its way, the button says so and can't be pressed twice
+function busy(form, on, label) {
+  const btn = form.querySelector("button[type=submit]");
+  if (!btn) return;
+  if (on) { btn.dataset.label = btn.textContent; btn.textContent = label; }
+  else if (btn.dataset.label) btn.textContent = btn.dataset.label;
+  btn.disabled = on;
+}
+
+["loginEmail", "loginPassword", "signupName", "signupEmail", "signupPassword", "signupConfirm", "recoverPassword"]
+  .forEach(id => { if ($(id)) $(id).addEventListener("input", () => clearFieldError(id)); });
 
 
 /* ============================================================
-   3. LOGIN FORM
+   3. ACCOUNTS — live (Supabase) or demo (localStorage)
+   Every function returns a promise so the page code is the same.
+   A user here is { name, email, since }.
 ============================================================ */
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const email    = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
-    // Reset errors
-    clearFieldError("loginEmail");
-    clearFieldError("loginPassword");
-
-    let isValid = true;
-
-    if (!emailPattern.test(email)) {
-      showFieldError("loginEmail", "Please enter a valid email address.");
-      isValid = false;
-    }
-
-    if (password.length < 6) {
-      showFieldError("loginPassword", "Password must be at least 6 characters.");
-      isValid = false;
-    }
-
-    if (!isValid) return;
-
-    // Demo: use the name saved at sign-up if this email has an account
+const Accounts = live ? {
+  async current() {
+    const u = await SeyluneBackend.getUser();
+    return u ? { name: SeyluneBackend.displayName(u), email: u.email, since: u.created_at } : null;
+  },
+  async signIn(email, password) {
+    await SeyluneBackend.signIn(email, password);
+  },
+  async signUp(name, email, password) {
+    const result = await SeyluneBackend.signUp(name, email, password);
+    // With "Confirm email" switched on, Supabase waits for the email link
+    return result.session ? "signed-in" : "confirm";
+  },
+  signOut: () => SeyluneBackend.signOut(),
+  sendReset: email => SeyluneBackend.sendPasswordReset(email),
+  async orders() {
+    const rows = await SeyluneBackend.myOrders();
+    return rows.map(o => ({
+      number: o.number, date: o.created_at, status: o.status, delivery: o.delivery,
+      payment: o.payment, shipping: o.shipping, total: o.total, city: o.ship_city,
+      items: o.order_items.map(i => ({
+        id: i.product_id, name: i.name, size: i.size, quantity: i.quantity, price: i.unit_price,
+        image: Seylune.asset((Seylune.getProduct(i.product_id) || {}).image || "home/images/Logo.png")
+      }))
+    }));
+  }
+} : {
+  async current() {
+    const u = Seylune.read(Seylune.KEYS.user, null);
+    return u && u.email ? { name: u.name, email: u.email, since: u.memberSince } : null;
+  },
+  async signIn(email) {
+    const known = Seylune.read(Seylune.KEYS.accounts, {})[email.toLowerCase()];
+    Seylune.write(Seylune.KEYS.user, { name: known ? known.name : email.split("@")[0], email, memberSince: known ? known.createdAt : Date.now() });
+  },
+  async signUp(name, email) {
     const accounts = Seylune.read(Seylune.KEYS.accounts, {});
-    const known = accounts[email.toLowerCase()];
-    const name = known ? known.name : email.split("@")[0];
-
-    loginForm.reset();
-    signIn({ name: name, email: email, memberSince: known ? known.createdAt : Date.now() });
-    Seylune.toast(`Welcome back, ${name.split(" ")[0]}.`);
-  });
-}
-
-
-/* ============================================================
-   4. SIGNUP FORM
-============================================================ */
-const signupForm = document.getElementById("signupForm");
-
-if (signupForm) {
-  signupForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name     = document.getElementById("signupName").value.trim();
-    const email    = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value;
-    const confirm  = document.getElementById("signupConfirm").value;
-    const agreed   = document.getElementById("agreeTerms").checked;
-
-    // Reset errors
-    clearFieldError("signupName");
-    clearFieldError("signupEmail");
-    clearFieldError("signupPassword");
-    clearFieldError("signupConfirm");
-
-    let isValid = true;
-
-    if (name.length < 2) {
-      showFieldError("signupName", "Please enter your full name.");
-      isValid = false;
-    }
-
-    if (!emailPattern.test(email)) {
-      showFieldError("signupEmail", "Please enter a valid email address.");
-      isValid = false;
-    }
-
-    if (password.length < 6) {
-      showFieldError("signupPassword", "Password must be at least 6 characters.");
-      isValid = false;
-    }
-
-    if (confirm !== password) {
-      showFieldError("signupConfirm", "Passwords do not match.");
-      isValid = false;
-    }
-
-    if (!agreed) {
-      showFeedback("signupFeedback", "Please agree to the Terms and Privacy Policy.", "error");
-      isValid = false;
-    }
-
-    if (!isValid) return;
-
-    // Demo: remember the name for this email (no password is stored)
-    const createdAt = Date.now();
-    const accounts = Seylune.read(Seylune.KEYS.accounts, {});
-    accounts[email.toLowerCase()] = { name: name, createdAt: createdAt };
+    accounts[email.toLowerCase()] = { name, createdAt: Date.now() };
     Seylune.write(Seylune.KEYS.accounts, accounts);
+    Seylune.write(Seylune.KEYS.user, { name, email, memberSince: Date.now() });
+    return "signed-in";
+  },
+  async signOut() { Seylune.remove(Seylune.KEYS.user); },
+  async sendReset() { /* demo: nothing is sent */ },
+  async orders(user) {
+    return Seylune.read(Seylune.KEYS.orders, [])
+      .filter(o => !o.customer || o.customer.email.toLowerCase() === user.email.toLowerCase())
+      .map(o => ({
+        number: o.id, date: o.date, status: "processing", delivery: o.delivery, payment: o.payment,
+        shipping: o.shipping, total: o.total, city: o.customer.city,
+        items: o.items.map(i => ({ id: i.id, name: i.name, size: i.size, quantity: i.quantity, price: i.price, image: i.image }))
+      }));
+  }
+};
 
-    signupForm.reset();
-    signIn({ name: name, email: email, memberSince: createdAt });
-    Seylune.toast(`Welcome to Seylune, ${name.split(" ")[0]}. Your account has been created.`);
-
-    // Reset password strength meter
-    const meter = document.getElementById("passwordStrength");
-    if (meter) {
-      meter.className = "password-strength";
-      meter.querySelector(".strength-label").textContent = "Password strength";
-    }
-  });
+function afterSignIn(message) {
+  if (next === "checkout") {
+    location.href = "../Checkout/checkout.html";
+    return;
+  }
+  renderAccount();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  Seylune.toast(message);
 }
 
 
 /* ============================================================
-   5. PASSWORD STRENGTH METER (signup)
+   4. SIGN IN
 ============================================================ */
-const signupPassword = document.getElementById("signupPassword");
-const strengthMeter  = document.getElementById("passwordStrength");
+const loginForm = $("loginForm");
 
-if (signupPassword && strengthMeter) {
-  const label = strengthMeter.querySelector(".strength-label");
+loginForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+  ["loginEmail", "loginPassword"].forEach(clearFieldError);
+  showFeedback("loginFeedback", "");
 
-  signupPassword.addEventListener("input", () => {
-    const value = signupPassword.value;
-    const score = scorePassword(value);
+  let ok = true;
+  if (!emailPattern.test(email)) { showFieldError("loginEmail", "Please enter a valid email address."); ok = false; }
+  if (!password) { showFieldError("loginPassword", "Please enter your password."); ok = false; }
+  if (!ok) return;
 
-    strengthMeter.classList.remove("weak", "medium", "strong");
+  busy(loginForm, true, "Signing in…");
+  try {
+    await Accounts.signIn(email, password);
+    loginForm.reset();
+    const user = await Accounts.current();
+    afterSignIn(`Welcome back, ${(user ? user.name : "").split(" ")[0]}.`);
+  } catch (err) {
+    showFeedback("loginFeedback", err.message, "error");
+  } finally {
+    busy(loginForm, false);
+  }
+});
 
-    if (value.length === 0) {
-      label.textContent = "Password strength";
-      return;
-    }
 
-    if (score <= 1) {
-      strengthMeter.classList.add("weak");
-      label.textContent = "Weak";
-    } else if (score === 2) {
-      strengthMeter.classList.add("medium");
-      label.textContent = "Medium";
+/* ============================================================
+   5. CREATE ACCOUNT
+============================================================ */
+const signupForm = $("signupForm");
+
+signupForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("signupName").value.trim();
+  const email = $("signupEmail").value.trim();
+  const password = $("signupPassword").value;
+  const confirm = $("signupConfirm").value;
+  ["signupName", "signupEmail", "signupPassword", "signupConfirm"].forEach(clearFieldError);
+  showFeedback("signupFeedback", "");
+
+  let ok = true;
+  if (name.length < 2) { showFieldError("signupName", "Please enter your full name."); ok = false; }
+  if (!emailPattern.test(email)) { showFieldError("signupEmail", "Please enter a valid email address."); ok = false; }
+  if (password.length < MIN_PASSWORD) { showFieldError("signupPassword", `Password must be at least ${MIN_PASSWORD} characters.`); ok = false; }
+  if (confirm !== password) { showFieldError("signupConfirm", "Passwords do not match."); ok = false; }
+  if (!$("agreeTerms").checked) { showFeedback("signupFeedback", "Please agree to the Terms and Privacy Policy.", "error"); ok = false; }
+  if (!ok) return;
+
+  busy(signupForm, true, "Creating account…");
+  try {
+    const result = await Accounts.signUp(name, email, password);
+    signupForm.reset();
+    resetStrength();
+    if (result === "confirm") {
+      showFeedback("signupFeedback", `Almost there: open the link we sent to ${email} to confirm your account.`, "success");
     } else {
-      strengthMeter.classList.add("strong");
-      label.textContent = "Strong";
+      afterSignIn(`Welcome to Seylune, ${name.split(" ")[0]}. Your account has been created.`);
     }
-  });
+  } catch (err) {
+    showFeedback("signupFeedback", err.message, "error");
+  } finally {
+    busy(signupForm, false);
+  }
+});
+
+// Password strength: +1 for 10+ characters, +1 for letters and numbers, +1 for a symbol
+const strengthMeter = $("passwordStrength");
+
+function resetStrength() {
+  strengthMeter.className = "password-strength";
+  strengthMeter.querySelector(".strength-label").textContent = "Password strength";
 }
 
-// Simple scoring: +1 for length >= 8, +1 for mix of letters & numbers, +1 for symbols
-function scorePassword(pw) {
+$("signupPassword").addEventListener("input", () => {
+  const pw = $("signupPassword").value;
+  if (!pw) return resetStrength();
   let score = 0;
-  if (pw.length >= 8) score++;
+  if (pw.length >= 10) score++;
   if (/[A-Za-z]/.test(pw) && /\d/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score;
-}
+  const level = pw.length < MIN_PASSWORD || score <= 1 ? "weak" : score === 2 ? "medium" : "strong";
+  strengthMeter.className = "password-strength " + level;
+  strengthMeter.querySelector(".strength-label").textContent =
+    pw.length < MIN_PASSWORD ? "Too short" : level.charAt(0).toUpperCase() + level.slice(1);
+});
 
 
 /* ============================================================
-   6. LIVE CLEAR ERRORS WHILE TYPING
+   6. FORGOT PASSWORD + CHOOSING A NEW ONE
+   Supabase emails a one-time link back to this page. Opening it
+   signs the customer in for one purpose: setting a new password.
 ============================================================ */
-[
-  "loginEmail", "loginPassword",
-  "signupName", "signupEmail", "signupPassword", "signupConfirm"
-].forEach(id => {
-  const field = document.getElementById(id);
-  if (!field) return;
-
-  field.addEventListener("input", () => clearFieldError(id));
+$("forgotLink").addEventListener("click", async () => {
+  const email = $("loginEmail").value.trim();
+  if (!emailPattern.test(email)) {
+    showFieldError("loginEmail", "Enter your email first, then choose Forgot password.");
+    $("loginEmail").focus();
+    return;
+  }
+  try {
+    await Accounts.sendReset(email);
+    // The same message whether or not the account exists, so this form
+    // can't be used to find out who has an account
+    showFeedback("loginFeedback", live
+      ? `If ${email} has an account, a reset link is on its way.`
+      : `A reset link would be sent to ${email} in a live store.`, "success");
+  } catch (err) {
+    showFeedback("loginFeedback", err.message, "error");
+  }
 });
+
+const recoverForm = $("recoverForm");
+
+function showRecovery() {
+  $("authSection").hidden = false;
+  $("accountDashboard").hidden = true;
+  document.querySelector(".auth-tabs").hidden = true;
+  $("loginCard").hidden = true;
+  $("signupCard").hidden = true;
+  $("recoverCard").hidden = false;
+  $("accountTitle").textContent = "Choose a new password";
+  $("accountSubtitle").textContent = "You opened a password reset link. Set a new password to finish.";
+  $("recoverPassword").focus();
+}
+
+recoverForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const password = $("recoverPassword").value;
+  clearFieldError("recoverPassword");
+  if (password.length < MIN_PASSWORD) {
+    showFieldError("recoverPassword", `Password must be at least ${MIN_PASSWORD} characters.`);
+    return;
+  }
+  busy(recoverForm, true, "Saving…");
+  try {
+    await SeyluneBackend.updatePassword(password);
+    recoverForm.reset();
+    document.querySelector(".auth-tabs").hidden = false;
+    $("recoverCard").hidden = true;
+    afterSignIn("Your new password is saved.");
+  } catch (err) {
+    showFeedback("recoverFeedback", err.message, "error");
+  } finally {
+    busy(recoverForm, false);
+  }
+});
+
+if (live) {
+  SeyluneBackend.onAuthChange(event => {
+    if (event === "PASSWORD_RECOVERY") showRecovery();
+  });
+}
 
 
 /* ============================================================
@@ -255,14 +323,14 @@ function scorePassword(pw) {
    Arrow keys move between the two tabs. The photograph beside
    the forms ripples under the cursor (shared/liquid.js).
 ============================================================ */
-const authTabs = [document.getElementById("tabLogin"), document.getElementById("tabSignup")];
+const authTabs = [$("tabLogin"), $("tabSignup")];
 
 function showAuthTab(tab, focus) {
   authTabs.forEach(t => {
     const on = t === tab;
     t.setAttribute("aria-selected", on);
     t.tabIndex = on ? 0 : -1;
-    document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    $(t.getAttribute("aria-controls")).hidden = !on;
   });
   if (focus) tab.focus();
 }
@@ -276,100 +344,71 @@ authTabs.forEach((tab, i) => {
   });
 });
 
-// A link to #signup opens the Create account tab
 if (location.hash === "#signup") showAuthTab(authTabs[1]);
+if (next === "checkout") {
+  $("accountSubtitle").textContent = "Sign in or create an account to finish your order.";
+}
 
 if (SeyluneSite.liquid) {
   // Zoomed toward the top so the words printed at the foot of the photograph stay out of view
-  SeyluneSite.liquid.create(document.getElementById("accountLiquid"), { focus: [[0.5, 0.12]], zoom: 1.3 });
+  SeyluneSite.liquid.create($("accountLiquid"), { focus: [[0.5, 0.12]], zoom: 1.3 });
 }
 
 
 /* ============================================================
-   8. FORGOT PASSWORD (demo)
+   8. SIGNED IN — profile, orders, saved pieces
 ============================================================ */
-const forgotLink = document.getElementById("forgotLink");
-if (forgotLink) {
-  forgotLink.addEventListener("click", () => {
-    const email = document.getElementById("loginEmail").value.trim();
-    if (!emailPattern.test(email)) {
-      showFieldError("loginEmail", "Enter your email first, then choose Forgot password.");
-      document.getElementById("loginEmail").focus();
-      return;
-    }
-    showFeedback("loginFeedback", `A reset link would be sent to ${email} in a live store.`, "success");
-  });
-}
-
-
-/* ============================================================
-   9. SIGNED-IN DASHBOARD
-   Shows the profile, orders placed at checkout and saved
-   pieces. Guests see the login/signup cards instead.
-============================================================ */
-const authSection = document.getElementById("authSection");
-const dashboard   = document.getElementById("accountDashboard");
-
-function getUser() {
-  return Seylune.read(Seylune.KEYS.user, null);
-}
-
-function signIn(user) {
-  Seylune.write(Seylune.KEYS.user, { ...user, loggedInAt: Date.now() });
-  renderAccount();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function signOut() {
-  Seylune.remove(Seylune.KEYS.user);
+$("signOutBtn").addEventListener("click", async () => {
+  await Accounts.signOut();
   renderAccount();
   Seylune.toast("You have been signed out.");
-}
+});
 
-document.getElementById("signOutBtn").addEventListener("click", signOut);
+async function renderAccount() {
+  const user = await Accounts.current();
+  $("authSection").hidden = !!user;
+  $("accountDashboard").hidden = !user;
 
-function renderAccount() {
-  const user = getUser();
-  const signedIn = !!(user && user.email);
-
-  authSection.hidden = signedIn;
-  dashboard.hidden = !signedIn;
-
-  if (signedIn) {
+  if (user) {
     const name = user.name || user.email.split("@")[0];
-    document.getElementById("dashboardTitle").textContent  = `Welcome, ${name.split(" ")[0]}`;
-    document.getElementById("dashboardName").textContent   = name;
-    document.getElementById("dashboardAvatar").textContent = name.charAt(0).toUpperCase();
-    const since = user.memberSince
-      ? " · Member since " + new Date(user.memberSince).toLocaleDateString("en-GB", { month: "long", year: "numeric" })
+    $("dashboardTitle").textContent = `Welcome, ${name.split(" ")[0]}`;
+    $("dashboardName").textContent = name;
+    $("dashboardAvatar").textContent = name.charAt(0).toUpperCase();
+    const since = user.since
+      ? " · Member since " + new Date(user.since).toLocaleDateString("en-GB", { month: "long", year: "numeric" })
       : "";
-    document.getElementById("dashboardEmail").textContent = user.email + since;
+    $("dashboardEmail").textContent = user.email + since;
     renderOrders(user);
   }
-
   renderSaved();
 }
 
-/* ----- Order history (newest first) ----- */
-function renderOrders(user) {
-  const all = Seylune.read(Seylune.KEYS.orders, []);
-  const orders = all.filter(o => !o.customer || !o.customer.email ||
-                                 o.customer.email.toLowerCase() === user.email.toLowerCase());
+const STATUS = { processing: "Processing", shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled" };
 
-  document.getElementById("statOrders").textContent = orders.length;
-  document.getElementById("ordersEmpty").hidden = orders.length > 0;
+async function renderOrders(user) {
+  const list = $("orderList");
+  list.innerHTML = `<p class="section-note">Loading your orders…</p>`;
+  let orders = [];
+  try {
+    orders = await Accounts.orders(user);
+  } catch (err) {
+    list.innerHTML = `<p class="form-feedback error">${esc(err.message)}</p>`;
+    return;
+  }
 
-  const esc = Seylune.escapeHtml;
-  document.getElementById("orderList").innerHTML = orders.map(order => {
+  $("statOrders").textContent = orders.length;
+  $("ordersEmpty").hidden = orders.length > 0;
+
+  list.innerHTML = orders.map(order => {
     const count = order.items.reduce((sum, i) => sum + i.quantity, 0);
     const date = new Date(order.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
     return `
       <details class="order-card">
         <summary>
-          <span class="order-id">${esc(order.id)}</span>
+          <span class="order-id">${esc(order.number)}</span>
           <span class="order-date">${date}</span>
           <span class="order-count">${count} item${count === 1 ? "" : "s"}</span>
-          <span class="order-status">Processing</span>
+          <span class="order-status">${STATUS[order.status] || "Processing"}</span>
           <span class="order-total">${Seylune.formatPrice(order.total)}</span>
         </summary>
         <ul class="order-items">
@@ -384,26 +423,27 @@ function renderOrders(user) {
         <p class="order-meta">
           ${order.delivery === "express" ? "Express" : "Standard"} delivery
           (${order.shipping === 0 ? "free" : Seylune.formatPrice(order.shipping)})
-          to ${esc(order.customer.city)} · ${order.payment === "bank" ? "Bank transfer" : "Cash on delivery"}
+          to ${esc(order.city)} · ${order.payment === "bank" ? "Bank transfer" : "Cash on delivery"}
         </p>
       </details>`;
   }).join("");
+
+  // A link to #orders (from the order confirmation) opens the newest one
+  if (location.hash === "#orders" && list.firstElementChild) list.firstElementChild.open = true;
 }
 
-/* ----- Saved pieces (wishlist) ----- */
+/* ----- Saved pieces (wishlist, kept in this browser) ----- */
 function renderSaved() {
   const saved = Seylune.getWishlist().map(Seylune.getProduct).filter(Boolean);
-  const grid = document.getElementById("savedGrid");
-
+  const grid = $("savedGrid");
   grid.innerHTML = saved.map(p => Seylune.renderProductCard(p)).join("");
   Seylune.addWishlistButtons(grid);
-
-  document.getElementById("savedEmpty").hidden = saved.length > 0;
-  document.getElementById("statSaved").textContent = saved.length;
+  $("savedEmpty").hidden = saved.length > 0;
+  $("statSaved").textContent = saved.length;
 }
 
 // Un-saving a piece here removes its card straight away
-document.getElementById("savedGrid").addEventListener("click", e => {
+$("savedGrid").addEventListener("click", e => {
   if (e.target.closest(".wishlist-btn")) setTimeout(renderSaved, 0);
 });
 

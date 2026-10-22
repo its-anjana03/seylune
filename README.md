@@ -34,7 +34,9 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 - Wishlist hearts on every product, saved to the account page
 - Size guide dialog, image gallery and accessible tabs on product pages
 - Skip link, keyboard focus styles, live regions and reduced-motion support
-- Everything persists in `localStorage` — no backend required
+- Supabase backend: real accounts (Supabase Auth), orders priced and stock-checked by a database function, live per-size stock, all protected by Row Level Security — see `supabase/README.md`
+- Bag drawer, quick view, full-screen zoom, "complete the look" and recently viewed
+- Demo mode: with no Supabase config the store falls back to `localStorage`
 
 ## Run locally
 
@@ -47,7 +49,8 @@ npx serve .
 ## Structure
 
 ```
-shared/      products.js (catalogue) · seylune.js (cart, search, filters) · site.css · site.js (menu, rooms, page motion) · liquid.js (WebGL photographs) · vendor/gsap.min.js
+shared/      products.js (catalogue) · seylune.js (cart, search, filters, stock) · backend.js + supabase-config.js (Supabase) · site.css · site.js (menu, rooms, page motion) · liquid.js (WebGL photographs) · vendor/gsap.min.js
+supabase/    schema.sql (tables, security rules, place_order) · seed.sql · setup guide
 home/        home page (scenes.css, home.js) + all images and video
 Product/     single product template
 Search/      search results

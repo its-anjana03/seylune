@@ -236,6 +236,20 @@
     </section>
 
     <!-- ============================================================
+         SIGN IN FIRST (when the store is connected to Supabase)
+    ============================================================ -->
+    <section class="still-room" id="checkoutSignin" hidden aria-labelledby="checkoutSigninTitle">
+      <img class="still-mark" src="../home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker">Checkout</p>
+      <h1 class="room-title" id="checkoutSigninTitle">Sign in to finish your order</h1>
+      <p class="room-lede">Your order is saved to your account, so you can follow it from any device. Your bag stays as it is.</p>
+      <div class="still-actions">
+        <a href="../Account/Account.html?next=checkout" class="btn btn-primary">Sign In</a>
+        <a href="../Account/Account.html?next=checkout#signup" class="btn btn-ghost">Create Account</a>
+      </div>
+    </section>
+
+    <!-- ============================================================
          NOTHING TO CHECK OUT
     ============================================================ -->
     <section class="still-room" id="checkoutEmpty" hidden aria-labelledby="checkoutEmptyTitle">
@@ -272,6 +286,11 @@
   <!-- ========== Shared Scripts: catalogue + site logic ========== -->
   <script src="../shared/products.js"></script>
   <script src="../shared/seylune.js"></script>
+
+  <!-- ========== Backend: Supabase (accounts, orders, live stock) ========== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.97.0/dist/umd/supabase.js"></script>
+  <script src="../shared/supabase-config.js"></script>
+  <script src="../shared/backend.js"></script>
 
   <!-- ========== Motion: GSAP, WebGL photographs, the menu + rooms ========== -->
   <script src="../shared/vendor/gsap.min.js"></script>

@@ -1,15 +1,22 @@
 /* ============================================================
    SEYLUNE — CHECKOUT PAGE JAVASCRIPT
-   Frontend-only checkout for the demo store.
-   Shared behaviour (cart storage, badge, mobile menu, search)
-   comes from shared/seylune.js.
+   Shared behaviour (cart storage, badge, menu, search) comes
+   from shared/seylune.js and shared/site.js.
+
+   Two modes:
+   - LIVE (Supabase connected): the customer must be signed in.
+     The order goes to place_order() in the database, which
+     prices every line itself and takes the pieces out of stock.
+     The prices shown on this page are only a preview.
+   - DEMO: the order is saved in this browser (localStorage).
+
    This script handles:
-   1. Choosing which state to show (form / empty / done)
+   1. Choosing which state to show (sign in / form / empty / done)
    2. Order summary + delivery cost (updates with the method)
    3. Prefilling details for signed-in customers
-   4. Form validation (Sri Lankan mobile + postal code)
-   5. Placing the order: save to localStorage, clear the cart,
-      show the confirmation
+   4. Form validation (Sri Lankan mobile + postal code) — the
+      database checks all of it again
+   5. Placing the order and showing the confirmation
 ============================================================ */
 
 const { formatPrice, escapeHtml } = Seylune;
@@ -17,6 +24,7 @@ const $ = id => document.getElementById(id);
 
 const form   = $("checkoutForm");
 const layout = $("checkoutLayout");
+const live   = typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled;
 
 
 /* ============================================================
@@ -33,10 +41,22 @@ if (cart.length === 0) {
 } else if (missingSize) {
   // Sizes are chosen on the cart page
   window.location.replace("../Cart/cart.html");
+} else if (live) {
+  // A real order belongs to an account: sign in first
+  SeyluneBackend.getUser().then(user => {
+    if (!user) {
+      $("checkoutSignin").hidden = false;
+      return;
+    }
+    layout.hidden = false;
+    renderSummary();
+    prefill({ name: SeyluneBackend.displayName(user), email: user.email });
+    $("coEmail").readOnly = true;   // the order belongs to the signed-in account
+  });
 } else {
   layout.hidden = false;
   renderSummary();
-  prefill();
+  prefill(Seylune.read(Seylune.KEYS.user, null));
 }
 
 
@@ -87,8 +107,7 @@ form.querySelectorAll("input[name='delivery']").forEach(radio => {
 /* ============================================================
    3. PREFILL FOR SIGNED-IN CUSTOMERS
 ============================================================ */
-function prefill() {
-  const user = Seylune.read(Seylune.KEYS.user, null);
+function prefill(user) {
   if (!user) return;
   if (user.name)  $("coName").value  = user.name;
   if (user.email) $("coEmail").value = user.email;
@@ -145,7 +164,7 @@ $("coTerms").addEventListener("change", () => { $("coTermsError").textContent = 
 /* ============================================================
    5. PLACE ORDER
 ============================================================ */
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const firstInvalid = validate();
@@ -160,6 +179,35 @@ form.addEventListener("submit", e => {
   const delivery = selectedDelivery();
   const payment = form.querySelector("input[name='payment']:checked").value;
 
+  // LIVE: the database prices the order, checks the stock and saves it.
+  // Only ids, sizes and quantities are sent — never a price.
+  if (live) {
+    const button = $("placeOrderBtn");
+    button.disabled = true;
+    button.textContent = "Placing order…";
+    try {
+      const placed = await SeyluneBackend.placeOrder(cart, delivery, payment, {
+        name:    $("coName").value.trim(),
+        phone:   $("coPhone").value.trim(),
+        address: $("coAddress").value.trim(),
+        city:    $("coCity").value.trim(),
+        postal:  $("coPostal").value.trim(),
+        notes:   $("coNotes").value.trim()
+      });
+      Seylune.clearCart();
+      showConfirmation({
+        id: placed.number, total: placed.total, delivery, payment,
+        customer: { name: $("coName").value.trim(), email: $("coEmail").value.trim() }
+      });
+    } catch (err) {
+      $("checkoutMessage").textContent = err.message;
+      button.disabled = false;
+      button.textContent = "Place Order";
+    }
+    return;
+  }
+
+  // DEMO: saved in this browser only
   const order = {
     id:       "SEY-" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 90 + 10),
     date:     new Date().toISOString(),
@@ -198,8 +246,9 @@ function showConfirmation(order) {
   $("stepConfirm").classList.add("current");
   $("stepConfirm").setAttribute("aria-current", "step");
 
-  $("doneText").textContent =
-    `Thank you, ${order.customer.name.split(" ")[0]}. A confirmation would be sent to ${order.customer.email} in a live store.`;
+  $("doneText").textContent = live
+    ? `Thank you, ${order.customer.name.split(" ")[0]}. Your order is saved to your account. This is a concept store, so nothing will be charged or shipped.`
+    : `Thank you, ${order.customer.name.split(" ")[0]}. A confirmation would be sent to ${order.customer.email} in a live store.`;
   $("doneOrderId").textContent  = order.id;
   $("doneTotal").textContent    = formatPrice(order.total);
   $("doneDelivery").textContent = order.delivery === "express" ? "Express (1–2 days)" : "Standard (2–4 days)";
