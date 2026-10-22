@@ -24,9 +24,9 @@ const SEYLUNE_PRODUCTS = [
     gallery: [
       "home/images/products/Dresses/noira-satin-dress-2.jpg",
       "home/images/products/Dresses/noira-satin-dress-3.jpg",
-      "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-2.jpg",
-      "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-1.jpg",
-      "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-3.jpg"
+      "home/images/products/Dresses/noira-satin-dress-4.jpg",
+      "home/images/products/Dresses/noira-satin-dress-5.jpg",
+      "home/images/products/Dresses/noira-satin-dress-6.jpg"
     ],
     short: "A sleek satin silhouette designed to bring softness, structure, and quiet luxury into every occasion. The Noira Satin Dress features a graceful drape, modern neckline, and a polished finish perfect for evening elegance.",
     description: "Crafted for sophisticated evenings and elevated day styling, the Noira Satin Dress blends fluid movement with a refined feminine shape. Its clean finish and timeless form make it a versatile wardrobe statement.",

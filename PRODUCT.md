@@ -31,7 +31,7 @@ A Sri Lankan-rooted luxury label: **Sey** (a hint of Ceylon) + **Lune** (the moo
 - Filters by size, colour and price plus sorting; search with relevance scoring; cart keeps sizes separate with free-delivery progress; checkout validates Sri Lankan mobile numbers and postal codes; size guide dialog; product gallery and details.
 - Currency: Sri Lankan rupees (Rs.). Free islandwide delivery over Rs. 10,000; easy 7-day returns.
 - No real payments, accounts or shipping. The site must say it is a concept brand where that matters (footer, checkout).
-- Folder names with typos (`New arrivals/new-arriavals.html`, `Prodcut Details-…`) are live URLs; renaming them is a separate decision.
+- The old misspelled URLs (`New arrivals/new-arriavals.html`, `Prodcut Details-…`) were renamed on 2026-10-22; `404.html` forwards anyone who still has an old link.
 
 ## Brand Commitments
 - Name and wordmark: SEYLUNE. Tagline: "Luxury for the modern muse." Hero line: "Luxury in Every Line."
@@ -43,7 +43,7 @@ A Sri Lankan-rooted luxury label: **Sey** (a hint of Ceylon) + **Lune** (the moo
 - Author credit: design and build by Thinura Anjana (FORGE Studio).
 
 ## Evidence on Hand
-- Model and product photography (AI-generated with Gemini / Nano Banana) in `home/images/` and `home/images/products/<category>/`, plus a three-image gallery for the Noira Satin Dress in `Prodcut Details-Noira Satin Dress/`.
+- Model and product photography (AI-generated with Gemini / Nano Banana) in `home/images/` and `home/images/products/<category>/` (the Noira Satin Dress has six views, `noira-satin-dress-2` … `-6`).
 - Brand video: `home/Videos/About-brand.mp4`. Logo: `home/images/Logo.png`. Story image: `home/images/story-home.jpg`.
 - 40 products (five collections of 8) with names, prices, colours, sizes, fabric and care notes.
 - There are no real customers, reviews, press, stockists or sales figures. Never invent testimonials, ratings, review counts or press quotes.

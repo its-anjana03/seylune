@@ -53,7 +53,7 @@ const Seylune = (() => {
       Outerwear: "Outerwear/outerwear.html",
       Accessories: "Accessories/accessories.html"
     };
-    return ROOT + (pages[category] || "New arrivals/new-arriavals.html");
+    return ROOT + (pages[category] || "New-Arrivals/new-arrivals.html");
   }
 
   // Escape text before putting it inside innerHTML

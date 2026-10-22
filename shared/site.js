@@ -431,7 +431,7 @@ const SeyluneSite = (() => {
     }).join("") : `
       <div class="bag-empty">
         <p class="bag-empty-title">Your bag is empty</p>
-        <a href="${Seylune.ROOT}New arrivals/new-arriavals.html" class="text-link">Shop New Arrivals</a>
+        <a href="${Seylune.ROOT}New-Arrivals/new-arrivals.html" class="text-link">Shop New Arrivals</a>
       </div>`;
 
     const remaining = Seylune.FREE_DELIVERY_MIN - subtotal;

@@ -682,9 +682,20 @@ body.menu-open {
   opacity: 1;
 }
 
+/* Only the photo on show is part of the page, so the browser downloads
+   the others only when they are needed (liquid.js fetches them itself) */
+.liquid-box img {
+  display: none;
+}
+
+.liquid-box img.is-current,
+.liquid-box:not(:has(img.is-current)) img:first-child {
+  display: block;
+}
+
+/* Once the moving photograph is drawing, it covers the plain images */
 .liquid-box.is-liquid img {
-  opacity: 0;
-  transition: none;
+  display: none;
 }
 
 .liquid-canvas {

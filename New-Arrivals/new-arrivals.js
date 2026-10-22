@@ -1,7 +1,7 @@
 /* ============================================================
    SEYLUNE — NEW ARRIVALS PAGE JAVASCRIPT
    The product cards (with images, names, prices) are written
-   directly inside new-arriavals.html.
+   directly inside new-arrivals.html.
    Shared behaviour (mobile menu, cart badge, add-to-cart,
    wishlist hearts, search) comes from shared/seylune.js.
    This script only sets up the catalogue tools:

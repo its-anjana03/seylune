@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ============================================================
+       PAGE NOT FOUND
+       GitHub Pages shows this page for any address that doesn't
+       exist, at any depth, so every link here starts from the site
+       root (the <base> below), not from this file's folder.
+       It also forwards the old, misspelled addresses to their new
+       ones, so links shared before the rename keep working.
+  ============================================================ -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0F0D10" />
+  <title>Page not found — Seylune</title>
+  <script>
+    (function () {
+      // The site lives at /seylune/ on GitHub Pages, at / when run locally
+      var root = location.hostname.endsWith("github.io") ? "/seylune/" : "/";
+      var path = decodeURIComponent(location.pathname).toLowerCase();
+      var moved = [
+        [/new[ -]arrivals\/new-arriavals/, "New-Arrivals/new-arrivals.html"],
+        [/prodcut details/, "Product/product.html?id=noira-satin-dress"]
+      ];
+      for (var i = 0; i < moved.length; i++) {
+        if (moved[i][0].test(path)) { location.replace(root + moved[i][1]); return; }
+      }
+      document.write('<base href="' + root + '" />');
+    })();
+  </script>
+  <link rel="icon" href="home/images/Logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Tenor+Sans&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared/site.css" />
+</head>
+<body class="page">
+
+  <header class="navbar" id="navbar">
+    <a href="home/home.html" class="nav-logo" aria-label="Seylune home">
+      <img src="home/images/Logo.png" alt="" width="26" height="27" />
+      <span>Seylune</span>
+    </a>
+  </header>
+
+  <main id="main">
+    <section class="still-room" aria-labelledby="notFoundTitle">
+      <img class="still-mark" src="home/images/Logo.png" alt="" width="58" height="60" />
+      <p class="kicker">Page not found</p>
+      <h1 class="room-title" id="notFoundTitle">This room is not in the house</h1>
+      <p class="room-lede">The link may be old or mistyped. Every collection is still a step away.</p>
+      <div class="still-actions">
+        <a href="Collections/collections.html" class="btn btn-primary">Explore the collections</a>
+        <a href="home/home.html" class="btn btn-ghost">Go to the home page</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-legal">Seylune · A concept store by Thinura Anjana — no real orders are taken.</p>
+  </footer>
+</body>
+</html>

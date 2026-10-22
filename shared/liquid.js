@@ -271,9 +271,31 @@ const SeyluneLiquid = (() => {
       if (!state.raf) state.raf = requestAnimationFrame(frame);
     }
 
+    /* Photos load one at a time, when they are about to be shown,
+       instead of every photo in the frame at once. */
+    const loading = [];
+    function ensure(i) {
+      if (!loading[i]) {
+        loading[i] = loadImage(imgs[i]).then(image => {
+          if (!image) return false;
+          textures[i] = makeTexture(image);
+          sizes[i] = [image.naturalWidth, image.naturalHeight];
+          return true;
+        });
+      }
+      return loading[i];
+    }
+
+    let wanted = 0;
     function show(i, duration = 1400) {
-      if (!api.ready) { fallbackShow(i); return; }
       i = (i + imgs.length) % imgs.length;
+      if (!api.ready) { fallbackShow(i); return; }
+      wanted = i;
+      if (!textures[i]) {
+        // fetch it first; by then the visitor may have pointed elsewhere
+        ensure(i).then(ok => { if (ok && wanted === i) show(i, duration); });
+        return;
+      }
       if (i === state.index && !state.transition) return;
       const from = state.transition ? state.transition.to : state.index;
       if (state.transition) { state.index = from; }
@@ -281,6 +303,8 @@ const SeyluneLiquid = (() => {
       bind(from, i);
       imgs.forEach((img, k) => img.classList.toggle("is-current", k === i));
       wake();
+      // get the next one ready while this one plays
+      if (imgs.length > 1) setTimeout(() => ensure((i + 1) % imgs.length), duration);
     }
 
     // Scenes that are off screen stop drawing entirely
@@ -297,19 +321,22 @@ const SeyluneLiquid = (() => {
     });
     box.addEventListener("pointerleave", () => { state.hoverTarget = 0; wake(); });
 
-    Promise.all(imgs.map(loadImage)).then(images => {
-      if (images.some(img => !img)) return;   // keep the plain images
-      images.forEach(image => {
-        textures.push(makeTexture(image));
-        sizes.push([image.naturalWidth, image.naturalHeight]);
-      });
+    // Start with the photo showing now; the rest follow when needed
+    const first = state.index;
+    ensure(first).then(ok => {
+      if (!ok) return;   // keep the plain images
+      // the page may have moved on to another photo while this one loaded
+      const now = state.index;
+      state.index = first;
       box.appendChild(canvas);
       api.ready = true;
-      bind(state.index, state.index);
+      bind(first, first);
       resize();
       box.classList.add("is-liquid");
       state.running = true;
       state.raf = requestAnimationFrame(frame);
+      if (now !== first) show(now, 10);
+      else if (imgs.length > 1) setTimeout(() => ensure((first + 1) % imgs.length), 1500);
       if (options.onReady) options.onReady(api);
     });
 

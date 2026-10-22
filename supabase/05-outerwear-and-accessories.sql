@@ -176,7 +176,7 @@ on conflict (product_id, size) do nothing;
 -- 3. The Noira Satin Dress gains a back view and a close-up
 --    (only if its photos haven't been changed on the admin page)
 update public.products
-   set gallery = array['home/images/products/Dresses/noira-satin-dress-2.jpg', 'home/images/products/Dresses/noira-satin-dress-3.jpg', 'Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-2.jpg', 'Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-1.jpg', 'Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-3.jpg']::text[],
+   set gallery = array['home/images/products/Dresses/noira-satin-dress-2.jpg', 'home/images/products/Dresses/noira-satin-dress-3.jpg', 'home/images/products/Dresses/noira-satin-dress-4.jpg', 'home/images/products/Dresses/noira-satin-dress-5.jpg', 'home/images/products/Dresses/noira-satin-dress-6.jpg']::text[],
        updated_at = now()
  where id = 'noira-satin-dress'
    and gallery = array['Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-2.jpg', 'Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-1.jpg', 'Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-3.jpg']::text[];

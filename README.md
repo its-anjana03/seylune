@@ -12,7 +12,7 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 | --- | --- |
 | Home | `home/home.html` |
 | All collections (from the home "Explore Collection" button) | `Collections/collections.html` |
-| New Arrivals | `New arrivals/new-arriavals.html` |
+| New Arrivals | `New-Arrivals/new-arrivals.html` |
 | Dresses · Tops · Bottoms · Outerwear · Accessories | `Dresses/`, `Tops/`, `Bottoms/`, `Outerwear/`, `Accessories/` |
 | Product details (all 40 products) | `Product/product.html?id=…` |
 | Search results | `Search/search.html?q=…` |
@@ -38,6 +38,8 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 - Supabase backend: real accounts (Supabase Auth), orders priced and stock-checked by a database function, live per-size stock, all protected by Row Level Security — see `supabase/README.md`
 - Bag drawer, quick view, full-screen zoom, "complete the look" and recently viewed
 - Demo mode: with no Supabase config the store falls back to `localStorage`
+- Fast loading: compressed photos and video, and each moving photograph loads only the picture it is about to show
+- Link previews (Open Graph) and canonical addresses on every page, product structured data for Google, `sitemap.xml` (built by `tools/make-sitemap.js`) and a `404.html` that forwards old addresses
 
 ## Run locally
 

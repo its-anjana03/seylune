@@ -37,12 +37,62 @@ function loadProduct() {
   fillProduct(product);
 }
 
+/* ----- For search engines and link previews -----
+   One page shows every piece (?id=…), so the piece's own address,
+   photo and details are written into the page once it is known.
+   Google reads these after running the page's script; the
+   "structured data" lets it show the price and stock in results. */
+function describeForSearch(p) {
+  const abs = path => new URL(path, location.href).href;
+  const url = abs(Seylune.productUrl(p.id));
+  const head = document.head;
+  const tag = (selector, make) => head.querySelector(selector) || head.appendChild(make());
+
+  tag('link[rel="canonical"]', () => Object.assign(document.createElement("link"), { rel: "canonical" })).href = url;
+  const og = (prop, value) => tag(`meta[property="${prop}"]`, () => {
+    const m = document.createElement("meta"); m.setAttribute("property", prop); return m;
+  }).setAttribute("content", value);
+  og("og:type", "product");
+  og("og:title", `${p.name} — Seylune`);
+  og("og:description", p.short);
+  og("og:url", url);
+  og("og:image", abs(Seylune.asset(p.image)));
+  og("og:image:alt", p.name);
+  // the share image is 1200 × 630; a piece's photo is portrait, so drop the size hints
+  head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach(m => m.remove());
+
+  const inStock = p.sizes.some(s => Seylune.stockLeft(p.id, s) !== 0);
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name,
+    sku: p.id,
+    category: p.category,
+    color: (SEYLUNE_COLORS[p.color] || { label: p.color }).label,
+    material: p.fabric,
+    description: p.description,
+    image: [p.image].concat(p.gallery || []).map(src => abs(Seylune.asset(src))),
+    brand: { "@type": "Brand", name: "Seylune" },
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "LKR",
+      price: Seylune.priceOf(p),
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition"
+    }
+  };
+  tag('script[type="application/ld+json"]', () => Object.assign(document.createElement("script"), { type: "application/ld+json" }))
+    .textContent = JSON.stringify(data);
+}
+
 function fillProduct(p) {
   const color = SEYLUNE_COLORS[p.color] || { label: p.color, swatch: "transparent" };
 
   document.title = `${p.name} — Seylune`;
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute("content", `${p.name} — ${p.short}`);
+  describeForSearch(p);
 
   $("breadcrumbCategory").textContent = p.category;
   $("breadcrumbCategory").href = Seylune.categoryUrl(p.category);

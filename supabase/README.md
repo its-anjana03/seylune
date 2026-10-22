@@ -169,6 +169,13 @@ twice does no harm. It is generated from `shared/products.js` by `make-new-colle
 The photos themselves live in the website (`home/images/products/…`), so the live site shows
 them once the code is pushed to GitHub.
 
+## Step 10 — The Noira photos moved
+
+Run [`06-renamed-photos.sql`](06-renamed-photos.sql) **before** pushing the version of the site that
+renamed the misspelled `Prodcut Details-Noira Satin Dress/` folder. It points the Noira Satin
+Dress's three extra photos at their new home (`home/images/products/Dresses/noira-satin-dress-4/5/6.jpg`)
+and changes nothing else. Running it twice does no harm.
+
 ## Later: adding products
 
 Once step 7 has run, add pieces on the admin page (**Admin → Products → Add a piece**).

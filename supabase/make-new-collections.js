@@ -56,7 +56,13 @@ const stock = pieces.flatMap(p => p.sizes.map(s =>
   `  (${q(p.id)}, ${q(s)}, ${stockFor(p.id, s)})`)).join(",\n");
 
 const noira = ctx.P.find(p => p.id === "noira-satin-dress");
-const oldNoiraGallery = noira.gallery.filter(src => src.startsWith("Prodcut Details"));
+// Noira's three photos as they were before step 9 (they lived in the old
+// "Prodcut Details-Noira Satin Dress/" folder, renamed in step 10)
+const oldNoiraGallery = [
+  "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-2.jpg",
+  "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-1.jpg",
+  "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-3.jpg"
+];
 
 const sql = `-- =====================================================================
 -- SEYLUNE — STEP 9: THE OUTERWEAR + ACCESSORIES COLLECTIONS
