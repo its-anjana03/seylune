@@ -28,14 +28,24 @@ insert into public.products (id, name, category, price) values
   ('liora-satin-skirt', 'Liora Satin Skirt', 'Bottoms', 5950),
   ('selene-midi-skirt', 'Selene Midi Skirt', 'Bottoms', 6100),
   ('noemi-pleated-trousers', 'Noemi Pleated Trousers', 'Bottoms', 6950),
-  ('vara-structured-skirt', 'Vara Structured Skirt', 'Bottoms', 5850)
-on conflict (id) do update
-  set name = excluded.name, category = excluded.category,
-      price = excluded.price, active = true;
-
--- Pieces no longer in the catalogue stop being sold (old orders keep them)
-update public.products set active = false
- where id not in ('noira-satin-dress', 'lune-midi-dress', 'aurelle-evening-dress', 'seren-pleated-dress', 'viana-slip-dress', 'elowen-wrap-dress', 'nyra-embellished-dress', 'zarelle-maxi-dress', 'elara-drape-top', 'selah-wrap-top', 'kaia-structured-blouse', 'liora-satin-blouse', 'aven-knit-top', 'nerah-tie-front-top', 'veya-luxe-shirt', 'sorelle-evening-blouse', 'veya-tailored-pants', 'mira-wide-leg-trousers', 'nyla-straight-fit-pants', 'aure-slim-trousers', 'liora-satin-skirt', 'selene-midi-skirt', 'noemi-pleated-trousers', 'vara-structured-skirt');
+  ('vara-structured-skirt', 'Vara Structured Skirt', 'Bottoms', 5850),
+  ('lunaire-long-wool-coat', 'Lunaire Long Wool Coat', 'Outerwear', 15900),
+  ('noor-tailored-blazer', 'Noor Tailored Blazer', 'Outerwear', 11500),
+  ('selene-satin-trench', 'Selene Satin Trench', 'Outerwear', 13800),
+  ('cyra-cropped-jacket', 'Cyra Cropped Jacket', 'Outerwear', 9900),
+  ('mahi-belted-wrap-coat', 'Mahi Belted Wrap Coat', 'Outerwear', 14600),
+  ('isra-velvet-evening-jacket', 'Isra Velvet Evening Jacket', 'Outerwear', 12400),
+  ('vela-linen-overshirt', 'Vela Linen Overshirt', 'Outerwear', 8900),
+  ('orla-cape-blazer', 'Orla Cape Blazer', 'Outerwear', 13200),
+  ('crescent-satin-clutch', 'Crescent Satin Clutch', 'Accessories', 6800),
+  ('lune-pearl-drop-earrings', 'Lune Pearl Drop Earrings', 'Accessories', 4200),
+  ('sey-silk-scarf', 'Sey Silk Scarf', 'Accessories', 3900),
+  ('noira-leather-tote', 'Noira Leather Tote', 'Accessories', 12800),
+  ('aurelle-beaded-evening-bag', 'Aurelle Beaded Evening Bag', 'Accessories', 7600),
+  ('celeste-gold-cuff', 'Celeste Gold Cuff', 'Accessories', 5400),
+  ('mira-leather-belt', 'Mira Leather Belt', 'Accessories', 3600),
+  ('elara-silk-hair-bow', 'Elara Silk Hair Bow', 'Accessories', 2900)
+on conflict (id) do nothing;   -- pieces already in the database are managed on the admin page
 
 insert into public.product_stock (product_id, size, quantity) values
   ('noira-satin-dress', 'XS', 7),
@@ -133,5 +143,47 @@ insert into public.product_stock (product_id, size, quantity) values
   ('vara-structured-skirt', 'XS', 1),
   ('vara-structured-skirt', 'S', 0),
   ('vara-structured-skirt', 'M', 7),
-  ('vara-structured-skirt', 'L', 6)
+  ('vara-structured-skirt', 'L', 6),
+  ('lunaire-long-wool-coat', 'XS', 9),
+  ('lunaire-long-wool-coat', 'S', 9),
+  ('lunaire-long-wool-coat', 'M', 7),
+  ('lunaire-long-wool-coat', 'L', 8),
+  ('lunaire-long-wool-coat', 'XL', 8),
+  ('noor-tailored-blazer', 'XS', 1),
+  ('noor-tailored-blazer', 'S', 9),
+  ('noor-tailored-blazer', 'M', 1),
+  ('noor-tailored-blazer', 'L', 0),
+  ('selene-satin-trench', 'XS', 2),
+  ('selene-satin-trench', 'S', 6),
+  ('selene-satin-trench', 'M', 2),
+  ('selene-satin-trench', 'L', 1),
+  ('cyra-cropped-jacket', 'XS', 6),
+  ('cyra-cropped-jacket', 'S', 1),
+  ('cyra-cropped-jacket', 'M', 9),
+  ('cyra-cropped-jacket', 'L', 10),
+  ('mahi-belted-wrap-coat', 'S', 7),
+  ('mahi-belted-wrap-coat', 'M', 8),
+  ('mahi-belted-wrap-coat', 'L', 7),
+  ('mahi-belted-wrap-coat', 'XL', 8),
+  ('isra-velvet-evening-jacket', 'XS', 7),
+  ('isra-velvet-evening-jacket', 'S', 6),
+  ('isra-velvet-evening-jacket', 'M', 4),
+  ('isra-velvet-evening-jacket', 'L', 10),
+  ('vela-linen-overshirt', 'XS', 1),
+  ('vela-linen-overshirt', 'S', 9),
+  ('vela-linen-overshirt', 'M', 10),
+  ('vela-linen-overshirt', 'L', 9),
+  ('vela-linen-overshirt', 'XL', 9),
+  ('orla-cape-blazer', 'XS', 9),
+  ('orla-cape-blazer', 'S', 4),
+  ('orla-cape-blazer', 'M', 9),
+  ('orla-cape-blazer', 'L', 10),
+  ('crescent-satin-clutch', 'One Size', 7),
+  ('lune-pearl-drop-earrings', 'One Size', 9),
+  ('sey-silk-scarf', 'One Size', 9),
+  ('noira-leather-tote', 'One Size', 10),
+  ('aurelle-beaded-evening-bag', 'One Size', 5),
+  ('celeste-gold-cuff', 'One Size', 9),
+  ('mira-leather-belt', 'One Size', 10),
+  ('elara-silk-hair-bow', 'One Size', 0)
 on conflict (product_id, size) do nothing;

@@ -26,19 +26,34 @@
   /* ============================================================
      3. NEW ARRIVALS (set up first: the scenes need its liquid box)
   ============================================================ */
-  const arrivals = Seylune.products.filter(p => p.isNew);
+  let arrivals = Seylune.products.filter(p => p.isNew);
   const arrivalsBox = $("arrivalsLiquid");
-  const arrivalsLiquid = liquid && arrivalsBox
-    ? liquid.create(arrivalsBox, { focus: arrivals.map(() => [0.5, 0.0]) })
-    : null;
+  let arrivalsLiquid = null;
   let pieceIndex = 0;
 
-  $("pieceTotal").textContent = pad(arrivals.length - 1);
+  // Built once the live catalogue is known (shared/backend.js), so the
+  // pieces an admin marks as new are the ones shown here
+  function buildArrivals() {
+    arrivals = Seylune.products.filter(p => p.isNew);
+    if (!arrivals.length) return;
+    pieceIndex = 0;
+    arrivalsBox.innerHTML = arrivals.map((p, i) =>
+      `<img src="${Seylune.asset(p.image)}" alt="${Seylune.escapeHtml(p.name)}"${i ? ' loading="lazy"' : ""} />`).join("");
+    arrivalsLiquid = liquid ? liquid.create(arrivalsBox, { focus: arrivals.map(() => [0.5, 0.0]) }) : null;
+    // Only draw while its scene is showing
+    if (arrivalsLiquid && arrivalsLiquid.setActive && root.classList.contains("scenes-on")) {
+      arrivalsLiquid.setActive($("arrivals").classList.contains("is-active"));
+    }
 
-  // Thumbnails to jump straight to a piece
-  $("pieceThumbs").innerHTML = arrivals.map((p, i) => `
-    <li><button type="button" class="piece-thumb" data-index="${i}" aria-label="${Seylune.escapeHtml(p.name)}"
-         ${i === 0 ? 'aria-current="true"' : ""}><img src="${Seylune.asset(p.image)}" alt="" loading="lazy" /></button></li>`).join("");
+    $("pieceIndex").textContent = pad(0);
+    $("pieceTotal").textContent = pad(arrivals.length - 1);
+
+    // Thumbnails to jump straight to a piece
+    $("pieceThumbs").innerHTML = arrivals.map((p, i) => `
+      <li><button type="button" class="piece-thumb" data-index="${i}" aria-label="${Seylune.escapeHtml(p.name)}"
+           ${i === 0 ? 'aria-current="true"' : ""}><img src="${Seylune.asset(p.image)}" alt="" loading="lazy" /></button></li>`).join("");
+    fillPiece(arrivals[0]);
+  }
 
   function fillPiece(p) {
     const url = Seylune.productUrl(p.id);
@@ -46,7 +61,7 @@
     $("pieceLink").textContent = p.name;
     $("pieceLink").href = url;
     $("pieceShort").textContent = p.short.split(". ")[0].replace(/\.?$/, ".");
-    $("piecePrice").textContent = Seylune.formatPrice(p.price);
+    $("piecePrice").innerHTML = Seylune.priceHtml(p);
     $("pieceSizes").innerHTML = Seylune.sizePills(p);
   }
 
@@ -77,6 +92,7 @@
   }
 
   fillPiece(arrivals[0]);
+  Seylune.whenCatalogue(buildArrivals);
   // Real stock arrived from the database: redraw the sizes
   document.addEventListener("seylune:stock", () => fillPiece(arrivals[pieceIndex]));
   $("piecePrev").addEventListener("click", () => showPiece(pieceIndex - 1));
@@ -103,7 +119,7 @@
   ============================================================ */
   const collectionsBox = $("collectionsLiquid");
   const collectionsLiquid = liquid && collectionsBox
-    ? liquid.create(collectionsBox, { focus: [[0.86, 0.4], [0.86, 0.4], [0.8, 0.4]] })
+    ? liquid.create(collectionsBox, { focus: [[0.86, 0.4], [0.86, 0.4], [0.8, 0.4], [0.83, 0.4], [0.83, 0.4]] })
     : null;
   const collectionLinks = Array.from(document.querySelectorAll(".collection-link"));
   let collectionIndex = 0;
@@ -162,17 +178,28 @@
   ============================================================ */
   const form = $("newsletterForm");
   const message = $("newsletterMessage");
-  form.addEventListener("submit", e => {
+  // With the backend connected the email is saved (through join_newsletter(),
+  // which checks it and limits how often one visitor can send)
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     const email = $("newsletterEmail").value.trim();
-    if (!Seylune.EMAIL_PATTERN.test(email)) {
-      message.textContent = "Please enter a valid email address.";
-      message.style.color = "#E59A9A";
-      return;
+    const say = (text, isError) => {
+      message.textContent = text;
+      message.style.color = isError ? "#E59A9A" : "var(--gold)";
+    };
+    if (!Seylune.EMAIL_PATTERN.test(email)) return say("Please enter a valid email address.", true);
+
+    const button = form.querySelector("button");
+    button.disabled = true;
+    try {
+      if (typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled) await SeyluneBackend.joinNewsletter(email);
+      say("Thank you — you're on the list.");
+      form.reset();
+    } catch (err) {
+      say(err.message, true);
+    } finally {
+      button.disabled = false;
     }
-    message.textContent = "Thank you — you're on the list.";
-    message.style.color = "var(--gold)";
-    form.reset();
   });
 
 
@@ -180,14 +207,15 @@
      1. SCENES
   ============================================================ */
   const scenes = Array.from(document.querySelectorAll(".scene"));
-  const liquids = { hero: heroLiquid, arrivals: arrivalsLiquid, collections: collectionsLiquid, story: storyLiquid };
+  // Read when a scene is entered (the arrivals photograph arrives with the catalogue)
+  const liquids = { hero: () => heroLiquid, arrivals: () => arrivalsLiquid, collections: () => collectionsLiquid, story: () => storyLiquid };
   let current = 0;
   let busy = false;
   let lockUntil = 0;
 
   // Each scene starts or stops what lives in it
   function sceneEntered(scene) {
-    Object.entries(liquids).forEach(([id, l]) => { if (l && l.setActive) l.setActive(id === scene.id); });
+    Object.entries(liquids).forEach(([id, get]) => { const l = get(); if (l && l.setActive) l.setActive(id === scene.id); });
     cycleCollections(scene.id === "collections");
   }
 

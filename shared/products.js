@@ -22,6 +22,8 @@ const SEYLUNE_PRODUCTS = [
     isNew: true,
     image: "home/images/products/Dresses/noira-satin-dress.jpg",
     gallery: [
+      "home/images/products/Dresses/noira-satin-dress-2.jpg",
+      "home/images/products/Dresses/noira-satin-dress-3.jpg",
       "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-2.jpg",
       "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-1.jpg",
       "Prodcut Details-Noira Satin Dress/Noira-Satin-Dress-3.jpg"
@@ -380,6 +382,314 @@ const SEYLUNE_PRODUCTS = [
     fabric: "Structured cotton blend",
     care: "Gentle machine wash, cold",
     note: "Iron on medium heat"
+  },
+
+  /* ---------------- OUTERWEAR ---------------- */
+  {
+    id: "lunaire-long-wool-coat",
+    name: "Lunaire Long Wool Coat",
+    category: "Outerwear",
+    price: 15900,
+    color: "taupe",
+    sizes: ["XS", "S", "M", "L", "XL"],
+    isNew: true,
+    image: "home/images/products/Outerwear/lunaire-long-wool-coat.jpg",
+    gallery: [
+      "home/images/products/Outerwear/lunaire-long-wool-coat-2.jpg",
+      "home/images/products/Outerwear/lunaire-long-wool-coat-3.jpg"
+    ],
+    short: "A long, softly tailored coat in warm taupe wool that falls below the knee, with clean notched lapels.",
+    description: "Lunaire is the coat the rest of the wardrobe is built around. A straight, unhurried line, a gentle shoulder and a length that moves as you walk. Wear it open over black for the evening, or over knitwear on cooler days.",
+    fabric: "Brushed wool blend with satin lining",
+    care: "Dry clean only",
+    note: "Brush gently after wear and hang on a wide hanger"
+  },
+  {
+    id: "noor-tailored-blazer",
+    name: "Noor Tailored Blazer",
+    category: "Outerwear",
+    price: 11500,
+    color: "black",
+    sizes: ["XS", "S", "M", "L"],
+    isNew: false,
+    image: "home/images/products/Outerwear/noor-tailored-blazer.jpg",
+    gallery: [
+      "home/images/products/Outerwear/noor-tailored-blazer-2.jpg",
+      "home/images/products/Outerwear/noor-tailored-blazer-3.jpg"
+    ],
+    short: "A sharply tailored black blazer with peak lapels and a single gold button at the waist.",
+    description: "Noor is precise without being stiff. The peak lapels and shaped waist give a confident line, and the single gold button adds one quiet point of light. It works over silk for dinner as well as it does over a shirt for the day.",
+    fabric: "Wool-blend suiting with satin lining",
+    care: "Dry clean recommended",
+    note: "Hang on a shaped hanger to keep the shoulders"
+  },
+  {
+    id: "selene-satin-trench",
+    name: "Selene Satin Trench",
+    category: "Outerwear",
+    price: 13800,
+    color: "ivory",
+    sizes: ["XS", "S", "M", "L"],
+    isNew: false,
+    image: "home/images/products/Outerwear/selene-satin-trench.jpg",
+    gallery: [
+      "home/images/products/Outerwear/selene-satin-trench-2.jpg",
+      "home/images/products/Outerwear/selene-satin-trench-3.jpg"
+    ],
+    short: "A fluid ivory satin trench with a wide collar and a soft tie belt, falling to mid-calf.",
+    description: "The Selene Satin Trench takes a classic shape and makes it glow. Heavy satin holds the collar and lapels, then falls loosely to the calf. Belt it softly at the waist, or leave it open over a slip dress.",
+    fabric: "Heavy duchess satin",
+    care: "Dry clean only",
+    note: "Steam lightly from the inside"
+  },
+  {
+    id: "cyra-cropped-jacket",
+    name: "Cyra Cropped Jacket",
+    category: "Outerwear",
+    price: 9900,
+    color: "plum",
+    sizes: ["XS", "S", "M", "L"],
+    isNew: false,
+    image: "home/images/products/Outerwear/cyra-cropped-jacket.jpg",
+    gallery: [
+      "home/images/products/Outerwear/cyra-cropped-jacket-2.jpg",
+      "home/images/products/Outerwear/cyra-cropped-jacket-3.jpg"
+    ],
+    short: "A cropped, collarless plum jacket with four covered buttons and a neat, fitted line.",
+    description: "Cyra sits just at the waist, so it pairs beautifully with high-waisted trousers and skirts. The round collarless neck and covered buttons keep the front clean and polished.",
+    fabric: "Brushed wool blend",
+    care: "Dry clean recommended",
+    note: "Fasten the buttons when hanging"
+  },
+  {
+    id: "mahi-belted-wrap-coat",
+    name: "Mahi Belted Wrap Coat",
+    category: "Outerwear",
+    price: 14600,
+    color: "brown",
+    sizes: ["S", "M", "L", "XL"],
+    isNew: false,
+    image: "home/images/products/Outerwear/mahi-belted-wrap-coat.jpg",
+    gallery: [
+      "home/images/products/Outerwear/mahi-belted-wrap-coat-2.jpg",
+      "home/images/products/Outerwear/mahi-belted-wrap-coat-3.jpg"
+    ],
+    short: "A deep brown wrap coat with a wide shawl collar and a self-tie belt.",
+    description: "Mahi wraps and ties like a favourite robe but is cut like tailoring. The shawl collar frames the face, and the belt can be knotted at the front or tied behind for a cleaner line.",
+    fabric: "Double-faced wool blend",
+    care: "Dry clean only",
+    note: "Tie the belt loosely when stored"
+  },
+  {
+    id: "isra-velvet-evening-jacket",
+    name: "Isra Velvet Evening Jacket",
+    category: "Outerwear",
+    price: 12400,
+    color: "emerald",
+    sizes: ["XS", "S", "M", "L"],
+    isNew: true,
+    image: "home/images/products/Outerwear/isra-velvet-evening-jacket.jpg",
+    gallery: [
+      "home/images/products/Outerwear/isra-velvet-evening-jacket-2.jpg",
+      "home/images/products/Outerwear/isra-velvet-evening-jacket-3.jpg"
+    ],
+    short: "An emerald velvet evening jacket with a slim shawl lapel and a soft, deep sheen.",
+    description: "Isra is made for candlelight. Silk-blend velvet turns from deep green to almost black as it moves, and the slim shawl lapel and shaped waist keep it elegant. Wear it over black silk, or over a dress instead of a wrap.",
+    fabric: "Silk-blend velvet with satin lining",
+    care: "Dry clean only",
+    note: "Steam, never press, to protect the velvet"
+  },
+  {
+    id: "vela-linen-overshirt",
+    name: "Vela Linen Overshirt",
+    category: "Outerwear",
+    price: 8900,
+    color: "navy",
+    sizes: ["XS", "S", "M", "L", "XL"],
+    isNew: false,
+    image: "home/images/products/Outerwear/vela-linen-overshirt.jpg",
+    gallery: [
+      "home/images/products/Outerwear/vela-linen-overshirt-2.jpg",
+      "home/images/products/Outerwear/vela-linen-overshirt-3.jpg"
+    ],
+    short: "A relaxed navy linen overshirt with patch pockets, easy to wear open or buttoned.",
+    description: "Vela is the lightest layer in the collection, made for warm Colombo evenings. Washed linen gives it a soft hand, and the patch pockets and relaxed fit make it easy over a tank or a fine knit.",
+    fabric: "Washed linen",
+    care: "Gentle machine wash, cold",
+    note: "Line dry; a few soft creases are part of linen's charm"
+  },
+  {
+    id: "orla-cape-blazer",
+    name: "Orla Cape Blazer",
+    category: "Outerwear",
+    price: 13200,
+    color: "burgundy",
+    sizes: ["XS", "S", "M", "L"],
+    isNew: false,
+    image: "home/images/products/Outerwear/orla-cape-blazer.jpg",
+    gallery: [
+      "home/images/products/Outerwear/orla-cape-blazer-2.jpg",
+      "home/images/products/Outerwear/orla-cape-blazer-3.jpg"
+    ],
+    short: "A burgundy blazer with cape panels that fall over the arms, fastened with a single button.",
+    description: "Orla has the structure of a blazer at the front and the movement of a cape at the sides. The panels fall open over the arms, so it feels dramatic yet stays easy to wear over slim trousers or an evening dress.",
+    fabric: "Crepe wool suiting",
+    care: "Dry clean recommended",
+    note: "Store on a broad hanger so the cape falls cleanly"
+  },
+
+  /* ---------------- ACCESSORIES ---------------- */
+  {
+    id: "crescent-satin-clutch",
+    name: "Crescent Satin Clutch",
+    category: "Accessories",
+    price: 6800,
+    color: "gold",
+    sizes: ["One Size"],
+    isNew: true,
+    image: "home/images/products/Accessories/crescent-satin-clutch.jpg",
+    gallery: [
+      "home/images/products/Accessories/crescent-satin-clutch-2.jpg",
+      "home/images/products/Accessories/crescent-satin-clutch-3.jpg"
+    ],
+    short: "A crescent-moon clutch in champagne-gold satin with a slim gold frame.",
+    description: "The Crescent Satin Clutch is the Seylune moon to carry in your hand. Soft satin curves into a crescent, closed by a slim gold frame, with just enough room for a phone, a lipstick and a key.",
+    fabric: "Duchess satin with a gold-tone frame",
+    care: "Wipe gently with a soft, dry cloth",
+    note: "Store in its dust bag"
+  },
+  {
+    id: "lune-pearl-drop-earrings",
+    name: "Lune Pearl Drop Earrings",
+    category: "Accessories",
+    price: 4200,
+    color: "ivory",
+    sizes: ["One Size"],
+    isNew: true,
+    image: "home/images/products/Accessories/lune-pearl-drop-earrings.jpg",
+    gallery: [
+      "home/images/products/Accessories/lune-pearl-drop-earrings-2.jpg",
+      "home/images/products/Accessories/lune-pearl-drop-earrings-3.jpg"
+    ],
+    short: "Long pearl drops on fine gold chains that catch the light as you turn.",
+    description: "Each Lune earring hangs a single freshwater pearl from a fine gold chain, long enough to move with you but light enough to wear all evening. They finish a high neckline beautifully.",
+    fabric: "Freshwater pearls on gold-plated sterling silver",
+    care: "Wipe with a soft cloth after wearing",
+    note: "Keep away from perfume and water"
+  },
+  {
+    id: "sey-silk-scarf",
+    name: "Sey Silk Scarf",
+    category: "Accessories",
+    price: 3900,
+    color: "print",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/sey-silk-scarf.jpg",
+    gallery: [
+      "home/images/products/Accessories/sey-silk-scarf-2.jpg",
+      "home/images/products/Accessories/sey-silk-scarf-3.jpg"
+    ],
+    short: "A silk square in deep blue, gold and burgundy, printed with sweeping leaves.",
+    description: "The Sey Silk Scarf brings the house colours together in one print. Tie it at the neck, knot it on a bag handle or wear it in your hair. The silk twill drapes softly and holds a knot well.",
+    fabric: "Silk twill with hand-rolled edges",
+    care: "Hand wash cold or dry clean",
+    note: "Iron on low heat from the reverse"
+  },
+  {
+    id: "noira-leather-tote",
+    name: "Noira Leather Tote",
+    category: "Accessories",
+    price: 12800,
+    color: "black",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/noira-leather-tote.jpg",
+    gallery: [
+      "home/images/products/Accessories/noira-leather-tote-2.jpg",
+      "home/images/products/Accessories/noira-leather-tote-3.jpg"
+    ],
+    short: "A structured black leather tote with slim handles and small gold details.",
+    description: "Noira is an everyday bag with an evening finish. Pebbled leather keeps its shape, the slim handles sit easily on the shoulder or the forearm, and the gold-capped handles add a quiet detail.",
+    fabric: "Pebbled calf leather, suede-lined",
+    care: "Wipe with a soft, dry cloth",
+    note: "Fill with paper to keep its shape when stored"
+  },
+  {
+    id: "aurelle-beaded-evening-bag",
+    name: "Aurelle Beaded Evening Bag",
+    category: "Accessories",
+    price: 7600,
+    color: "burgundy",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/aurelle-beaded-evening-bag.jpg",
+    gallery: [
+      "home/images/products/Accessories/aurelle-beaded-evening-bag-2.jpg",
+      "home/images/products/Accessories/aurelle-beaded-evening-bag-3.jpg"
+    ],
+    short: "A small burgundy evening bag covered in fine glass beads, with a gold frame and short chain.",
+    description: "Hundreds of glass beads give the Aurelle bag a deep, glowing texture. A gold frame clasp keeps it closed, and the short chain lets it hang from the wrist. Made to go with the Aurelle Evening Dress.",
+    fabric: "Hand-sewn glass beads on a satin base",
+    care: "Spot clean only",
+    note: "Store flat in its dust bag"
+  },
+  {
+    id: "celeste-gold-cuff",
+    name: "Celeste Gold Cuff",
+    category: "Accessories",
+    price: 5400,
+    color: "gold",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/celeste-gold-cuff.jpg",
+    gallery: [
+      "home/images/products/Accessories/celeste-gold-cuff-2.jpg",
+      "home/images/products/Accessories/celeste-gold-cuff-3.jpg"
+    ],
+    short: "A wide, softly hammered gold cuff whose small facets catch the light.",
+    description: "The Celeste Gold Cuff is hammered by hand into small facets, so it glints from every angle. It opens slightly at the back to slip on, and it looks just as good with a knit as with an evening dress.",
+    fabric: "Gold-plated brass",
+    care: "Polish gently with a soft cloth",
+    note: "Take it off before swimming or showering"
+  },
+  {
+    id: "mira-leather-belt",
+    name: "Mira Leather Belt",
+    category: "Accessories",
+    price: 3600,
+    color: "brown",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/mira-leather-belt.jpg",
+    gallery: [
+      "home/images/products/Accessories/mira-leather-belt-2.jpg",
+      "home/images/products/Accessories/mira-leather-belt-3.jpg"
+    ],
+    short: "A slim brown leather belt with an oval gold buckle.",
+    description: "Mira finishes tailoring with a small, warm detail. The slim strap suits trousers and high-waisted skirts, and the oval gold buckle echoes the moon that runs through the collection.",
+    fabric: "Full-grain leather with a gold-tone buckle",
+    care: "Condition the leather now and then",
+    note: "Hang or roll loosely; never fold"
+  },
+  {
+    id: "elara-silk-hair-bow",
+    name: "Elara Silk Hair Bow",
+    category: "Accessories",
+    price: 2900,
+    color: "plum",
+    sizes: ["One Size"],
+    isNew: false,
+    image: "home/images/products/Accessories/elara-silk-hair-bow.jpg",
+    gallery: [
+      "home/images/products/Accessories/elara-silk-hair-bow-2.jpg",
+      "home/images/products/Accessories/elara-silk-hair-bow-3.jpg"
+    ],
+    short: "A plum silk bow with long ribbon tails, made to sit at the base of a low bun.",
+    description: "Elara turns a simple bun into a finished look. Plum silk satin is tied into a full bow on a hidden clip, with long tails that fall down the back.",
+    fabric: "Silk satin on a gold-tone clip",
+    care: "Spot clean only",
+    note: "Steam the ribbon tails to smooth them"
   }
 ];
 
@@ -402,21 +712,25 @@ const SEYLUNE_COLORS = {
   print:    { label: "Print",    swatch: "linear-gradient(135deg, #2B4A7A 0%, #C6A36B 50%, #6B1F2E 100%)" }
 };
 
+// Clothing sizes, in order. Accessories are made in "One Size".
 const SEYLUNE_SIZES = ["XS", "S", "M", "L", "XL"];
 
 
 /* ============================================================
    LOOKS — pieces styled together ("Complete the look" on the
-   product page). A piece can belong to one look. Dresses join
-   looks once the Outerwear and Accessories pieces arrive.
+   product page). A piece belongs to one look at most; the page
+   shows the other pieces of its look.
 ============================================================ */
 const SEYLUNE_LOOKS = [
-  { name: "Plum Evening",     pieces: ["elara-drape-top", "veya-tailored-pants"] },
-  { name: "Ivory Ease",       pieces: ["selah-wrap-top", "mira-wide-leg-trousers"] },
-  { name: "Emerald Hour",     pieces: ["kaia-structured-blouse", "selene-midi-skirt"] },
-  { name: "The Liora Set",    pieces: ["liora-satin-blouse", "liora-satin-skirt"] },
-  { name: "Soft Taupe",       pieces: ["aven-knit-top", "vara-structured-skirt"] },
-  { name: "Printed Navy",     pieces: ["nerah-tie-front-top", "aure-slim-trousers"] },
-  { name: "Weekday Tailoring", pieces: ["veya-luxe-shirt", "nyla-straight-fit-pants"] },
-  { name: "Candlelit",        pieces: ["sorelle-evening-blouse", "noemi-pleated-trousers"] }
+  { name: "Plum Evening",      pieces: ["elara-drape-top", "veya-tailored-pants", "cyra-cropped-jacket", "elara-silk-hair-bow"] },
+  { name: "Ivory Ease",        pieces: ["selah-wrap-top", "mira-wide-leg-trousers", "sey-silk-scarf"] },
+  { name: "Emerald Hour",      pieces: ["kaia-structured-blouse", "selene-midi-skirt", "isra-velvet-evening-jacket"] },
+  { name: "The Liora Set",     pieces: ["liora-satin-blouse", "liora-satin-skirt", "celeste-gold-cuff"] },
+  { name: "Soft Taupe",        pieces: ["aven-knit-top", "vara-structured-skirt", "lunaire-long-wool-coat"] },
+  { name: "Printed Navy",      pieces: ["nerah-tie-front-top", "aure-slim-trousers", "vela-linen-overshirt"] },
+  { name: "Weekday Tailoring", pieces: ["veya-luxe-shirt", "nyla-straight-fit-pants", "noor-tailored-blazer", "mira-leather-belt"] },
+  { name: "Candlelit",         pieces: ["sorelle-evening-blouse", "noemi-pleated-trousers", "mahi-belted-wrap-coat"] },
+  { name: "Noira Night",       pieces: ["noira-satin-dress", "crescent-satin-clutch", "lune-pearl-drop-earrings"] },
+  { name: "Burgundy Gala",     pieces: ["aurelle-evening-dress", "orla-cape-blazer", "aurelle-beaded-evening-bag"] },
+  { name: "After Dark",        pieces: ["viana-slip-dress", "selene-satin-trench", "noira-leather-tote"] }
 ];

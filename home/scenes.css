@@ -354,7 +354,8 @@
 
 .collection-name {
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, min(6.4vw, 11vh), 6.2rem);
+  /* five names (and the open one's note) fit the height of the screen */
+  font-size: clamp(2.4rem, min(5vw, 8vh), 5.4rem);
   line-height: 1.02;
   letter-spacing: 0.02em;
   text-transform: uppercase;

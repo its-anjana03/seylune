@@ -60,7 +60,8 @@ const SeyluneSite = (() => {
       // The photographs load the first time the room opens
       if (!menuLiquid && liquid) {
         menuLiquid = liquid.create($("menuLiquid"), {
-          focus: [[0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.25], [0.5, 0.08]]
+          // one per menu name; About's photograph is framed a little lower
+          focus: [[0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.08], [0.5, 0.25], [0.5, 0.08]]
         });
       }
       if (menuLiquid && menuLiquid.setActive) menuLiquid.setActive(true);
@@ -157,11 +158,50 @@ const SeyluneSite = (() => {
 
   /* ============================================================
      3. THE INDEX
+     syncIndexRows() first makes the list match the live catalogue:
+     the rows written in the page are kept when nothing changed, and
+     rebuilt (with their photographs) when an admin added a piece,
+     changed a price or started a sale.
+
      opts.list  — the list of .index-row items (each data-id)
      opts.box   — the liquid box holding one <img> per row, in the
                   rows' original order
      opts.plate — where the active piece's name, price and sizes go
   ============================================================ */
+  function rowSignature(p) {
+    return [p.id, p.name, Seylune.priceHtml(p), p.image].join("|");
+  }
+
+  function syncIndexRows(list, box, pieces) {
+    const rows = list.querySelectorAll(".index-row");
+    const want = pieces.map(rowSignature);
+    const same = rows.length === want.length &&
+      Array.from(list.querySelectorAll(".index-row")).every((row, i) =>
+        row.dataset.id === pieces[i].id &&
+        row.querySelector(".index-name").textContent === pieces[i].name &&
+        row.querySelector(".index-price").innerHTML === Seylune.priceHtml(pieces[i]));
+    if (same) return false;
+
+    const esc = Seylune.escapeHtml;
+    list.innerHTML = pieces.map((p, i) => `
+      <li class="index-row product-card reveal" data-id="${p.id}" data-sig="${esc(want[i])}">
+        <a class="index-link" href="${Seylune.productUrl(p.id)}">
+          <img class="index-thumb" src="${Seylune.asset(p.image)}" alt="" loading="lazy" width="896" height="1200" />
+          <span class="index-name">${esc(p.name)}</span>
+          <span class="index-price">${Seylune.priceHtml(p)}</span>
+        </a>
+      </li>`).join("");
+    if (box) {
+      box.innerHTML = pieces.map((p, i) =>
+        `<img src="${Seylune.asset(p.image)}" alt=""${i ? ' loading="lazy"' : ""} />`).join("");
+    }
+    const count = document.getElementById("resultCount");
+    if (count) count.textContent = pieces.length;
+    Seylune.addWishlistButtons(list);
+    reveal(list, 0.1);
+    return true;
+  }
+
   function initIndex(opts) {
     const list = opts.list;
     const box = opts.box;
@@ -188,7 +228,7 @@ const SeyluneSite = (() => {
         <div class="plate-copy">
           <p class="plate-category">${esc(p.category)} · <span class="swatch" style="background:${colour.swatch}"></span>${esc(colour.label)}${p.isNew ? " · New" : ""}</p>
           <p class="plate-name"><a href="${url}">${esc(p.name)}</a></p>
-          <p class="plate-price">${Seylune.formatPrice(p.price)}</p>
+          <p class="plate-price">${Seylune.priceHtml(p)}</p>
         </div>
         <div class="plate-actions">
           <button type="button" class="wishlist-btn" data-id="${p.id}" data-name="${esc(p.name)}">${Seylune.HEART_SVG}</button>
@@ -360,6 +400,7 @@ const SeyluneSite = (() => {
   }
 
   function renderBag() {
+    Seylune.refreshCart();   // prices and photos as they are now
     const cart = Seylune.getCart();
     const count = Seylune.getCartCount();
     const subtotal = Seylune.getSubtotal(cart);
@@ -474,7 +515,7 @@ const SeyluneSite = (() => {
     qv.querySelector("#quickBody").innerHTML = `
       <p class="kicker">${esc(p.category)}${p.isNew ? " · New" : ""}</p>
       <h2 class="quick-name" id="quickName">${esc(p.name)}</h2>
-      <p class="quick-price">${Seylune.formatPrice(p.price)}</p>
+      <p class="quick-price">${Seylune.priceHtml(p)}</p>
       <p class="quick-short">${esc(p.short)}</p>
       <p class="quick-colour"><span class="option-label">Colour</span><span class="swatch" style="background:${colour.swatch}"></span>${esc(colour.label)}</p>
       <p class="option-label quick-label">Add to bag</p>
@@ -581,5 +622,5 @@ const SeyluneSite = (() => {
   }
 
 
-  return { reduced, canAnimate, liquid, isMenuOpen, reveal, initIndex, openBag, closeBag, quickView, zoom };
+  return { reduced, canAnimate, liquid, isMenuOpen, reveal, syncIndexRows, initIndex, openBag, closeBag, quickView, zoom };
 })();

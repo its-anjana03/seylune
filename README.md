@@ -11,9 +11,10 @@ A fictional Sri Lankan-inspired luxury fashion store built with plain **HTML, CS
 | Page | Path |
 | --- | --- |
 | Home | `home/home.html` |
+| All collections (from the home "Explore Collection" button) | `Collections/collections.html` |
 | New Arrivals | `New arrivals/new-arriavals.html` |
-| Dresses · Tops · Bottoms | `Dresses/`, `Tops/`, `Bottoms/` |
-| Product details (all 24 products) | `Product/product.html?id=…` |
+| Dresses · Tops · Bottoms · Outerwear · Accessories | `Dresses/`, `Tops/`, `Bottoms/`, `Outerwear/`, `Accessories/` |
+| Product details (all 40 products) | `Product/product.html?id=…` |
 | Search results | `Search/search.html?q=…` |
 | Cart | `Cart/cart.html` |
 | Checkout + order confirmation | `Checkout/checkout.html` |

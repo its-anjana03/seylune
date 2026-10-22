@@ -81,92 +81,97 @@ function scoreProduct(p, words) {
   return total;
 }
 
-const words = normalise(query).split(/\s+/).filter(Boolean);
+// Scored once the live catalogue has arrived (shared/backend.js)
+Seylune.whenCatalogue(() => {
 
-const matches = words.length
-  ? Seylune.products
-      .map((p, index) => ({ p, index, score: scoreProduct(p, words) }))
-      .filter(r => r.score > 0)
-  : Seylune.products.map((p, index) => ({ p, index, score: 1 }));   // empty query = browse all
+  const words = normalise(query).split(/\s+/).filter(Boolean);
 
-
-/* ============================================================
-   3. RENDER THE RESULTS (once, in order of relevance)
-   Each result is a row in the list and a photograph in the
-   liquid box beside it, in the same order.
-============================================================ */
-matches.sort((a, b) => b.score - a.score || a.index - b.index);
-
-const grid = document.getElementById("productGrid");
-const esc = Seylune.escapeHtml;
-
-grid.innerHTML = matches.map((r, order) => `
-  <li class="index-row product-card reveal" data-id="${r.p.id}" data-order="${order}">
-    <a class="index-link" href="${Seylune.productUrl(r.p.id)}">
-      <img class="index-thumb" src="${Seylune.asset(r.p.image)}" alt="" loading="lazy" width="896" height="1200" />
-      <span class="index-name">${esc(r.p.name)}</span>
-      <span class="index-price">${Seylune.formatPrice(r.p.price)}</span>
-    </a>
-  </li>`).join("");
-
-document.getElementById("indexLiquid").innerHTML = matches.map((r, i) =>
-  `<img src="${Seylune.asset(r.p.image)}" alt=""${i ? " loading=\"lazy\"" : ""} />`).join("");
-
-Seylune.addWishlistButtons(grid);
-
-const index = SeyluneSite.initIndex({
-  list:  grid,
-  box:   document.getElementById("indexLiquid"),
-  plate: document.getElementById("indexPlate")
-});
-
-const rows = Array.from(grid.querySelectorAll(".index-row"));
-SeyluneSite.reveal(grid, 0.3);
+  const matches = words.length
+    ? Seylune.products
+        .map((p, index) => ({ p, index, score: scoreProduct(p, words) }))
+        .filter(r => r.score > 0)
+    : Seylune.products.map((p, index) => ({ p, index, score: 1 }));   // empty query = browse all
 
 
-/* ============================================================
-   4. CATEGORY CHIPS + SORT
-============================================================ */
-const state = { category: "all", sort: "relevance" };
+  /* ============================================================
+     3. RENDER THE RESULTS (once, in order of relevance)
+     Each result is a row in the list and a photograph in the
+     liquid box beside it, in the same order.
+  ============================================================ */
+  matches.sort((a, b) => b.score - a.score || a.index - b.index);
 
-document.getElementById("categoryChips").addEventListener("click", e => {
-  const chip = e.target.closest(".filter-chip");
-  if (!chip) return;
-  state.category = chip.dataset.value;
-  document.querySelectorAll("#categoryChips .filter-chip").forEach(c => {
-    const active = c === chip;
-    c.classList.toggle("active", active);
-    c.setAttribute("aria-pressed", active);
-  });
-  render();
-});
+  const grid = document.getElementById("productGrid");
+  const esc = Seylune.escapeHtml;
 
-document.getElementById("sortSelect").addEventListener("change", e => {
-  state.sort = e.target.value;
-  render();
-});
+  grid.innerHTML = matches.map((r, order) => `
+    <li class="index-row product-card reveal" data-id="${r.p.id}" data-order="${order}">
+      <a class="index-link" href="${Seylune.productUrl(r.p.id)}">
+        <img class="index-thumb" src="${Seylune.asset(r.p.image)}" alt="" loading="lazy" width="896" height="1200" />
+        <span class="index-name">${esc(r.p.name)}</span>
+        <span class="index-price">${Seylune.priceHtml(r.p)}</span>
+      </a>
+    </li>`).join("");
 
-function render() {
-  const price = row => Seylune.getProduct(row.dataset.id).price;
-  let shown = 0;
+  document.getElementById("indexLiquid").innerHTML = matches.map((r, i) =>
+    `<img src="${Seylune.asset(r.p.image)}" alt=""${i ? " loading=\"lazy\"" : ""} />`).join("");
 
-  rows.forEach(row => {
-    const match = state.category === "all" || Seylune.getProduct(row.dataset.id).category === state.category;
-    row.hidden = !match;
-    if (match) shown++;
+  Seylune.addWishlistButtons(grid);
+
+  const index = SeyluneSite.initIndex({
+    list:  grid,
+    box:   document.getElementById("indexLiquid"),
+    plate: document.getElementById("indexPlate")
   });
 
-  rows.slice().sort((a, b) => {
-    if (state.sort === "price-low")  return price(a) - price(b);
-    if (state.sort === "price-high") return price(b) - price(a);
-    return a.dataset.order - b.dataset.order;
-  }).forEach(row => grid.appendChild(row));
+  const rows = Array.from(grid.querySelectorAll(".index-row"));
+  SeyluneSite.reveal(grid, 0.3);
 
-  document.getElementById("resultCount").textContent = shown;
-  document.getElementById("resultLabel").textContent = shown === 1 ? "result" : "results";
-  document.getElementById("emptyState").hidden = shown > 0;
-  document.getElementById("emptyQuery").textContent = query ? ` for “${query}”` : "";
-  index.refresh();
-}
 
-render();
+  /* ============================================================
+     4. CATEGORY CHIPS + SORT
+  ============================================================ */
+  const state = { category: "all", sort: "relevance" };
+
+  document.getElementById("categoryChips").addEventListener("click", e => {
+    const chip = e.target.closest(".filter-chip");
+    if (!chip) return;
+    state.category = chip.dataset.value;
+    document.querySelectorAll("#categoryChips .filter-chip").forEach(c => {
+      const active = c === chip;
+      c.classList.toggle("active", active);
+      c.setAttribute("aria-pressed", active);
+    });
+    render();
+  });
+
+  document.getElementById("sortSelect").addEventListener("change", e => {
+    state.sort = e.target.value;
+    render();
+  });
+
+  function render() {
+    const price = row => Seylune.priceOf(Seylune.getProduct(row.dataset.id));
+    let shown = 0;
+
+    rows.forEach(row => {
+      const match = state.category === "all" || Seylune.getProduct(row.dataset.id).category === state.category;
+      row.hidden = !match;
+      if (match) shown++;
+    });
+
+    rows.slice().sort((a, b) => {
+      if (state.sort === "price-low")  return price(a) - price(b);
+      if (state.sort === "price-high") return price(b) - price(a);
+      return a.dataset.order - b.dataset.order;
+    }).forEach(row => grid.appendChild(row));
+
+    document.getElementById("resultCount").textContent = shown;
+    document.getElementById("resultLabel").textContent = shown === 1 ? "result" : "results";
+    document.getElementById("emptyState").hidden = shown > 0;
+    document.getElementById("emptyQuery").textContent = query ? ` for “${query}”` : "";
+    index.refresh();
+  }
+
+  render();
+
+});

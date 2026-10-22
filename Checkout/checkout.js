@@ -30,38 +30,44 @@ const live   = typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled;
 /* ============================================================
    1. WHICH STATE TO SHOW
 ============================================================ */
-const cart = Seylune.getCart();
-const missingSize = cart.some(item => {
-  const p = Seylune.getProduct(item.id);
-  return p && p.sizes && !item.size;
-});
+let cart = [];
 
-if (cart.length === 0) {
-  $("checkoutEmpty").hidden = false;
-} else if (missingSize) {
-  // Sizes are chosen on the cart page
-  window.location.replace("../Cart/cart.html");
-} else if (live) {
-  // A real order belongs to an account: sign in first
-  SeyluneBackend.getUser().then(user => {
-    if (!user) {
-      $("checkoutSignin").hidden = false;
-      return;
-    }
+// Prices and photos as they are now (a sale may have started), then decide
+Seylune.whenCatalogue(() => {
+  Seylune.refreshCart();
+  cart = Seylune.getCart();
+  const missingSize = cart.some(item => {
+    const p = Seylune.getProduct(item.id);
+    return p && p.sizes && !item.size;
+  });
+
+  if (cart.length === 0) {
+    $("checkoutEmpty").hidden = false;
+  } else if (missingSize) {
+    // Sizes are chosen on the cart page
+    window.location.replace("../Cart/cart.html");
+  } else if (live) {
+    // A real order belongs to an account: sign in first
+    SeyluneBackend.getUser().then(user => {
+      if (!user) {
+        $("checkoutSignin").hidden = false;
+        return;
+      }
+      layout.hidden = false;
+      renderSummary();
+      prefill({ name: SeyluneBackend.displayName(user), email: user.email });
+      $("coEmail").readOnly = true;   // the order belongs to the signed-in account
+      // Fill in the rest from the member's saved details (Account → Your Details)
+      SeyluneBackend.getProfile().then(p => prefill({
+        name: p.full_name, phone: p.phone, address: p.address, city: p.city, postal: p.postal
+      })).catch(() => {});
+    });
+  } else {
     layout.hidden = false;
     renderSummary();
-    prefill({ name: SeyluneBackend.displayName(user), email: user.email });
-    $("coEmail").readOnly = true;   // the order belongs to the signed-in account
-    // Fill in the rest from the member's saved details (Account → Your Details)
-    SeyluneBackend.getProfile().then(p => prefill({
-      name: p.full_name, phone: p.phone, address: p.address, city: p.city, postal: p.postal
-    })).catch(() => {});
-  });
-} else {
-  layout.hidden = false;
-  renderSummary();
-  prefill(Seylune.read(Seylune.KEYS.user, null));
-}
+    prefill(Seylune.read(Seylune.KEYS.user, null));
+  }
+});
 
 
 /* ============================================================

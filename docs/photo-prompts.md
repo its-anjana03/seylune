@@ -36,6 +36,19 @@ Main is required. Views 2 and 3 are for the new full-screen zoom gallery; add th
 
 ---
 
+> **Done (22 Oct 2026):** all 16 Outerwear and Accessories pieces are in the store, with three
+> views each. The photos were converted to JPG (`<id>.jpg`, `<id>-2.jpg` back/side, `<id>-3.jpg`
+> close-up); the original PNGs are kept outside the repo in `../Seylune photo originals/`.
+
+## Home page backgrounds for the two new collections
+
+The home page's "Shop by Category" scene shows a wide photograph (1744 × 608 px) behind each
+name. For Outerwear and Accessories (`home/images/scenes/outerwear.jpg`, `accessories.jpg`) the
+model was cut out of her product photo (Isra velvet jacket, Crescent clutch) and placed in the same
+wood-panelled room as Tops, so all five match. To replace them with generated shots instead,
+upload `home/images/Bottoms.jpg` as the reference, ask for the same room with the model on the
+right third, and save over those two files.
+
 ## New collection: Outerwear (8 pieces)
 
 Folder: `home/images/products/Outerwear/` · sizes XS–XL

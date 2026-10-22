@@ -63,6 +63,40 @@ const SeyluneBackend = (() => {
 
 
   /* ============================================================
+     2b. THE CATALOGUE — every piece, from the products table
+     Shoppers only receive pieces that are in the shop (active);
+     Row Level Security hides archived ones. If the database has no
+     details yet (before step 3), the built-in copy in
+     shared/products.js stays in use.
+  ============================================================ */
+  const CATALOGUE_COLUMNS =
+    "id, name, category, price, sale_price, color, sizes, is_new, image, gallery, short, description, fabric, care, note, sort_order, active, created_at";
+
+  function toPiece(row) {
+    return {
+      id: row.id, name: row.name, category: row.category,
+      price: row.price, salePrice: row.sale_price || null,
+      color: row.color, sizes: row.sizes || [], isNew: !!row.is_new,
+      image: row.image, gallery: row.gallery || [],
+      short: row.short || "", description: row.description || "",
+      fabric: row.fabric || "", care: row.care || "", note: row.note || "",
+      sortOrder: row.sort_order, active: row.active
+    };
+  }
+
+  async function loadCatalogue() {
+    if (!enabled) return false;
+    const { data, error } = await client.from("products").select(CATALOGUE_COLUMNS)
+      .eq("active", true).order("sort_order").order("created_at");
+    // A piece without a photo is left out of the shop until it has one
+    const pieces = (data || []).filter(r => r.image);
+    if (error || !pieces.length) return false;
+    Seylune.setCatalogue(pieces.map(toPiece));
+    return true;
+  }
+
+
+  /* ============================================================
      3. ACCOUNTS
   ============================================================ */
   async function getUser() {
@@ -183,7 +217,7 @@ const SeyluneBackend = (() => {
   async function adminOrders() {
     const { data, error } = await client
       .from("orders")
-      .select("number, status, email, delivery, payment, subtotal, shipping, total, ship_name, ship_phone, ship_address, ship_city, ship_postal, notes, created_at, status_updated_at, order_items (product_id, name, size, unit_price, quantity)")
+      .select("number, user_id, status, email, delivery, payment, subtotal, shipping, total, ship_name, ship_phone, ship_address, ship_city, ship_postal, notes, created_at, status_updated_at, order_items (product_id, name, size, unit_price, quantity)")
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(friendly(error, "Orders could not be loaded."));
@@ -210,13 +244,119 @@ const SeyluneBackend = (() => {
     if (!data || !data.length) throw new Error("Only the Seylune team can change stock.");
   }
 
+  /* ----- Products (admin): every piece, archived ones too ----- */
+  async function adminProducts() {
+    const { data, error } = await client.from("products").select(CATALOGUE_COLUMNS)
+      .order("sort_order").order("created_at");
+    if (error) throw new Error(friendly(error, "Pieces could not be loaded."));
+    return data;
+  }
+
+  // Saves one piece. The database checks every value again (price range,
+  // sale below price, known category…) and refuses anyone not on the team.
+  async function saveProduct(row, isNew) {
+    const payload = { ...row, updated_at: new Date().toISOString() };
+    const query = isNew
+      ? client.from("products").insert(payload).select("id")
+      : client.from("products").update(payload).eq("id", row.id).select("id");
+    const { data, error } = await query;
+    if (error) {
+      if (error.code === "23505") throw new Error("A piece with this web address already exists. Change the name or address.");
+      if (error.code === "23514") throw new Error("The database refused a value: check the price, sale price, address and text lengths.");
+      throw new Error(friendly(error, "The piece could not be saved."));
+    }
+    if (!data || !data.length) throw new Error("Only the Seylune team can change pieces.");
+    // Every size needs a stock row (new sizes start at 0)
+    if (row.sizes && row.sizes.length) {
+      const rows = row.sizes.map(size => ({ product_id: row.id, size, quantity: 0 }));
+      const { error: stockError } = await client.from("product_stock")
+        .upsert(rows, { onConflict: "product_id,size", ignoreDuplicates: true });
+      if (stockError) throw new Error(friendly(stockError, "The piece was saved, but its sizes could not be added to stock."));
+    }
+    loadStock();
+    loadCatalogue();
+  }
+
+  // Uploads a photo to the product-images bucket and returns its public address.
+  // The bucket only accepts JPG / PNG / WebP up to 5 MB, and only from admins.
+  async function uploadProductImage(blob, productId) {
+    const path = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+    const { error } = await client.storage.from("product-images")
+      .upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: false });
+    if (error) throw new Error(friendly(error, "The photo could not be uploaded."));
+    return client.storage.from("product-images").getPublicUrl(path).data.publicUrl;
+  }
+
+  /* ----- Customers (admin): members' profiles ----- */
+  async function adminCustomers() {
+    const { data, error } = await client.from("profiles")
+      .select("id, full_name, email, phone, city, created_at").order("created_at", { ascending: false });
+    if (error) throw new Error(friendly(error, "Customers could not be loaded."));
+    return data;
+  }
+
+  // The team list (admins see every row once supabase/04-team-list.sql has
+  // run; before that, only their own), so team accounts can be left out of
+  // the Customers list
+  async function adminTeam() {
+    const { data, error } = await client.from("admins").select("user_id");
+    if (error) throw new Error(friendly(error, "The team list could not be loaded."));
+    return data;
+  }
+
+  /* ----- Messages + newsletter ----- */
+  // Anyone may send — through guarded functions with a per-visitor limit
+  async function sendMessage(name, email, message) {
+    const { error } = await client.rpc("send_message", { p_name: name, p_email: email, p_message: message });
+    if (error) throw new Error(friendly(error, "Your message could not be sent. Please try again."));
+  }
+
+  async function joinNewsletter(email) {
+    const { error } = await client.rpc("join_newsletter", { p_email: email });
+    if (error) throw new Error(friendly(error, "You could not be added to the list. Please try again."));
+  }
+
+  // Only the team may read them
+  async function adminMessages() {
+    const { data, error } = await client.from("messages")
+      .select("id, name, email, message, handled, created_at").order("created_at", { ascending: false }).limit(500);
+    if (error) throw new Error(friendly(error, "Messages could not be loaded."));
+    return data;
+  }
+
+  async function setMessageHandled(id, handled) {
+    const { data, error } = await client.from("messages").update({ handled }).eq("id", id).select("id");
+    if (error || !data || !data.length) throw new Error(friendly(error, "The message could not be updated."));
+  }
+
+  async function deleteMessage(id) {
+    const { error } = await client.from("messages").delete().eq("id", id);
+    if (error) throw new Error(friendly(error, "The message could not be deleted."));
+  }
+
+  async function adminNewsletter() {
+    const { data, error } = await client.from("newsletter")
+      .select("email, created_at").order("created_at", { ascending: false });
+    if (error) throw new Error(friendly(error, "The newsletter list could not be loaded."));
+    return data;
+  }
+
+  async function deleteNewsletter(email) {
+    const { error } = await client.from("newsletter").delete().eq("email", email);
+    if (error) throw new Error(friendly(error, "The email could not be removed."));
+  }
+
   const ready = enabled ? loadStock() : Promise.resolve();
+  const catalogue = enabled ? loadCatalogue().catch(() => false) : Promise.resolve(false);
 
   return {
-    enabled, client, ready, friendly,
-    loadStock, getUser, onAuthChange, signUp, signIn, signOut,
+    enabled, client, ready, catalogue, friendly, CATALOGUE_COLUMNS, toPiece,
+    loadStock, loadCatalogue, getUser, onAuthChange, signUp, signIn, signOut,
     sendPasswordReset, updatePassword, displayName,
     placeOrder, myOrders, getProfile, saveProfile,
-    isAdmin, adminOrders, setOrderStatus, allStock, setStockCount
+    isAdmin, adminOrders, setOrderStatus, allStock, setStockCount,
+    adminProducts, saveProduct, uploadProductImage, adminCustomers, adminTeam,
+    sendMessage, joinNewsletter, adminMessages, setMessageHandled, deleteMessage,
+    adminNewsletter, deleteNewsletter
   };
 })();

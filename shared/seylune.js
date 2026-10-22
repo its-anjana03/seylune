@@ -40,7 +40,8 @@ const Seylune = (() => {
 
   const products = typeof SEYLUNE_PRODUCTS !== "undefined" ? SEYLUNE_PRODUCTS : [];
 
-  function asset(path)      { return ROOT + path; }
+  // Photos in the repo are stored as "home/images/…"; uploaded ones are full URLs
+  function asset(path)      { return /^https?:/.test(path || "") ? path : ROOT + path; }
   function productUrl(id)   { return ROOT + "Product/product.html?id=" + encodeURIComponent(id); }
   function getProduct(id)   { return products.find(p => p.id === id) || null; }
 
@@ -48,7 +49,9 @@ const Seylune = (() => {
     const pages = {
       Dresses: "Dresses/dresses.html",
       Tops:    "Tops/tops.html",
-      Bottoms: "Bottoms/bottoms.html"
+      Bottoms: "Bottoms/bottoms.html",
+      Outerwear: "Outerwear/outerwear.html",
+      Accessories: "Accessories/accessories.html"
     };
     return ROOT + (pages[category] || "New arrivals/new-arriavals.html");
   }
@@ -61,6 +64,38 @@ const Seylune = (() => {
   }
 
   // "Rs. 8,950"
+  /* ----- Prices: a piece may carry a sale price ----- */
+  function priceOf(p)  { return p.salePrice || p.price; }
+  function onSale(p)   { return !!p.salePrice && p.salePrice < p.price; }
+
+  // "Rs. 8,950", or the full price struck through beside the sale price
+  function priceHtml(p) {
+    return onSale(p)
+      ? `<s class="price-was">${formatPrice(p.price)}</s> <span class="price-now">${formatPrice(p.salePrice)}</span>`
+      : formatPrice(p.price);
+  }
+
+  /* ----- The catalogue from the database -----
+     shared/products.js is the built-in copy (and the demo-mode
+     catalogue). When shared/backend.js loads the live catalogue,
+     setCatalogue() replaces the pieces in place, so every page
+     reading Seylune.products sees the same list. */
+  function setCatalogue(list) {
+    products.splice(0, products.length, ...list);
+    document.dispatchEvent(new CustomEvent("seylune:catalogue"));
+  }
+
+  // Run fn once the live catalogue has arrived (or straight away in demo
+  // mode). If the database is slow, the built-in copy is used after 2.5s.
+  function whenCatalogue(fn) {
+    const backend = typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled ? SeyluneBackend : null;
+    if (!backend) { fn(); return; }
+    let done = false;
+    const run = () => { if (!done) { done = true; fn(); } };
+    backend.catalogue.then(run, run);
+    setTimeout(run, 2500);
+  }
+
   function formatPrice(amount) {
     return "Rs. " + Number(amount).toLocaleString("en-IN");
   }
@@ -226,8 +261,8 @@ const Seylune = (() => {
     const image = asset(p.image);
     return (p.sizes || []).map(s => {
       const out = stockLeft(p.id, s) === 0;
-      return `<button type="button" class="size-pill add-to-cart${out ? " is-sold-out" : ""}"
-        data-id="${p.id}" data-name="${name}" data-price="${p.price}" data-image="${image}" data-size="${s}"
+      return `<button type="button" class="size-pill add-to-cart${s.length > 2 ? " is-wide" : ""}${out ? " is-sold-out" : ""}"
+        data-id="${p.id}" data-name="${name}" data-price="${priceOf(p)}" data-image="${image}" data-size="${s}"
         ${out ? `aria-disabled="true" aria-label="${name}, size ${s}, sold out"`
                : `aria-label="Add ${name}, size ${s}, to cart${extraLabel || ""}"`}>${s}</button>`;
     }).join("");
@@ -254,6 +289,25 @@ const Seylune = (() => {
   // drawer and cancels the event; without it, a toast says so instead.
   function announceAdd(product) {
     return !document.dispatchEvent(new CustomEvent("seylune:added", { detail: product, cancelable: true }));
+  }
+
+  // Bring the cart in line with the catalogue (a price changed, a sale
+  // started, a photo was replaced). Returns pieces that are gone.
+  function refreshCart() {
+    const cart = getCart();
+    const gone = [];
+    let changed = false;
+    cart.forEach(item => {
+      const p = getProduct(item.id);
+      if (!p) { gone.push(item); return; }
+      const price = priceOf(p), image = asset(p.image);
+      if (item.price !== price || item.name !== p.name || item.image !== image) {
+        Object.assign(item, { price, name: p.name, image });
+        changed = true;
+      }
+    });
+    if (changed) saveCart(cart);
+    return gone;
   }
 
   function clearCart() {
@@ -368,7 +422,7 @@ const Seylune = (() => {
     const name  = escapeHtml(p.name);
 
     return `
-      <article class="product-card" data-id="${p.id}" data-price="${p.price}">
+      <article class="product-card" data-id="${p.id}" data-price="${priceOf(p)}">
         <div class="product-frame">
           <a href="${url}" class="product-image-link" tabindex="-1" aria-hidden="true">
             <div class="product-image">
@@ -381,9 +435,9 @@ const Seylune = (() => {
           <button type="button" class="quick-btn" data-id="${p.id}" aria-label="Quick view: ${name}">Quick view</button>
         </div>
         <div class="product-info">
-          <p class="product-card-category">${escapeHtml(p.category)}</p>
+          <p class="product-card-category">${escapeHtml(p.category)}${onSale(p) ? ` · <span class="sale-word">Sale</span>` : ""}</p>
           <h3 class="product-name"><a href="${url}">${name}</a></h3>
-          <p class="product-price">${formatPrice(p.price)}</p>
+          <p class="product-price">${priceHtml(p)}</p>
         </div>
       </article>`;
   }
@@ -462,7 +516,7 @@ const Seylune = (() => {
 
   /* ============================================================
      8. CATALOGUE FILTERS + SORT
-     Used on New Arrivals, Dresses, Tops and Bottoms.
+     Used on New Arrivals and every collection page.
      The cards stay in the HTML; each card's size and colour come
      from the shared catalogue using its data-id.
      options.prices = [{ value, label, min, max }]
@@ -484,16 +538,17 @@ const Seylune = (() => {
       const product = getProduct(id) || {};
       card.dataset.id = id;
       card.dataset.order = card.dataset.order || index + 1;
-      card.dataset.size = (product.sizes || []).join(" ");
+      card.dataset.size = (product.sizes || []).join("|");   // "|" because "One Size" has a space
       card.dataset.color = product.color || "";
-      card.dataset.price = card.dataset.price || product.price;
+      card.dataset.price = product.price ? priceOf(product) : card.dataset.price;
+      card.dataset.sale = onSale(product) ? "yes" : "no";
     });
 
-    const state = { size: "all", color: "all", price: "all", sort: "newest" };
+    const state = { size: "all", color: "all", price: "all", sale: "all", sort: "newest" };
 
     /* ----- Build the filter panel from what is on this page ----- */
     if (panel) {
-      const sizesOnPage  = SEYLUNE_SIZES.filter(s => cards.some(c => c.dataset.size.split(" ").includes(s)));
+      const sizesOnPage  = SEYLUNE_SIZES.concat("One Size").filter(s => cards.some(c => c.dataset.size.split("|").includes(s)));
       const colorsOnPage = Object.keys(SEYLUNE_COLORS).filter(k => cards.some(c => c.dataset.color === k));
 
       const chip = (value, label, extra) =>
@@ -501,12 +556,13 @@ const Seylune = (() => {
 
       panel.innerHTML = `
         <div class="filter-panel-inner">
+          ${sizesOnPage.length > 1 ? `
           <div class="filter-group">
             <p class="filter-label" id="filterSizeLabel">Size</p>
             <div class="filter-options" data-filter="size" role="group" aria-labelledby="filterSizeLabel">
               ${chip("all", "All")}${sizesOnPage.map(s => chip(s, s)).join("")}
             </div>
-          </div>
+          </div>` : ""}
           <div class="filter-group">
             <p class="filter-label" id="filterColorLabel">Colour</p>
             <div class="filter-options" data-filter="color" role="group" aria-labelledby="filterColorLabel">
@@ -521,6 +577,13 @@ const Seylune = (() => {
               ${chip("all", "All")}${prices.map(p => chip(p.value, p.label)).join("")}
             </div>
           </div>
+          ${cards.some(c => c.dataset.sale === "yes") ? `
+          <div class="filter-group">
+            <p class="filter-label" id="filterSaleLabel">Offers</p>
+            <div class="filter-options" data-filter="sale" role="group" aria-labelledby="filterSaleLabel">
+              ${chip("all", "All")}${chip("yes", "On sale")}
+            </div>
+          </div>` : ""}
           <div class="filter-actions">
             <button type="button" class="btn btn-small" id="resetFilters">Reset Filters</button>
           </div>
@@ -554,7 +617,7 @@ const Seylune = (() => {
     }
 
     function reset() {
-      state.size = state.color = state.price = "all";
+      state.size = state.color = state.price = state.sale = "all";
       state.sort = "newest";
       if (sortSelect) sortSelect.value = "newest";
       apply();
@@ -576,7 +639,8 @@ const Seylune = (() => {
 
       cards.forEach(card => {
         const match =
-          (state.size === "all"  || card.dataset.size.split(" ").includes(state.size)) &&
+          (state.size === "all"  || card.dataset.size.split("|").includes(state.size)) &&
+          (state.sale === "all"  || card.dataset.sale === state.sale) &&
           (state.color === "all" || card.dataset.color === state.color) &&
           priceMatches(parseInt(card.dataset.price, 10));
 
@@ -603,7 +667,7 @@ const Seylune = (() => {
       }
 
       // Number of active filters on the toggle button
-      const activeCount = ["size", "color", "price"].filter(k => state[k] !== "all").length;
+      const activeCount = ["size", "color", "price", "sale"].filter(k => state[k] !== "all").length;
       const badge = document.getElementById("filterCount");
       if (badge) {
         badge.textContent = activeCount;
@@ -692,7 +756,8 @@ const Seylune = (() => {
     ROOT, KEYS, DELIVERY, FREE_DELIVERY_MIN, EMAIL_PATTERN,
     products, getProduct, asset, productUrl, categoryUrl,
     escapeHtml, formatPrice, read, write, remove,
-    lineKey, getCart, saveCart, getCartCount, getSubtotal, getShipping,
+    lineKey, getCart, saveCart, getCartCount, getSubtotal, getShipping, refreshCart,
+    priceOf, onSale, priceHtml, setCatalogue, whenCatalogue,
     addToCart, changeQuantity, changeSize, removeFromCart, clearCart, updateCartBadge,
     getWishlist, isSaved, toggleWishlist, syncWishlistButtons,
     toast, renderProductCard, addWishlistButtons, initCatalog, HEART_SVG,

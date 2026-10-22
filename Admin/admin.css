@@ -2,20 +2,78 @@
    SEYLUNE — ADMIN PAGE (the Seylune team only)
    A working room: quieter than the shop, the same house. Chips,
    buttons, fields and the still room come from shared/site.css.
+   0. The admin bar
    1. The panel + figures
    2. Tabs + tools
    3. Orders
    4. Stock
+   4b. Shared bits  4c. Dashboard  4d. Products
+   4e. Customers + messages  4f. Printing a packing slip
    5. Phones
 ============================================================ */
+
+
+/* ============================================================
+   0. THE ADMIN BAR — the team's own interface: a plain working
+      bar instead of the shop's corner words and menu
+============================================================ */
+.admin-bar {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  height: 64px;
+  padding: 0 var(--pad);
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-logo {
+  font-size: 1rem;
+  letter-spacing: 0.4em;
+}
+
+.admin-logo img {
+  width: 22px;
+}
+
+.admin-badge {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--line-gold);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.admin-bar-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.4vw, 2rem);
+  margin-left: auto;
+}
+
+.admin-who {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+/* The door (sign in / not on the team) sits under the bar */
+.page-admin .still-room {
+  min-height: calc(100svh - 64px);
+  padding-top: var(--gap-y);
+}
 
 
 /* ============================================================
    1. THE PANEL + FIGURES
 ============================================================ */
 .admin {
-  min-height: 100svh;
-  padding: calc(var(--header) + var(--gap-y)) var(--pad) clamp(3rem, 9vh, 5rem);
+  min-height: calc(100svh - 64px);
+  padding: var(--gap-y) var(--pad) clamp(3rem, 9vh, 5rem);
   background:
     radial-gradient(ellipse 60% 50% at 90% 0%, rgba(34, 26, 36, 0.95), transparent 70%),
     var(--bg-main);
@@ -315,6 +373,12 @@
   grid-column: 1 / -1;
 }
 
+/* Notes keep the customer's line breaks (shown as plain text) */
+.ao-notes dd {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .ao-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -423,8 +487,950 @@
 
 
 /* ============================================================
+   4b. SHARED BITS — tab counts, tools, tags
+============================================================ */
+.admin-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.admin-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.tab-count:not(:empty) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--bg-deep);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.admin-tools-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.4rem;
+}
+
+.admin-note {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.tag-archived,
+.tag-new,
+.tag-sale {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.12rem 0.45rem;
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-body);
+  font-size: 0.54rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  vertical-align: 0.2em;
+  color: var(--text-soft);
+}
+
+.tag-new {
+  border-color: var(--line-gold);
+  color: var(--gold);
+}
+
+.tag-sale {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--bg-deep);
+}
+
+.ao-slip {
+  margin-left: auto;
+}
+
+
+/* ============================================================
+   4c. DASHBOARD
+============================================================ */
+.dash-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-bottom: 1.6rem;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.dash-tiles > div {
+  padding: 1.2rem 1.4rem;
+  background: var(--bg-main);
+}
+
+.dash-tiles dt {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.dash-tiles dd {
+  margin-top: 0.3rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  letter-spacing: 0.03em;
+}
+
+.dash-card {
+  padding: 1.4rem;
+  margin-bottom: 1.6rem;
+  border: 1px solid var(--line);
+  background: rgba(34, 26, 36, 0.35);
+}
+
+.dash-title {
+  margin-bottom: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.dash-grid .dash-card {
+  margin-bottom: 0;
+}
+
+/* Revenue by day: one gold bar per day on a quiet baseline */
+.chart-plot {
+  position: relative;
+  height: 220px;
+  padding-top: 1.4rem;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.chart-max {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.66rem;
+  color: var(--text-soft);
+}
+
+.chart-max::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.2rem;
+  width: calc(100vw);
+  max-width: 2000px;
+  border-top: 1px dashed var(--line);
+  pointer-events: none;
+}
+
+.chart-plot {
+  overflow: hidden;
+}
+
+.chart-bars {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--count), minmax(0, 1fr));
+  align-items: end;
+  gap: 2px;
+  height: 100%;
+}
+
+.chart-bar {
+  position: relative;
+  height: 100%;
+  cursor: default;
+}
+
+/* The visible bar; the button around it is the full-height hit area */
+.chart-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--h);
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--gold);
+  transition: background-color 0.2s;
+}
+
+.chart-bar.is-empty::before {
+  background: var(--line);
+}
+
+.chart-bar:hover::before,
+.chart-bar:focus-visible::before {
+  background: var(--gold-hover);
+}
+
+.chart-tip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 0.1rem;
+  min-width: 8.5rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--line-gold);
+  font-size: 0.8rem;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.chart-tip strong {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.chart-tip span {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+}
+
+.chart-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.66rem;
+  color: var(--text-soft);
+}
+
+.dash-table-toggle {
+  margin-top: 1rem;
+}
+
+.dash-table-toggle summary {
+  cursor: pointer;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.dash-table {
+  width: 100%;
+  margin-top: 0.8rem;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.dash-table th,
+.dash-table td {
+  padding: 0.45rem 0.4rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.dash-table th {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+/* Best sellers, status counts, sizes running out */
+.dash-best li,
+.dash-sizes li,
+.dash-status li {
+  display: grid;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.86rem;
+}
+
+.dash-best li {
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-areas: "img name" "img bar" "img qty";
+  row-gap: 0.25rem;
+}
+
+.dash-best img,
+.dash-best .ao-noimg {
+  grid-area: img;
+  width: 36px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.best-name {
+  grid-area: name;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.best-name small {
+  font-family: var(--font-body);
+  color: var(--text-soft);
+}
+
+.best-bar {
+  grid-area: bar;
+  height: 4px;
+  background: var(--line);
+}
+
+.best-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 0 2px 2px 0;
+  background: var(--gold);
+}
+
+.best-qty {
+  grid-area: qty;
+  font-size: 0.76rem;
+  color: var(--text-soft);
+}
+
+.dash-status li {
+  grid-template-columns: auto 1fr;
+}
+
+.dash-count {
+  justify-self: end;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.dash-sizes li {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.dash-sizes .best-name {
+  grid-area: auto;
+}
+
+.dash-left {
+  font-size: 0.76rem;
+  color: var(--gold);
+}
+
+.dash-left.is-out {
+  color: var(--error);
+}
+
+.dash-best .admin-empty,
+.dash-sizes .admin-empty {
+  display: block;
+  padding: 0.6rem 0;
+  border: none;
+}
+
+
+/* ============================================================
+   4d. PRODUCTS — the list and the editor
+============================================================ */
+.product-admin-list {
+  border-top: 1px solid var(--line);
+}
+
+.pa-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 0.6fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.86rem;
+  text-align: left;
+  transition: background-color 0.3s;
+}
+
+.pa-row:hover {
+  background: rgba(34, 26, 36, 0.5);
+}
+
+.pa-row img,
+.pa-row .ao-noimg {
+  width: 44px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.pa-name {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pa-meta,
+.pa-sizes,
+.pa-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-soft);
+}
+
+.pa-price {
+  justify-self: end;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.product-editor {
+  padding-bottom: 2rem;
+}
+
+.editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem 2rem;
+  margin-bottom: 1.6rem;
+}
+
+.editor-head .dash-title {
+  margin: 0;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 0.8fr);
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.editor-select {
+  width: 100%;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.editor-sizes {
+  border: none;
+}
+
+.editor-sizes legend {
+  margin-bottom: 0.6rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.editor-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.editor-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-bottom: 1.6rem;
+}
+
+.editor-toggles small {
+  color: var(--text-soft);
+}
+
+.editor-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.editor-order input {
+  width: 5rem;
+  padding: 0.4rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--text-main);
+  font-size: 0.92rem;
+}
+
+.editor-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.editor-photos .option-label {
+  margin-bottom: 0.6rem;
+}
+
+.editor-main-photo {
+  aspect-ratio: 3 / 4;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+}
+
+.editor-main-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.editor-nophoto {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.editor-upload {
+  position: relative;
+  cursor: pointer;
+}
+
+.editor-upload:focus-within {
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.editor-gallery-label {
+  margin-top: 1.6rem;
+}
+
+.editor-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.editor-thumb {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.editor-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+}
+
+.editor-thumb-remove,
+.editor-thumb-main {
+  position: absolute;
+  background: rgba(15, 13, 16, 0.75);
+  color: var(--text-main);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.editor-thumb-remove {
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 26px;
+  height: 26px;
+  font-size: 1rem;
+}
+
+.editor-thumb-main {
+  left: 0.25rem;
+  bottom: 0.25rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.editor-thumb-remove:hover {
+  color: var(--error);
+}
+
+.editor-thumb-main:hover {
+  color: var(--gold);
+}
+
+.editor-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding-top: 1.4rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.editor-foot .form-feedback {
+  margin: 0;
+}
+
+
+/* ============================================================
+   4e. CUSTOMERS + MESSAGES
+============================================================ */
+.customer-list,
+.message-list {
+  border-top: 1px solid var(--line);
+}
+
+.customer {
+  border-bottom: 1px solid var(--line);
+}
+
+.customer summary {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1.6fr) minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 0.8fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.86rem;
+}
+
+.customer summary::-webkit-details-marker {
+  display: none;
+}
+
+.cu-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-gold);
+  font-family: var(--font-display);
+  color: var(--gold);
+}
+
+.cu-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cu-who small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  color: var(--text-soft);
+}
+
+.cu-phone,
+.cu-orders,
+.cu-last {
+  color: var(--text-soft);
+}
+
+.cu-spent {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.cu-body {
+  padding: 0 0 1.2rem 56px;
+}
+
+.cu-body a {
+  color: var(--gold);
+  border-bottom: 1px solid var(--line-gold);
+}
+
+.cu-orderlist li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 0.8fr)) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.84rem;
+}
+
+.message-card {
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.message-card.is-done {
+  opacity: 0.6;
+}
+
+.message-card header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem 1.4rem;
+  margin-bottom: 0.7rem;
+}
+
+.mc-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mc-who a {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--gold);
+}
+
+.mc-date {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+/* Shown exactly as typed (as text), line breaks kept */
+.mc-text {
+  max-width: 60rem;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+}
+
+.mc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem 1rem;
+}
+
+.news-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem;
+}
+
+.news-list li span:nth-child(2) {
+  color: var(--text-soft);
+  font-size: 0.8rem;
+}
+
+.message-list > .admin-note {
+  padding: 0.8rem 0;
+}
+
+
+/* ============================================================
+   4f. PRINTING A PACKING SLIP — only the slip is printed
+============================================================ */
+.print-slip {
+  display: none;
+}
+
+@media print {
+  body.page-admin > *:not(.print-slip) {
+    display: none !important;
+  }
+
+  body.page-admin {
+    background: #fff;
+    color: #000;
+  }
+
+  .print-slip {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 11pt;
+    color: #000;
+  }
+
+  .slip {
+    max-width: 180mm;
+    margin: 0 auto;
+  }
+
+  .slip-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #000;
+  }
+
+  .slip-brand {
+    font-family: var(--font-display);
+    font-size: 20pt;
+    letter-spacing: 0.4em;
+  }
+
+  .slip-title {
+    font-family: var(--font-display);
+    font-size: 14pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .slip-meta {
+    text-align: right;
+  }
+
+  .slip-label {
+    margin-top: 0.8rem;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .slip-table {
+    width: 100%;
+    margin: 1.2rem 0;
+    border-collapse: collapse;
+  }
+
+  .slip-table th,
+  .slip-table td {
+    padding: 0.4rem 0.3rem;
+    border-bottom: 1px solid #999;
+    text-align: left;
+  }
+
+  .slip-table tfoot td {
+    border-bottom: none;
+  }
+
+  .slip-foot {
+    margin-top: 2rem;
+    font-size: 9pt;
+  }
+}
+
+/* ============================================================
    5. PHONES
 ============================================================ */
+.admin-bar .nav-word {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .admin-who {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-bar {
+    gap: 0.8rem;
+  }
+
+  /* The crescent alone on small phones */
+  .admin-logo span {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-photos {
+    max-width: 26rem;
+  }
+
+  .pa-row {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .pa-meta,
+  .pa-sizes,
+  .pa-stock {
+    display: none;
+  }
+
+  .customer summary {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+  }
+
+  .cu-phone,
+  .cu-orders,
+  .cu-last {
+    display: none;
+  }
+
+  .cu-body {
+    padding-left: 0;
+  }
+
+  .cu-orderlist li {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .cu-orderlist li span:nth-child(2),
+  .cu-orderlist li span:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dash-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .editor-three {
+    grid-template-columns: 1fr;
+  }
+
+  .ao-slip {
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 960px) {
   .admin-order summary {
     grid-template-columns: minmax(0, 1fr) auto auto;

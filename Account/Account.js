@@ -366,6 +366,15 @@ $("signOutBtn").addEventListener("click", async () => {
 
 async function renderAccount() {
   const user = await Accounts.current();
+
+  // The Seylune team has its own interface: an admin signing in (or opening
+  // this page) goes straight to it. Customers stay here. This only decides
+  // which screen to show; the database decides what each person may do.
+  if (user && live && next !== "checkout" && await SeyluneBackend.isAdmin()) {
+    location.replace("../Admin/admin.html");
+    return;
+  }
+
   $("authSection").hidden = !!user;
   $("accountDashboard").hidden = !user;
 
@@ -379,10 +388,7 @@ async function renderAccount() {
       : "";
     $("dashboardEmail").textContent = user.email + since;
     renderOrders(user);
-    if (live) {
-      renderDetails();
-      SeyluneBackend.isAdmin().then(yes => { $("adminLink").hidden = !yes; });
-    }
+    if (live) renderDetails();
   }
   renderSaved();
 }
@@ -545,4 +551,4 @@ $("savedGrid").addEventListener("click", e => {
 /* ============================================================
    INIT
 ============================================================ */
-renderAccount();
+Seylune.whenCatalogue(renderAccount);

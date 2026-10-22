@@ -26,7 +26,7 @@ A Sri Lankan-rooted luxury label: **Sey** (a hint of Ceylon) + **Lune** (the moo
 - All state (cart, wishlist, account, orders) lives in `localStorage`.
 
 ## Capabilities and Constraints
-- Pages: Home, New Arrivals, Dresses, Tops, Bottoms, Product details (`Product/product.html?id=…`, 24 products), Search, Cart, Checkout + order confirmation, Account (sign in, orders, saved pieces), About + contact.
+- Pages: Home, New Arrivals, Dresses, Tops, Bottoms, Outerwear, Accessories, Product details (`Product/product.html?id=…`, 40 products), Search, Cart, Checkout + order confirmation, Account (sign in, orders, saved pieces), About + contact.
 - Shared catalogue in `shared/products.js`; shared behaviour in `shared/seylune.js` (cart, search, filters, wishlist, toast) and `shared/site.js` (menu, rooms, page motion).
 - Filters by size, colour and price plus sorting; search with relevance scoring; cart keeps sizes separate with free-delivery progress; checkout validates Sri Lankan mobile numbers and postal codes; size guide dialog; product gallery and details.
 - Currency: Sri Lankan rupees (Rs.). Free islandwide delivery over Rs. 10,000; easy 7-day returns.
@@ -45,7 +45,7 @@ A Sri Lankan-rooted luxury label: **Sey** (a hint of Ceylon) + **Lune** (the moo
 ## Evidence on Hand
 - Model and product photography (AI-generated with Gemini / Nano Banana) in `home/images/` and `home/images/products/<category>/`, plus a three-image gallery for the Noira Satin Dress in `Prodcut Details-Noira Satin Dress/`.
 - Brand video: `home/Videos/About-brand.mp4`. Logo: `home/images/Logo.png`. Story image: `home/images/story-home.jpg`.
-- 24 products with names, prices, colours, sizes, fabric and care notes.
+- 40 products (five collections of 8) with names, prices, colours, sizes, fabric and care notes.
 - There are no real customers, reviews, press, stockists or sales figures. Never invent testimonials, ratings, review counts or press quotes.
 
 ## Product Principles

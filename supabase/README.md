@@ -80,7 +80,7 @@ In the dashboard, open **Authentication**:
 1. Open **SQL Editor → New query**.
 2. Paste the whole of [`schema.sql`](schema.sql) and click **Run**. It should say *Success. No rows returned*.
 3. New query again: paste [`seed.sql`](seed.sql) and **Run**. This loads the price list and stock.
-4. Check **Table Editor**: you should see `products` (24 rows), `product_stock`, `orders` and
+4. Check **Table Editor**: you should see `products` (40 rows), `product_stock`, `orders` and
    `order_items`, each with a green **RLS enabled** label.
 
 Read the comments in `schema.sql` as you go: every block says what it does and why.
@@ -129,9 +129,48 @@ requests come back empty or refused. Nobody can add themselves to `admins` from 
 Members can edit their own profile (name, phone, address) in **Account → Your Details**; the
 database checks the same formats as checkout, and only their own row can be read or changed.
 
+## Step 7 — The catalogue in the database + shop tools
+
+1. New snippet → paste all of [`03-catalogue-and-shop-tools.sql`](03-catalogue-and-shop-tools.sql) → **Run**.
+2. New snippet → paste all of [`03-catalogue-content.sql`](03-catalogue-content.sql) → **Run**
+   (copies the pieces' descriptions, sizes and photos into the database).
+
+From then on the database is the source of the catalogue: the shop reads pieces, prices and
+sale prices from it, and **Admin → Products** adds and edits them. Photos uploaded there go to
+the `product-images` Storage bucket (only admins can upload; only JPG / PNG / WebP under 5 MB).
+`shared/products.js` stays as the built-in copy the site falls back to if the database can't
+be reached.
+
+What else this step adds:
+
+| Part | Who can do what |
+|---|---|
+| Sale prices | Admins set them; the database refuses a sale price that isn't below the price; checkout charges it |
+| Customers | Admins read members' profiles; a member's email in their profile is written only by the database |
+| Messages + newsletter | Anyone can *send* (through `send_message()` / `join_newsletter()`, a few per visitor every 10 minutes); only admins can read them |
+
+The Security Advisor will list `send_message` and `join_newsletter` as functions anyone can
+call. That is their job (they are the contact form and the newsletter box); each one checks
+its input and slows down repeat senders.
+
+## Step 8 — Admins can see the whole team list
+
+Run [`04-team-list.sql`](04-team-list.sql). It lets admins read every row of `admins`, so the
+admin page can leave team accounts out of **Customers**. Customers still can't see the list,
+and nobody can change it from the browser.
+
+## Step 9 — The Outerwear and Accessories collections
+
+Run [`05-outerwear-and-accessories.sql`](05-outerwear-and-accessories.sql). It adds the 16 new pieces
+(with their photos, sizes, descriptions and starting stock) and two more views of the Noira Satin
+Dress. Pieces and stock that are already in the database are left as they are, so running it
+twice does no harm. It is generated from `shared/products.js` by `make-new-collections.js`.
+
+The photos themselves live in the website (`home/images/products/…`), so the live site shows
+them once the code is pushed to GitHub.
+
 ## Later: adding products
 
-1. Add the piece to `shared/products.js` (and its photos).
-2. Run `node supabase/make-seed.js`.
-3. Paste the new `seed.sql` into the SQL Editor and run it. New pieces get stock; existing
-   stock and orders are not touched.
+Once step 7 has run, add pieces on the admin page (**Admin → Products → Add a piece**).
+`seed.sql` and `make-seed.js` are only needed for a fresh project; re-running them never
+overwrites pieces already in the database.

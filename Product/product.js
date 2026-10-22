@@ -19,7 +19,7 @@
    1. LOAD THE PRODUCT
 ============================================================ */
 const params  = new URLSearchParams(window.location.search);
-const product = Seylune.getProduct(params.get("id") || "noira-satin-dress");
+let product = null;   // set once the live catalogue has arrived (see START)
 
 const $ = id => document.getElementById(id);
 const esc = Seylune.escapeHtml;
@@ -51,10 +51,12 @@ function fillProduct(p) {
   $("productCategory").textContent = p.category;
   $("productNewTag").hidden = !p.isNew;
   $("productTitle").textContent = p.name;
-  $("productPrice").textContent = Seylune.formatPrice(p.price);
+  $("productPrice").innerHTML = Seylune.priceHtml(p);
   $("productShortDesc").textContent = p.short;
   $("productColor").textContent = color.label;
   $("productSwatch").style.background = color.swatch;
+  // A one-size accessory has no size chart to show
+  $("sizeGuideBtn").hidden = p.sizes.every(s => !SEYLUNE_SIZES.includes(s));
 
   $("productDescription").textContent = p.description;
   $("productFabric").textContent = p.fabric;
@@ -140,7 +142,7 @@ function buildSizes(p) {
     const made = p.sizes.includes(size);
     const out  = made && Seylune.stockLeft(p.id, size) === 0;
     const label = !made ? `${size}, not made in this size` : out ? `${size}, sold out` : size;
-    return `<button type="button" class="size-btn${out ? " sold-out" : ""}${size === selectedSize ? " active" : ""}"
+    return `<button type="button" class="size-btn${size.length > 2 ? " is-wide" : ""}${out ? " sold-out" : ""}${size === selectedSize ? " active" : ""}"
               data-size="${size}" aria-pressed="${size === selectedSize}" aria-label="${label}"
               ${!made || out ? "disabled" : ""}>${size}</button>`;
   }).join("");
@@ -229,7 +231,7 @@ $("addToCartBtn").addEventListener("click", () => {
   const added = {
     id:       product.id,
     name:     product.name,
-    price:    product.price,
+    price:    Seylune.priceOf(product),
     image:    Seylune.asset(product.image),
     size:     selectedSize,
     quantity: quantity
@@ -328,4 +330,7 @@ function buildRecent(p) {
 /* ============================================================
    START
 ============================================================ */
-loadProduct();
+Seylune.whenCatalogue(() => {
+  product = Seylune.getProduct(params.get("id") || "noira-satin-dress");
+  loadProduct();
+});

@@ -6,7 +6,9 @@
 // Writes the price list (products) and a starting stock count for every
 // size. Run it again whenever you add pieces to shared/products.js, then
 // paste the new seed.sql into the Supabase SQL Editor.
-//   - Prices and names are updated if they changed.
+//   - Only NEW pieces are added. Once the catalogue lives in the database
+//     (step 3), existing pieces are edited on the admin page, so this
+//     never overwrites them.
 //   - Stock is only set for NEW sizes: re-running never undoes sales.
 // The starting stock is made up but stable (the same every run): most
 // sizes have a few pieces, some are low and a handful are sold out, so
@@ -49,13 +51,7 @@ const sql = `-- ================================================================
 
 insert into public.products (id, name, category, price) values
 ${products}
-on conflict (id) do update
-  set name = excluded.name, category = excluded.category,
-      price = excluded.price, active = true;
-
--- Pieces no longer in the catalogue stop being sold (old orders keep them)
-update public.products set active = false
- where id not in (${ctx.P.map(p => q(p.id)).join(", ")});
+on conflict (id) do nothing;   -- pieces already in the database are managed on the admin page
 
 insert into public.product_stock (product_id, size, quantity) values
 ${stock}

@@ -130,6 +130,9 @@ const SeyluneLiquid = (() => {
       const src = img.currentSrc || img.src;
       const image = new Image();
       image.decoding = "async";
+      // Photos uploaded to Supabase Storage live on another domain; WebGL may
+      // only read them when they are fetched with CORS
+      image.crossOrigin = "anonymous";
       image.onload = () => resolve(image);
       image.onerror = () => resolve(null);
       image.src = src;

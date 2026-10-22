@@ -27,10 +27,13 @@ const priceRanges = [
    The photograph follows the first piece still shown after
    filtering or sorting.
 ============================================================ */
-const index = SeyluneSite.initIndex({
-  list:  document.getElementById("productGrid"),
-  box:   document.getElementById("indexLiquid"),
-  plate: document.getElementById("indexPlate")
-});
+// The rows written in the page are kept unless the live catalogue
+// (shared/backend.js) differs: a new piece, a new price, a sale.
+Seylune.whenCatalogue(() => {
+  const list = document.getElementById("productGrid");
+  const box  = document.getElementById("indexLiquid");
+  SeyluneSite.syncIndexRows(list, box, Seylune.products.filter(p => p.category === "Tops"));
 
-Seylune.initCatalog({ prices: priceRanges, onApply: () => index.refresh() });
+  const index = SeyluneSite.initIndex({ list, box, plate: document.getElementById("indexPlate") });
+  Seylune.initCatalog({ prices: priceRanges, onApply: () => index.refresh() });
+});

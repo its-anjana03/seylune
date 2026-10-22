@@ -20,7 +20,7 @@
 const contactForm = document.getElementById("contactForm");
 
 if (contactForm) {
-  contactForm.addEventListener("submit", (e) => {
+  contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     // Read inputs
@@ -58,9 +58,21 @@ if (contactForm) {
     // Stop if invalid
     if (!isValid) return;
 
-    // Success — show confirmation and reset form
-    showSuccess(`Thank you, ${name}. Your message has been received. We'll be in touch shortly.`);
-    contactForm.reset();
+    // With the backend connected the message is saved for the Seylune team
+    // (send_message() checks it again and limits how often one visitor can send)
+    const button = contactForm.querySelector("button[type=submit]");
+    button.disabled = true;
+    try {
+      if (typeof SeyluneBackend !== "undefined" && SeyluneBackend.enabled) {
+        await SeyluneBackend.sendMessage(name, email, message);
+      }
+      showSuccess(`Thank you, ${name}. Your message has been received. We'll be in touch shortly.`);
+      contactForm.reset();
+    } catch (err) {
+      showError("message", err.message);
+    } finally {
+      button.disabled = false;
+    }
   });
 }
 

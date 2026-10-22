@@ -49,7 +49,8 @@ function renderCart() {
     const url     = Seylune.productUrl(item.id);
     const name    = escapeHtml(item.name);
     const left    = Seylune.stockLeft(item.id, item.size);
-    const stock   = left === 0 ? "Sold out in this size — please remove it or choose another size."
+    const stock   = !product ? "This piece is no longer in the shop — please remove it."
+                  : left === 0 ? "Sold out in this size — please remove it or choose another size."
                   : left != null && item.quantity > left ? `Only ${left} left in this size — please lower the quantity.`
                   : left != null && left <= 3 ? `Only ${left} left.` : "";
 
@@ -95,7 +96,7 @@ function renderCart() {
         </div>
 
         <p class="cart-line-total">${formatPrice(item.price * item.quantity)}</p>
-        ${stock ? `<p class="cart-line-stock${left === 0 || item.quantity > left ? " is-problem" : ""}">${stock}</p>` : ""}
+        ${stock ? `<p class="cart-line-stock${!product || left === 0 || item.quantity > left ? " is-problem" : ""}">${stock}</p>` : ""}
       </article>`;
   }).join("");
 
@@ -194,7 +195,10 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
 /* ============================================================
    7. INIT
 ============================================================ */
-renderCart();
+Seylune.whenCatalogue(() => {
+  Seylune.refreshCart();
+  renderCart();
+});
 
 // Real stock arrived from the database
 document.addEventListener("seylune:stock", renderCart);
