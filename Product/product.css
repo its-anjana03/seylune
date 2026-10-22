@@ -58,6 +58,20 @@
   outline-color: var(--gold);
 }
 
+/* Click the photograph (or the magnifier) for the full-screen view */
+.product-media .liquid-box {
+  cursor: zoom-in;
+}
+
+.product-zoom {
+  position: absolute;
+  right: clamp(1.25rem, 3vw, 2.4rem);
+  bottom: clamp(1.25rem, 4vh, 2.4rem);
+  z-index: 3;
+  background: rgba(15, 13, 16, 0.45);
+  border-color: rgba(244, 238, 232, 0.35);
+}
+
 
 /* ============================================================
    2. NAME, PRICE, COLOUR
@@ -149,9 +163,15 @@
   gap: 0.5rem;
 }
 
+.size-stock {
+  min-height: 1.3rem;
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
 .size-error {
   min-height: 1.3rem;
-  margin-top: 0.5rem;
   font-size: 0.78rem;
   color: var(--error);
 }
@@ -285,6 +305,17 @@
 ============================================================ */
 .related {
   margin-top: clamp(3rem, 10vh, 5.5rem);
+}
+
+.look .section-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.related .section-note {
+  font-size: 0.84rem;
+  color: var(--text-soft);
 }
 
 .related-grid {

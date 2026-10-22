@@ -7,6 +7,10 @@
       follow; following a link fades the page out first
    3. The index: a list of names beside a photograph that melts
       to the piece you point at (collections + search)
+   4. Layers: shared open/close for the bag, quick view and zoom
+   5. The bag drawer: adding to the cart slides it in
+   6. Quick view: a piece in an overlay, from any card
+   7. Zoom: the photographs full screen, click to look closer
    With reduced motion (or without GSAP/WebGL) everything still
    works, just without the movement.
 ============================================================ */
@@ -180,7 +184,6 @@ const SeyluneSite = (() => {
       const esc = Seylune.escapeHtml;
       const url = Seylune.productUrl(p.id);
       const colour = SEYLUNE_COLORS[p.color] || { label: p.color, swatch: "transparent" };
-      const data = `data-id="${p.id}" data-name="${esc(p.name)}" data-price="${p.price}" data-image="${Seylune.asset(p.image)}"`;
       plate.innerHTML = `
         <div class="plate-copy">
           <p class="plate-category">${esc(p.category)} · <span class="swatch" style="background:${colour.swatch}"></span>${esc(colour.label)}${p.isNew ? " · New" : ""}</p>
@@ -193,7 +196,7 @@ const SeyluneSite = (() => {
         </div>
         <div class="plate-sizes" role="group" aria-label="Add ${esc(p.name)} to cart in size">
           <span class="plate-label" aria-hidden="true">Add to cart</span>
-          ${p.sizes.map(s => `<button type="button" class="size-pill add-to-cart" ${data} data-size="${s}" aria-label="Add ${esc(p.name)}, size ${s}, to cart">${s}</button>`).join("")}
+          ${Seylune.sizePills(p)}
         </div>`;
       Seylune.syncWishlistButtons();
     }
@@ -221,6 +224,21 @@ const SeyluneSite = (() => {
       }
     }
 
+    // On phones the photograph is hidden, so each piece gets a quick view instead
+    all.forEach(row => {
+      if (!row.querySelector(".quick-btn")) {
+        const p = Seylune.getProduct(row.dataset.id);
+        row.insertAdjacentHTML("beforeend",
+          `<button type="button" class="quick-btn" data-id="${row.dataset.id}" aria-label="Quick view: ${Seylune.escapeHtml(p ? p.name : "")}">Quick view</button>`);
+      }
+    });
+
+    // Real stock arrived from the database: redraw the sizes on the plate
+    document.addEventListener("seylune:stock", () => {
+      const p = active && Seylune.getProduct(active.dataset.id);
+      if (p) fillPlate(p);
+    });
+
     all.forEach(row => {
       row.addEventListener("pointerenter", () => { if (wide.matches) activate(row); });
       row.addEventListener("focusin", () => activate(row));
@@ -246,5 +264,322 @@ const SeyluneSite = (() => {
     return { refresh, activate };
   }
 
-  return { reduced, canAnimate, liquid, isMenuOpen, reveal, initIndex };
+  /* ============================================================
+     4. LAYERS — the bag, quick view and zoom share one way of
+        opening: built on first use, page scroll paused, focus
+        kept inside, Esc or the scrim closes, focus returns.
+  ============================================================ */
+  const esc = s => Seylune.escapeHtml(s);
+  const openLayers = [];
+
+  function makeLayer(id, className, html) {
+    const layer = document.createElement("div");
+    layer.id = id;
+    layer.className = "layer " + className;
+    layer.hidden = true;
+    layer.innerHTML = html;
+    document.body.appendChild(layer);
+    layer.addEventListener("click", e => {
+      if (e.target.closest("[data-close]")) closeLayer(layer);
+    });
+    layer.addEventListener("keydown", e => {
+      if (e.key !== "Tab") return;
+      const items = Array.from(layer.querySelectorAll("a[href], button:not([disabled]), input, select, [tabindex='0']"))
+        .filter(el => el.offsetParent !== null);
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    return layer;
+  }
+
+  function openLayer(layer, focusEl) {
+    if (!layer.hidden && layer.classList.contains("is-open")) return;
+    layer._returnFocus = document.activeElement;
+    clearTimeout(layer._timer);
+    layer.hidden = false;
+    void layer.offsetWidth;
+    layer.classList.add("is-open");
+    document.body.classList.add("layer-open");
+    if (!openLayers.includes(layer)) openLayers.push(layer);
+    setTimeout(() => (focusEl || layer.querySelector("[data-close]")).focus({ preventScroll: true }), 60);
+  }
+
+  function closeLayer(layer, keepFocus) {
+    if (layer.hidden) return;
+    layer.classList.remove("is-open");
+    openLayers.splice(openLayers.indexOf(layer), 1);
+    if (!openLayers.length) document.body.classList.remove("layer-open");
+    layer._timer = setTimeout(() => { layer.hidden = true; }, reduced ? 0 : 600);
+    if (!keepFocus && layer._returnFocus && layer._returnFocus.focus) layer._returnFocus.focus({ preventScroll: true });
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && openLayers.length) closeLayer(openLayers[openLayers.length - 1]);
+  });
+
+
+  /* ============================================================
+     5. THE BAG DRAWER
+     Adding a piece slides the bag in from the right with every
+     line, the subtotal and the way to checkout.
+  ============================================================ */
+  let bag = null;
+
+  function buildBag() {
+    bag = makeLayer("bagLayer", "bag-layer", `
+      <div class="layer-scrim" data-close></div>
+      <aside class="bag" role="dialog" aria-modal="true" aria-labelledby="bagTitle">
+        <header class="bag-head">
+          <h2 class="bag-title" id="bagTitle">Your Bag <span id="bagCount"></span></h2>
+          <button type="button" class="nav-word bag-close" data-close>Close</button>
+        </header>
+        <p class="bag-added" id="bagAdded" role="status" aria-live="polite"></p>
+        <div class="bag-lines" id="bagLines"></div>
+        <footer class="bag-foot" id="bagFoot">
+          <p class="bag-subtotal"><span>Subtotal</span><span id="bagSubtotal"></span></p>
+          <div class="delivery-track" aria-hidden="true"><span id="bagBar"></span></div>
+          <p class="summary-note" id="bagNote"></p>
+          <a class="btn btn-primary btn-block" href="${Seylune.ROOT}Checkout/checkout.html">Checkout</a>
+          <a class="text-link bag-view" href="${Seylune.ROOT}Cart/cart.html">View cart</a>
+        </footer>
+      </aside>`);
+
+    bag.querySelector("#bagLines").addEventListener("click", e => {
+      const btn = e.target.closest("[data-key]");
+      if (!btn) return;
+      const key = btn.dataset.key;
+      if (btn.classList.contains("qty-increase")) Seylune.changeQuantity(key, 1);
+      else if (btn.classList.contains("qty-decrease")) Seylune.changeQuantity(key, -1);
+      else if (btn.classList.contains("bag-remove")) Seylune.removeFromCart(key);
+      renderBag();
+      const again = bag.querySelector(`[data-key="${CSS.escape(key)}"].${btn.classList[btn.classList.length - 1]}`);
+      (again || bag.querySelector(".bag-close")).focus({ preventScroll: true });
+    });
+  }
+
+  function renderBag() {
+    const cart = Seylune.getCart();
+    const count = Seylune.getCartCount();
+    const subtotal = Seylune.getSubtotal(cart);
+    bag.querySelector("#bagCount").textContent = count ? `(${count})` : "";
+    bag.querySelector("#bagFoot").hidden = cart.length === 0;
+
+    bag.querySelector("#bagLines").innerHTML = cart.length ? cart.map(item => {
+      const key = Seylune.lineKey(item);
+      const url = Seylune.productUrl(item.id);
+      return `
+        <article class="bag-line">
+          <a href="${url}" class="bag-line-image" tabindex="-1" aria-hidden="true"><img src="${esc(item.image)}" alt="" /></a>
+          <div class="bag-line-info">
+            <h3 class="bag-line-name"><a href="${url}">${esc(item.name)}</a></h3>
+            <p class="bag-line-meta">${item.size ? "Size " + esc(item.size) : "Size to choose in the cart"}</p>
+            <div class="bag-line-row">
+              <div class="qty-control" role="group" aria-label="Quantity of ${esc(item.name)}">
+                <button type="button" class="qty-btn qty-decrease" data-key="${key}" aria-label="Decrease quantity of ${esc(item.name)}" ${item.quantity <= 1 ? "disabled" : ""}>−</button>
+                <span class="qty-value">${item.quantity}</span>
+                <button type="button" class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${esc(item.name)}"
+                  ${Seylune.stockLeft(item.id, item.size) != null && item.quantity >= Seylune.stockLeft(item.id, item.size) ? "disabled" : ""}>+</button>
+              </div>
+              <button type="button" class="remove-btn bag-remove" data-key="${key}" aria-label="Remove ${esc(item.name)}">Remove</button>
+            </div>
+          </div>
+          <p class="bag-line-total">${Seylune.formatPrice(item.price * item.quantity)}</p>
+        </article>`;
+    }).join("") : `
+      <div class="bag-empty">
+        <p class="bag-empty-title">Your bag is empty</p>
+        <a href="${Seylune.ROOT}New arrivals/new-arriavals.html" class="text-link">Shop New Arrivals</a>
+      </div>`;
+
+    const remaining = Seylune.FREE_DELIVERY_MIN - subtotal;
+    bag.querySelector("#bagSubtotal").textContent = Seylune.formatPrice(subtotal);
+    bag.querySelector("#bagBar").style.width = Math.min(100, (subtotal / Seylune.FREE_DELIVERY_MIN) * 100) + "%";
+    bag.querySelector("#bagNote").textContent = remaining > 0
+      ? `Add ${Seylune.formatPrice(remaining)} more for free islandwide delivery.`
+      : "You've unlocked free islandwide delivery.";
+  }
+
+  function openBag(added) {
+    if (!bag) buildBag();
+    renderBag();
+    bag.querySelector("#bagAdded").textContent = added
+      ? `${added.name}${added.size ? ", size " + added.size : ""}, added to your bag.` : "";
+    openLayer(bag);
+  }
+
+  function closeBag() {
+    if (bag) closeLayer(bag);
+  }
+
+  // A piece went into the cart: show the bag instead of a toast
+  document.addEventListener("seylune:added", e => {
+    e.preventDefault();
+    if (qv && !qv.hidden) closeLayer(qv, true);
+    openBag(e.detail);
+  });
+
+  // The Cart word opens the bag (the full cart page is one link away).
+  // Listens in the capture phase so it runs before the page-leave fade.
+  document.addEventListener("click", e => {
+    const link = e.target.closest(".navbar .cart-icon");
+    if (!link || e.metaKey || e.ctrlKey || e.shiftKey || link.getAttribute("aria-current") === "page") return;
+    e.preventDefault();
+    openBag();
+  }, true);
+
+  // The cart changed in another tab
+  window.addEventListener("storage", e => {
+    if (bag && !bag.hidden && e.key === Seylune.KEYS.cart) renderBag();
+  });
+
+
+  /* ============================================================
+     6. QUICK VIEW
+     Any card's "Quick view" opens the piece in an overlay: its
+     photographs, price, honest stock and one-tap sizes.
+  ============================================================ */
+  let qv = null;
+
+  function quickView(id) {
+    const p = Seylune.getProduct(id);
+    if (!p) return;
+    if (!qv) {
+      qv = makeLayer("quickLayer", "quick-layer", `
+        <div class="layer-scrim" data-close></div>
+        <div class="quick" role="dialog" aria-modal="true" aria-labelledby="quickName">
+          <button type="button" class="nav-word quick-close" data-close>Close</button>
+          <div class="quick-media"><div class="quick-frames" id="quickFrames"></div><div class="quick-thumbs" id="quickThumbs"></div></div>
+          <div class="quick-body" id="quickBody"></div>
+        </div>`);
+      qv.addEventListener("click", e => {
+        const thumb = e.target.closest(".quick-thumb");
+        if (!thumb) return;
+        const i = Number(thumb.dataset.index);
+        qv.querySelectorAll(".quick-frames img").forEach((img, k) => img.classList.toggle("is-current", k === i));
+        qv.querySelectorAll(".quick-thumb").forEach((t, k) => t.setAttribute("aria-pressed", k === i));
+      });
+    }
+
+    const images = [p.image].concat(p.gallery || []).map(Seylune.asset);
+    const colour = SEYLUNE_COLORS[p.color] || { label: p.color, swatch: "transparent" };
+    const url = Seylune.productUrl(p.id);
+    const lows = p.sizes.map(s => [s, Seylune.stockNote(p.id, s)]).filter(([, n]) => n);
+
+    qv.querySelector("#quickFrames").innerHTML = images.map((src, i) =>
+      `<img src="${src}" alt="${esc(p.name)}${i ? " — view " + (i + 1) : ""}"${i ? "" : ' class="is-current"'} />`).join("");
+    qv.querySelector("#quickThumbs").innerHTML = images.length > 1 ? images.map((src, i) =>
+      `<button type="button" class="quick-thumb" data-index="${i}" aria-label="View image ${i + 1} of ${images.length}" aria-pressed="${i === 0}"><img src="${src}" alt="" /></button>`).join("") : "";
+    qv.querySelector("#quickBody").innerHTML = `
+      <p class="kicker">${esc(p.category)}${p.isNew ? " · New" : ""}</p>
+      <h2 class="quick-name" id="quickName">${esc(p.name)}</h2>
+      <p class="quick-price">${Seylune.formatPrice(p.price)}</p>
+      <p class="quick-short">${esc(p.short)}</p>
+      <p class="quick-colour"><span class="option-label">Colour</span><span class="swatch" style="background:${colour.swatch}"></span>${esc(colour.label)}</p>
+      <p class="option-label quick-label">Add to bag</p>
+      <div class="quick-sizes" role="group" aria-label="Add ${esc(p.name)} to bag in size">${Seylune.sizePills(p)}</div>
+      <p class="quick-stock">${lows.map(([s, n]) => `${s}: ${n}`).join(" · ")}</p>
+      <div class="quick-actions">
+        <button type="button" class="wishlist-btn quick-heart" data-id="${p.id}" data-name="${esc(p.name)}">${Seylune.HEART_SVG}</button>
+        <a href="${url}" class="text-link">View full details</a>
+      </div>`;
+    Seylune.syncWishlistButtons();
+    openLayer(qv);
+  }
+
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".quick-btn");
+    if (btn) quickView(btn.dataset.id);
+  });
+
+  // Real stock arrived: redraw every card's sizes
+  document.addEventListener("seylune:stock", () => {
+    document.querySelectorAll(".card-sizes").forEach(el => {
+      const p = Seylune.getProduct(el.closest(".product-card").dataset.id);
+      if (p) el.innerHTML = Seylune.sizePills(p);
+    });
+  });
+
+
+  /* ============================================================
+     7. ZOOM
+     The photographs full screen. Click (or tap) to look closer;
+     move the pointer, or drag on a phone, to travel across the
+     fabric. Arrows and the keys ← → move between views.
+  ============================================================ */
+  let zoomLayer = null;
+  let zoomImages = [];
+  let zoomIndex = 0;
+
+  function buildZoom() {
+    zoomLayer = makeLayer("zoomLayer", "zoom-layer", `
+      <div class="zoom" role="dialog" aria-modal="true" aria-label="Photographs, full screen">
+        <div class="zoom-stage" id="zoomStage"><img id="zoomImg" alt="" /></div>
+        <button type="button" class="nav-word zoom-close" data-close>Close</button>
+        <button type="button" class="round-btn zoom-prev" id="zoomPrev" aria-label="Previous photograph">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+        </button>
+        <button type="button" class="round-btn zoom-next" id="zoomNext" aria-label="Next photograph">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+        </button>
+        <p class="zoom-count" id="zoomCount" aria-live="polite"></p>
+        <p class="zoom-hint">Click to look closer</p>
+      </div>`);
+
+    const stage = zoomLayer.querySelector("#zoomStage");
+    const img = zoomLayer.querySelector("#zoomImg");
+
+    // Click toggles the close look, keeping the point you clicked under the pointer
+    stage.addEventListener("click", e => {
+      const r = img.getBoundingClientRect();
+      const fx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      const fy = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      const zoomed = stage.classList.toggle("is-zoomed");
+      if (zoomed) {
+        stage.scrollLeft = fx * stage.scrollWidth - stage.clientWidth / 2;
+        stage.scrollTop = fy * stage.scrollHeight - stage.clientHeight / 2;
+      }
+    });
+
+    // With a mouse, moving the pointer travels across the zoomed photograph
+    stage.addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse" || !stage.classList.contains("is-zoomed")) return;
+      const r = stage.getBoundingClientRect();
+      stage.scrollLeft = ((e.clientX - r.left) / r.width) * (stage.scrollWidth - stage.clientWidth);
+      stage.scrollTop = ((e.clientY - r.top) / r.height) * (stage.scrollHeight - stage.clientHeight);
+    });
+
+    zoomLayer.querySelector("#zoomPrev").addEventListener("click", () => showZoom(zoomIndex - 1));
+    zoomLayer.querySelector("#zoomNext").addEventListener("click", () => showZoom(zoomIndex + 1));
+    zoomLayer.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") showZoom(zoomIndex - 1);
+      if (e.key === "ArrowRight") showZoom(zoomIndex + 1);
+    });
+  }
+
+  function showZoom(i) {
+    zoomIndex = (i + zoomImages.length) % zoomImages.length;
+    const stage = zoomLayer.querySelector("#zoomStage");
+    const img = zoomLayer.querySelector("#zoomImg");
+    stage.classList.remove("is-zoomed");
+    img.src = zoomImages[zoomIndex].src;
+    img.alt = zoomImages[zoomIndex].alt;
+    const many = zoomImages.length > 1;
+    zoomLayer.querySelector("#zoomPrev").hidden = !many;
+    zoomLayer.querySelector("#zoomNext").hidden = !many;
+    zoomLayer.querySelector("#zoomCount").textContent = many ? `${zoomIndex + 1} / ${zoomImages.length}` : "";
+  }
+
+  // images: [{ src, alt }]
+  function zoom(images, start) {
+    if (!images || !images.length) return;
+    if (!zoomLayer) buildZoom();
+    zoomImages = images;
+    showZoom(start || 0);
+    openLayer(zoomLayer);
+  }
+
+
+  return { reduced, canAnimate, liquid, isMenuOpen, reveal, initIndex, openBag, closeBag, quickView, zoom };
 })();

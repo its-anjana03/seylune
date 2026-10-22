@@ -403,3 +403,20 @@ const SEYLUNE_COLORS = {
 };
 
 const SEYLUNE_SIZES = ["XS", "S", "M", "L", "XL"];
+
+
+/* ============================================================
+   LOOKS — pieces styled together ("Complete the look" on the
+   product page). A piece can belong to one look. Dresses join
+   looks once the Outerwear and Accessories pieces arrive.
+============================================================ */
+const SEYLUNE_LOOKS = [
+  { name: "Plum Evening",     pieces: ["elara-drape-top", "veya-tailored-pants"] },
+  { name: "Ivory Ease",       pieces: ["selah-wrap-top", "mira-wide-leg-trousers"] },
+  { name: "Emerald Hour",     pieces: ["kaia-structured-blouse", "selene-midi-skirt"] },
+  { name: "The Liora Set",    pieces: ["liora-satin-blouse", "liora-satin-skirt"] },
+  { name: "Soft Taupe",       pieces: ["aven-knit-top", "vara-structured-skirt"] },
+  { name: "Printed Navy",     pieces: ["nerah-tie-front-top", "aure-slim-trousers"] },
+  { name: "Weekday Tailoring", pieces: ["veya-luxe-shirt", "nyla-straight-fit-pants"] },
+  { name: "Candlelit",        pieces: ["sorelle-evening-blouse", "noemi-pleated-trousers"] }
+];

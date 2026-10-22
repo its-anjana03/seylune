@@ -5,6 +5,7 @@
    1. Paths + catalogue helpers
    2. Safe localStorage helpers
    3. Cart (items are kept apart by id AND size)
+   3b. Stock, recently viewed, looks
    4. Wishlist (saved pieces)
    5. Toast messages
    6. Search forms (the menu room lives in shared/site.js)
@@ -26,7 +27,8 @@ const Seylune = (() => {
     wishlist: "seylune_wishlist",
     user:     "seylune_user",
     accounts: "seylune_accounts",
-    orders:   "seylune_orders"
+    orders:   "seylune_orders",
+    recent:   "seylune_recent"
   };
 
   // Delivery rules (also shown in the announcement bar)
@@ -175,6 +177,85 @@ const Seylune = (() => {
     saveCart(cart);
   }
 
+  /* ============================================================
+     3b. STOCK, RECENTLY VIEWED, LOOKS
+     Stock comes from the database once shared/backend.js has
+     loaded it (setStock). Until then — or in demo mode — every
+     size uses the same made-up starting count as
+     supabase/make-seed.js, so nothing jumps when the real numbers
+     arrive.
+  ============================================================ */
+  let stockMap = null;   // { "id|size": quantity } from the database
+
+  function demoStock(id, size) {
+    let h = 2166136261;
+    for (const ch of id + "|" + size) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    const n = Math.abs(h) % 20;
+    if (n < 2) return 0;
+    if (n < 5) return n - 1;
+    return 4 + (n % 7);
+  }
+
+  // How many are left: a number, or null when unknown (never blocks a sale)
+  function stockLeft(id, size) {
+    if (!id || !size) return null;
+    if (stockMap) {
+      const left = stockMap[id + "|" + size];
+      return left == null ? null : left;
+    }
+    return demoStock(id, size);
+  }
+
+  function setStock(rows) {
+    stockMap = {};
+    rows.forEach(r => { stockMap[r.product_id + "|" + r.size] = r.quantity; });
+    document.dispatchEvent(new CustomEvent("seylune:stock"));
+  }
+
+  // "Only 2 left" / "Sold out" / ""
+  function stockNote(id, size) {
+    const left = stockLeft(id, size);
+    if (left === 0) return "Sold out";
+    if (left != null && left <= 3) return `Only ${left} left`;
+    return "";
+  }
+
+  // Round size buttons that add straight to the cart; sold-out sizes are struck through
+  function sizePills(p, extraLabel) {
+    const name  = escapeHtml(p.name);
+    const image = asset(p.image);
+    return (p.sizes || []).map(s => {
+      const out = stockLeft(p.id, s) === 0;
+      return `<button type="button" class="size-pill add-to-cart${out ? " is-sold-out" : ""}"
+        data-id="${p.id}" data-name="${name}" data-price="${p.price}" data-image="${image}" data-size="${s}"
+        ${out ? `aria-disabled="true" aria-label="${name}, size ${s}, sold out"`
+               : `aria-label="Add ${name}, size ${s}, to cart${extraLabel || ""}"`}>${s}</button>`;
+    }).join("");
+  }
+
+  function getRecent() {
+    const list = read(KEYS.recent, []);
+    return Array.isArray(list) ? list.filter(id => getProduct(id)) : [];
+  }
+
+  function rememberViewed(id) {
+    write(KEYS.recent, [id].concat(getRecent().filter(x => x !== id)).slice(0, 8));
+  }
+
+  // The styled outfit a piece belongs to (SEYLUNE_LOOKS in products.js)
+  function lookFor(id) {
+    const looks = typeof SEYLUNE_LOOKS !== "undefined" ? SEYLUNE_LOOKS : [];
+    const look = looks.find(l => l.pieces.includes(id));
+    if (!look) return null;
+    return { name: look.name, pieces: look.pieces.filter(x => x !== id).map(getProduct).filter(Boolean) };
+  }
+
+  // Tell the page a piece went into the cart. site.js opens the bag
+  // drawer and cancels the event; without it, a toast says so instead.
+  function announceAdd(product) {
+    return !document.dispatchEvent(new CustomEvent("seylune:added", { detail: product, cancelable: true }));
+  }
+
   function clearCart() {
     saveCart([]);
   }
@@ -285,7 +366,6 @@ const Seylune = (() => {
     const url   = productUrl(p.id);
     const image = asset(p.image);
     const name  = escapeHtml(p.name);
-    const data  = `data-id="${p.id}" data-name="${name}" data-price="${p.price}" data-image="${image}"`;
 
     return `
       <article class="product-card" data-id="${p.id}" data-price="${p.price}">
@@ -296,10 +376,9 @@ const Seylune = (() => {
             </div>
           </a>
           <div class="card-sizes" role="group" aria-label="Add ${name} to cart in size">
-            ${(p.sizes || []).map(s =>
-              `<button type="button" class="size-pill add-to-cart" ${data} data-size="${s}" aria-label="Add ${name}, size ${s}, to cart">${s}</button>`
-            ).join("")}
+            ${sizePills(p)}
           </div>
+          <button type="button" class="quick-btn" data-id="${p.id}" aria-label="Quick view: ${name}">Quick view</button>
         </div>
         <div class="product-info">
           <p class="product-card-category">${escapeHtml(p.category)}</p>
@@ -334,6 +413,10 @@ const Seylune = (() => {
 
       const addBtn = e.target.closest(".add-to-cart");
       if (addBtn && !addBtn.disabled) {
+        if (stockLeft(addBtn.dataset.id, addBtn.dataset.size) === 0) {
+          toast(`${addBtn.dataset.name} in size ${addBtn.dataset.size} is sold out.`);
+          return;
+        }
         const product = {
           id:    addBtn.dataset.id,
           name:  addBtn.dataset.name,
@@ -354,6 +437,7 @@ const Seylune = (() => {
           addBtn.disabled = false;
         }, 1200);
 
+        if (announceAdd(product)) return;   // the bag drawer opened
         const needsSize = !product.size && (getProduct(product.id) || {}).sizes;
         toast(
           product.size ? `${product.name}, size ${product.size}, added to your cart.`
@@ -611,6 +695,7 @@ const Seylune = (() => {
     lineKey, getCart, saveCart, getCartCount, getSubtotal, getShipping,
     addToCart, changeQuantity, changeSize, removeFromCart, clearCart, updateCartBadge,
     getWishlist, isSaved, toggleWishlist, syncWishlistButtons,
-    toast, renderProductCard, addWishlistButtons, initCatalog, HEART_SVG
+    toast, renderProductCard, addWishlistButtons, initCatalog, HEART_SVG,
+    stockLeft, setStock, stockNote, sizePills, getRecent, rememberViewed, lookFor, announceAdd
   };
 })();

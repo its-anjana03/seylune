@@ -48,6 +48,10 @@ function renderCart() {
     const product = Seylune.getProduct(item.id);
     const url     = Seylune.productUrl(item.id);
     const name    = escapeHtml(item.name);
+    const left    = Seylune.stockLeft(item.id, item.size);
+    const stock   = left === 0 ? "Sold out in this size — please remove it or choose another size."
+                  : left != null && item.quantity > left ? `Only ${left} left in this size — please lower the quantity.`
+                  : left != null && left <= 3 ? `Only ${left} left.` : "";
 
     // Size: a picker, so the size can be chosen or changed here
     let sizeCell = "";
@@ -83,13 +87,15 @@ function renderCart() {
               <button class="qty-btn qty-decrease" data-key="${key}" aria-label="Decrease quantity of ${name}"
                       ${item.quantity <= 1 ? "disabled" : ""}>−</button>
               <span class="qty-value">${item.quantity}</span>
-              <button class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${name}">+</button>
+              <button class="qty-btn qty-increase" data-key="${key}" aria-label="Increase quantity of ${name}"
+                      ${left != null && item.quantity >= left ? "disabled" : ""}>+</button>
             </div>
             <button class="remove-btn" data-key="${key}" aria-label="Remove ${name}${item.size ? ", size " + item.size : ""}">Remove</button>
           </div>
         </div>
 
         <p class="cart-line-total">${formatPrice(item.price * item.quantity)}</p>
+        ${stock ? `<p class="cart-line-stock${left === 0 || item.quantity > left ? " is-problem" : ""}">${stock}</p>` : ""}
       </article>`;
   }).join("");
 
@@ -165,6 +171,14 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
     return;
   }
 
+  // Nothing sold out or over the stock that is left
+  const problem = document.querySelector(".cart-line-stock.is-problem");
+  if (problem) {
+    showMessage("Some pieces are no longer available in that quantity.", true);
+    problem.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
   // Every sized piece needs a size before checkout
   const missing = document.querySelector(".cart-size-select.needs-size");
   if (missing) {
@@ -181,6 +195,9 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
    7. INIT
 ============================================================ */
 renderCart();
+
+// Real stock arrived from the database
+document.addEventListener("seylune:stock", renderCart);
 
 // Re-render if the cart changes in another tab
 window.addEventListener("storage", e => {

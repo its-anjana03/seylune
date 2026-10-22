@@ -47,10 +47,7 @@
     $("pieceLink").href = url;
     $("pieceShort").textContent = p.short.split(". ")[0].replace(/\.?$/, ".");
     $("piecePrice").textContent = Seylune.formatPrice(p.price);
-    const data = `data-id="${p.id}" data-name="${Seylune.escapeHtml(p.name)}" data-price="${p.price}" data-image="${Seylune.asset(p.image)}"`;
-    $("pieceSizes").innerHTML = p.sizes.map(s =>
-      `<button type="button" class="size-pill add-to-cart" ${data} data-size="${s}" aria-label="Add ${Seylune.escapeHtml(p.name)}, size ${s}, to cart">${s}</button>`
-    ).join("");
+    $("pieceSizes").innerHTML = Seylune.sizePills(p);
   }
 
   function showPiece(i) {
@@ -80,6 +77,8 @@
   }
 
   fillPiece(arrivals[0]);
+  // Real stock arrived from the database: redraw the sizes
+  document.addEventListener("seylune:stock", () => fillPiece(arrivals[pieceIndex]));
   $("piecePrev").addEventListener("click", () => showPiece(pieceIndex - 1));
   $("pieceNext").addEventListener("click", () => showPiece(pieceIndex + 1));
   $("pieceThumbs").addEventListener("click", e => {
@@ -264,7 +263,8 @@
 
 
   /* ---------- Input: wheel, touch, keys ---------- */
-  const menuOpen = SeyluneSite.isMenuOpen;
+  // The menu, the bag drawer, quick view and zoom all pause the scenes
+  const menuOpen = () => SeyluneSite.isMenuOpen() || document.body.classList.contains("layer-open");
 
   // A scene with its own overflow scrolls first, then hands over at its edge
   function canScrollInside(scene, down) {

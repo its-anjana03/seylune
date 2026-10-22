@@ -95,6 +95,9 @@
     <div class="room-media product-media" id="productMedia">
       <div class="liquid-box" id="productLiquid"></div>
       <div class="product-thumbs" id="thumbnailStrip" role="group" aria-label="Product images" hidden></div>
+      <button type="button" class="round-btn product-zoom" id="productZoom" aria-label="View the photographs full screen">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg>
+      </button>
     </div>
 
     <section class="room-body product-body" id="productSection" aria-labelledby="productTitle">
@@ -126,6 +129,7 @@
           <button type="button" class="option-link" id="sizeGuideBtn" aria-haspopup="dialog">Size guide</button>
         </div>
         <div class="size-options" id="sizeOptions" role="group" aria-labelledby="sizeLabel"></div>
+        <p class="size-stock" id="sizeStock" aria-live="polite"></p>
         <p class="size-error" id="sizeError" role="alert"></p>
       </div>
 
@@ -173,6 +177,15 @@
         </details>
       </div>
 
+      <!-- Pieces styled with this one -->
+      <section class="related look" id="lookSection" aria-labelledby="lookTitle" hidden>
+        <div class="section-head">
+          <h2 class="section-title" id="lookTitle">Complete the look</h2>
+          <p class="section-note" id="lookName"></p>
+        </div>
+        <div class="product-grid related-grid" id="lookGrid"></div>
+      </section>
+
       <!-- More from the same collection -->
       <section class="related" id="relatedSection" aria-labelledby="relatedTitle">
         <div class="section-head">
@@ -180,6 +193,14 @@
           <a href="../Dresses/dresses.html" class="text-link" id="relatedLink">View all</a>
         </div>
         <div class="product-grid related-grid" id="relatedGrid"></div>
+      </section>
+
+      <!-- Pieces this visitor looked at before (this browser only) -->
+      <section class="related" id="recentSection" aria-labelledby="recentTitle" hidden>
+        <div class="section-head">
+          <h2 class="section-title" id="recentTitle">Recently viewed</h2>
+        </div>
+        <div class="product-grid related-grid" id="recentGrid"></div>
       </section>
     </section>
 

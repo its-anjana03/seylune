@@ -112,6 +112,18 @@
   white-space: nowrap;
 }
 
+/* Stock: low is gold, a problem (sold out / too many) is rose */
+.cart-line-stock {
+  grid-column: 2 / -1;
+  margin-top: -0.6rem;
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
+.cart-line-stock.is-problem {
+  color: var(--error);
+}
+
 .cart-continue {
   margin-top: 2rem;
 }
